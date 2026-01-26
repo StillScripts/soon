@@ -14,7 +14,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 
 **Packages:**
 - `@repo/ui`: shadcn/ui component library (Base UI primitives, Tailwind CSS v4)
-- `@repo/eslint-config`: Shared ESLint configurations
+- `@repo/biome-config`: Shared Biome configurations for linting and formatting
 - `@repo/typescript-config`: Shared TypeScript configurations
 
 ## Strict Bun Usage Policy
@@ -195,17 +195,17 @@ bunx shadcn@latest add <component>
 # Then update imports from @/lib/utils to ../../lib/utils
 ```
 
-**@repo/eslint-config exports:**
-- `./base`: Base ESLint configuration
-- `./next-js`: Next.js-specific configuration
-- `./react-internal`: React library configuration
+**@repo/biome-config exports:**
+- `./base`: Base Biome configuration (linting + formatting)
+- `./next-js`: Next.js-specific configuration (extends base)
+- `./react-internal`: React library configuration (extends base)
 
 ### Next.js App (web)
 
 - Uses App Router (not Pages Router)
 - Port: 3000
 - Type generation via `next typegen` before type checking
-- ESLint configured with `--max-warnings 0` (strict)
+- Linting via Biome (`biome check --write`)
 
 ### Astro Docs App
 
@@ -220,7 +220,7 @@ bunx shadcn@latest add <component>
 All packages use:
 - TypeScript 5.9.2
 - React 19.2.0
-- ESLint 9.39.1
+- Biome 1.9.4 (linting + formatting)
 - Tailwind CSS 4.1.0 (with oklch color theme)
 - Node.js >= 18 required
 

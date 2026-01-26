@@ -1,0 +1,20 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "extends": ["./packages/biome-config/base.json"],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignore": [
+      "dist/**",
+      "node_modules/**",
+      ".turbo/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "bun.lock"
+    ]
+  }
+}

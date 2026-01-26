@@ -1,35 +1,35 @@
-"use client";
+"use client"
 
-import { useMutation, useQuery } from "convex/react";
-import { api } from "backend/convex";
-import { type FormEvent, useState } from "react";
-import { Button } from "@repo/ui/components/ui/button";
-import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@repo/ui/components/ui/card";
+} from "@repo/ui/components/ui/card"
+import { Input } from "@repo/ui/components/ui/input"
+import { api } from "backend/convex"
+import { useMutation, useQuery } from "convex/react"
+import { type FormEvent, useState } from "react"
 
 export default function Home() {
-  const things = useQuery(api.things.getThings);
-  const createThing = useMutation(api.things.createThing);
-  const [title, setTitle] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const things = useQuery(api.things.getThings)
+  const createThing = useMutation(api.things.createThing)
+  const [title, setTitle] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
+    e.preventDefault()
+    if (!title.trim()) return
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      await createThing({ title: title.trim() });
-      setTitle("");
+      await createThing({ title: title.trim() })
+      setTitle("")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-20 gap-16">
@@ -87,5 +87,5 @@ export default function Home() {
         </Card>
       </main>
     </div>
-  );
+  )
 }
