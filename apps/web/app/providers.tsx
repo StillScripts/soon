@@ -1,71 +1,90 @@
 "use client"
 
-import { ConvexReactClient } from "convex/react"
-import type { ReactNode } from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ConvexAuthProvider } from "better-convex/auth-client"
+import {
+	ConvexReactClient,
+	getConvexQueryClientSingleton,
+	getQueryClientSingleton,
+	useAuthStore,
+} from "better-convex/react"
+import { useRouter } from "next/navigation"
+import { type ReactNode, useState } from "react"
 
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
+import { CRPCProvider } from "@/lib/convex/crpc"
 import { authClient } from "../lib/auth-client"
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!
 
-export function ConvexClientProvider({
-  children,
-  initialToken,
-}: {
-  children: ReactNode
-  initialToken?: string | null
-}) {
-  return (
-    <ConvexBetterAuthProvider
-      client={convex}
-      authClient={authClient}
-      initialToken={initialToken}
-    >
-      {children}
-    </ConvexBetterAuthProvider>
-  )
+function createQueryClient() {
+	return new QueryClient({
+		defaultOptions: {
+			queries: {
+				// Convex handles real-time updates via WebSocket
+				staleTime: Number.POSITIVE_INFINITY,
+				refetchOnWindowFocus: false,
+				refetchOnMount: false,
+				refetchOnReconnect: false,
+			},
+		},
+	})
 }
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
+function QueryProvider({
+	children,
+	convex,
+}: {
+	children: ReactNode
+	convex: ConvexReactClient
+}) {
+	const authStore = useAuthStore()
+	const queryClient = getQueryClientSingleton(createQueryClient)
+	const convexQueryClient = getConvexQueryClientSingleton({
+		authStore,
+		convex,
+		queryClient,
+	})
+
+	return (
+		<QueryClientProvider client={queryClient}>
+			<CRPCProvider convexClient={convex} convexQueryClient={convexQueryClient}>
+				{children}
+			</CRPCProvider>
+		</QueryClientProvider>
+	)
+}
 
 export function Providers({
-  children,
-  initialToken,
+	children,
+	initialToken,
 }: { children: ReactNode; initialToken?: string | null }) {
-  if (!convexUrl) {
-    return (
-      <div style={{ padding: "2rem", fontFamily: "system-ui" }}>
-        <h1>Convex Not Configured</h1>
-        <p>
-          Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.
-        </p>
-        <h2>Setup Steps:</h2>
-        <ol>
-          <li>
-            Run <code>cd packages/backend && bunx convex dev</code>
-          </li>
-          <li>Copy the deployment URL from the output</li>
-          <li>
-            Create <code>.env.local</code> at the repo root with:
-            <pre
-              style={{
-                background: "#f5f5f5",
-                padding: "1rem",
-                marginTop: "0.5rem",
-              }}
-            >
-              NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
-            </pre>
-          </li>
-          <li>Restart the dev server</li>
-        </ol>
-      </div>
-    )
-  }
+	const router = useRouter()
+	const [convex] = useState(() => new ConvexReactClient(convexUrl))
 
-  return (
-    <ConvexClientProvider initialToken={initialToken}>
-      {children}
-    </ConvexClientProvider>
-  )
+	if (!convexUrl) {
+		return (
+			<div style={{ padding: "2rem", fontFamily: "system-ui" }}>
+				<h1>Convex Not Configured</h1>
+				<p>
+					Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.
+				</p>
+			</div>
+		)
+	}
+
+	return (
+		<ConvexAuthProvider
+			authClient={authClient}
+			client={convex}
+			initialToken={initialToken ?? undefined}
+			onMutationUnauthorized={() => {
+				router.push("/login")
+			}}
+			onQueryUnauthorized={() => {
+				router.push("/login")
+			}}
+		>
+			<QueryProvider convex={convex}>{children}</QueryProvider>
+		</ConvexAuthProvider>
+	)
 }

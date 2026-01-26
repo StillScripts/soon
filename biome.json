@@ -18,5 +18,11 @@
       "bun.lock",
       "**/convex/_generated/**"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["**/convex/shared/**"],
+      "formatter": { "enabled": false }
+    }
+  ]
 }
