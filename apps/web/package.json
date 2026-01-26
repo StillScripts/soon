@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check --write",
-    "check-types": "next typegen && tsc --noEmit"
+    "check-types": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@convex-dev/better-auth": "^0.10.10",
@@ -23,11 +25,16 @@
   "devDependencies": {
     "@repo/biome-config": "*",
     "@repo/typescript-config": "*",
+    "@repo/vitest-config": "*",
     "@tailwindcss/postcss": "^4.1.0",
+    "@testing-library/react": "^16.0.0",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "@vitejs/plugin-react": "^4.4.0",
+    "jsdom": "^26.0.0",
     "tailwindcss": "^4.1.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "vitest": "^3.0.0"
   }
 }

@@ -43,11 +43,21 @@ export default defineConfig({
               label: "Biome Migration",
               slug: "guides/09-biome-migration",
             },
+            {
+              label: "Vitest Testing Setup",
+              slug: "guides/10-vitest-testing",
+            },
           ],
         },
         {
           label: "Reference",
-          autogenerate: { directory: "reference" },
+          items: [
+            { label: "Quick Reference", slug: "reference/quick-reference" },
+            { label: "Turborepo", slug: "reference/turborepo" },
+            { label: "UI Components", slug: "reference/ui-components" },
+            { label: "Convex API", slug: "reference/convex" },
+            { label: "Biome", slug: "reference/biome" },
+          ],
         },
       ],
     }),
