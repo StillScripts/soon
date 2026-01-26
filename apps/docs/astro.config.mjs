@@ -35,6 +35,10 @@ export default defineConfig({
               label: "shadcn/ui Components",
               slug: "guides/07-shadcn-ui-components",
             },
+            {
+              label: "Better Auth Integration",
+              slug: "guides/08-better-auth",
+            },
           ],
         },
         {

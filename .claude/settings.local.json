@@ -9,7 +9,10 @@
       "Bash(ls:*)",
       "WebFetch(domain:turborepo.dev)",
       "Bash(find:*)",
-      "WebFetch(domain:ui.shadcn.com)"
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:labs.convex.dev)",
+      "Bash(gh api:*)",
+      "Bash(bunx tsc:*)"
     ]
   }
 }
