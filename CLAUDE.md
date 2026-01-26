@@ -17,6 +17,115 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 - `@repo/eslint-config`: Shared ESLint configurations
 - `@repo/typescript-config`: Shared TypeScript configurations
 
+## Strict Bun Usage Policy
+
+**CRITICAL: This repository strictly uses Bun for all operations.** Do not use Node.js, npm, pnpm, yarn, or vite.
+
+### Command Replacements
+
+**Always use Bun commands:**
+- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
+- Use `bun test` instead of `jest` or `vitest`
+- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
+- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
+- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
+- Use `bunx <package> <command>` instead of `npx <package> <command>`
+- Bun automatically loads .env, so don't use dotenv
+
+### Bun APIs (Prefer Over npm Packages)
+
+**Built-in Bun APIs to use instead of npm packages:**
+- `Bun.serve()` supports WebSockets, HTTPS, and routes - don't use `express`
+- `bun:sqlite` for SQLite - don't use `better-sqlite3`
+- `Bun.redis` for Redis - don't use `ioredis`
+- `Bun.sql` for Postgres - don't use `pg` or `postgres.js`
+- `WebSocket` is built-in - don't use `ws`
+- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
+- `Bun.$`ls`` instead of `execa`
+
+### Testing with Bun
+
+Use `bun test` to run tests:
+
+```ts
+import { test, expect } from "bun:test";
+
+test("hello world", () => {
+  expect(1).toBe(1);
+});
+```
+
+### Frontend with Bun (Alternative to Vite)
+
+Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
+
+**Server:**
+```ts
+import index from "./index.html"
+
+Bun.serve({
+  routes: {
+    "/": index,
+    "/api/users/:id": {
+      GET: (req) => {
+        return new Response(JSON.stringify({ id: req.params.id }));
+      },
+    },
+  },
+  // optional websocket support
+  websocket: {
+    open: (ws) => {
+      ws.send("Hello, world!");
+    },
+    message: (ws, message) => {
+      ws.send(message);
+    },
+    close: (ws) => {
+      // handle close
+    }
+  },
+  development: {
+    hmr: true,
+    console: true,
+  }
+})
+```
+
+**HTML files can import .tsx, .jsx or .js files directly:**
+```html
+<html>
+  <body>
+    <h1>Hello, world!</h1>
+    <script type="module" src="./frontend.tsx"></script>
+  </body>
+</html>
+```
+
+**Frontend component:**
+```tsx
+import React from "react";
+import { createRoot } from "react-dom/client";
+
+// import .css files directly and it works
+import './index.css';
+
+const root = createRoot(document.body);
+
+export default function Frontend() {
+  return <h1>Hello, world!</h1>;
+}
+
+root.render(<Frontend />);
+```
+
+**Run with:**
+```bash
+bun --hot ./index.ts
+```
+
+**Additional Resources:**
+For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+
 ## Essential Commands
 
 ### Development
