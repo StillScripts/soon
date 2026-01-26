@@ -59,6 +59,12 @@ Systematic security and bug finding using comprehensive checklists.
 ### iterate-pr
 Automatically iterate on PRs until CI passes and all feedback is addressed.
 
+### vercel-react-best-practices
+React and Next.js performance optimization guidelines from Vercel Engineering. 57 rules across 8 categories including waterfalls, bundle size, server-side performance, and re-render optimization.
+
+### web-design-guidelines
+Review UI code for Web Interface Guidelines compliance. Checks accessibility, performance, forms, animations, and more against 100+ rules.
+
 ## Usage
 
 These skills and agents are automatically available in Claude Code when working in this repository. To invoke a skill:
@@ -78,7 +84,12 @@ Agents run automatically based on their configured triggers, or can be manually 
 
 ## Attribution
 
-Adapted from Sentry's open-source skills:
+**Sentry Skills** - Adapted from:
 https://github.com/getsentry/skills
 
 Modified for general professional use while maintaining references to Sentry's excellent documentation as industry best practices.
+
+**Vercel Skills** - From:
+https://github.com/vercel-labs/agent-skills
+
+Official React/Next.js best practices and web design guidelines from Vercel Engineering.

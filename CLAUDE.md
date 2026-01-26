@@ -114,7 +114,7 @@ turbo <task> --filter=web
 
 ## Claude Code Skills & Agents
 
-This repository includes professional skills and agents adapted from [Sentry's skills repository](https://github.com/getsentry/skills). See `.claude/README.md` for details.
+This repository includes professional skills and agents from [Sentry](https://github.com/getsentry/skills) and [Vercel](https://github.com/vercel-labs/agent-skills). See `.claude/README.md` for details.
 
 **Available Skills:**
 - `/commit` - Create well-formatted commits
@@ -124,6 +124,8 @@ This repository includes professional skills and agents adapted from [Sentry's s
 - `/iterate-pr` - Auto-fix CI failures
 - `/brand-guidelines` - Write professional UI copy
 - `/doc-coauthoring` - Collaborative documentation workflow
+- `/vercel-react-best-practices` - React/Next.js performance optimization (57 rules)
+- `/web-design-guidelines` - UI/UX best practices audit (100+ rules)
 
 **Available Agents:**
 - `code-simplifier` - Automatically refines code for clarity (runs proactively)
