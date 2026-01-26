@@ -19,6 +19,7 @@ These agents and skills are adapted from [Sentry's professional skills repositor
     ├── claude-settings-audit/
     ├── code-review/
     ├── commit/
+    ├── convex/
     ├── create-pr/
     ├── doc-coauthoring/
     ├── document-update/
@@ -47,6 +48,9 @@ Perform thorough code reviews covering security, performance, testing, and desig
 
 ### commit
 Create well-formatted commit messages following professional conventions.
+
+### convex
+Guidelines and best practices for building Convex projects. Comprehensive reference covering database schema design, queries, mutations, actions, validators, TypeScript patterns, and real-world examples.
 
 ### create-pr
 Create pull requests with clear descriptions and proper formatting.
@@ -97,3 +101,5 @@ Modified for general professional use while maintaining references to Sentry's e
 https://github.com/vercel-labs/agent-skills
 
 Official React/Next.js best practices and web design guidelines from Vercel Engineering.
+
+**Convex Skills** - Custom skill developed for this project to provide comprehensive Convex development guidelines and best practices.

@@ -18,6 +18,7 @@ export default defineConfig({
 						{ label: 'Claude Code Integration', slug: 'guides/03-claude-code' },
 						{ label: 'Professional Claude Code Skills', slug: 'guides/04-claude-skills' },
 						{ label: 'Convex Backend', slug: 'guides/05-convex-backend' },
+						{ label: 'Convex Development Skill', slug: 'guides/06-convex-skill' },
 					],
 				},
 				{

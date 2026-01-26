@@ -3,6 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "convex dev",
+    "start": "convex start"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
