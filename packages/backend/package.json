@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    "./convex": "./convex/_generated/api.js"
+  },
   "scripts": {
     "dev": "convex dev",
     "start": "convex start"
