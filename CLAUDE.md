@@ -232,6 +232,7 @@ This repository includes professional skills and agents from [Sentry](https://gi
 - `/iterate-pr` - Auto-fix CI failures
 - `/brand-guidelines` - Write professional UI copy
 - `/doc-coauthoring` - Collaborative documentation workflow
+- `/document-update` - Document development changes in guides folder
 - `/vercel-react-best-practices` - React/Next.js performance optimization (57 rules)
 - `/web-design-guidelines` - UI/UX best practices audit (100+ rules)
 

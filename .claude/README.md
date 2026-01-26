@@ -21,6 +21,7 @@ These agents and skills are adapted from [Sentry's professional skills repositor
     ├── commit/
     ├── create-pr/
     ├── doc-coauthoring/
+    ├── document-update/
     ├── find-bugs/
     └── iterate-pr/
 ```
@@ -52,6 +53,9 @@ Create pull requests with clear descriptions and proper formatting.
 
 ### doc-coauthoring
 Collaborative workflow for creating substantial documentation, proposals, specs, or RFCs.
+
+### document-update
+Document development updates in the guides folder. Use when significant features, packages, or architectural changes are made.
 
 ### find-bugs
 Systematic security and bug finding using comprehensive checklists.
