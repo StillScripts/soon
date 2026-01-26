@@ -1,239 +1,370 @@
 ---
 title: Convex Backend
-description: Adding Convex as the real-time, serverless backend for the application.
+description: Adding Convex as the real-time serverless backend with end-to-end Next.js integration.
 ---
 
 ## What We Did
 
-Added Convex to `packages/backend` as the application's backend-as-a-service solution, providing real-time database, serverless functions, and TypeScript-first development.
+1. Added Convex to `packages/backend` as the application's backend-as-a-service solution
+2. Created a Claude Code skill (`/convex`) for AI-assisted Convex development
+3. Integrated Convex with the Next.js web app with a working "Things" CRUD example
 
 ## Why Convex
 
-**Convex provides a complete backend solution** that aligns perfectly with our Bun-first, TypeScript-native, and modern development approach.
+**Convex provides a complete backend solution** that aligns perfectly with our Bun-first, TypeScript-native approach.
 
 **Key reasons:**
 - **Real-time by default**: Live queries automatically update when data changes
 - **TypeScript-first**: End-to-end type safety from database to client
 - **Serverless**: No infrastructure to manage, scales automatically
 - **Developer experience**: Hot reload, local dev server, built-in debugging
-- **React integration**: First-class React hooks (`useQuery`, `useMutation`)
-- **No ORM needed**: Direct database access with full TypeScript inference
+- **React integration**: First-class hooks (`useQuery`, `useMutation`)
 
 **Alternatives considered:**
-- **Supabase**: Excellent choice, but Convex's real-time model is simpler and more integrated
-- **Firebase**: Good real-time capabilities, but TypeScript support is not as strong
-- **Traditional backend (Express + DB)**: Full control, but requires managing infrastructure and scaling
+- **Supabase**: Excellent, but Convex's real-time model is simpler
+- **Firebase**: Good real-time, but TypeScript support is weaker
 - **tRPC + Prisma**: Type-safe, but more complex setup and no built-in real-time
 
-Convex was chosen because it provides the best developer experience for real-time TypeScript applications with minimal setup.
-
-## Commands Used
-
-```bash
-# Initialize Convex in the backend package
-cd packages/backend
-bunx convex dev
-
-# This command:
-# 1. Creates a new Convex project
-# 2. Generates convex/ directory
-# 3. Sets up TypeScript configuration
-# 4. Creates .env.local with deployment URL
-# 5. Starts local dev server
-```
-
-## Implementation Details
-
-### Package Structure
+## Project Structure
 
 ```
 packages/backend/
-├── convex/                    # Convex functions directory
-│   ├── _generated/           # Auto-generated types and server code
-│   │   ├── api.d.ts         # API types for client
-│   │   ├── dataModel.d.ts   # Database schema types
-│   │   └── server.ts        # Server imports (query, mutation, etc.)
-│   ├── README.md            # Convex functions documentation
-│   └── tsconfig.json        # Convex-specific TypeScript config
+├── convex/
+│   ├── _generated/          # Auto-generated (don't edit)
+│   │   ├── api.d.ts
+│   │   ├── api.js
+│   │   ├── dataModel.d.ts
+│   │   └── server.ts
+│   ├── schema.ts            # Database schema
+│   ├── things.ts            # Things queries/mutations
+│   └── tsconfig.json
 ├── .env.local               # Convex deployment URL (gitignored)
-├── .gitignore              # Ignores .env.local and generated files
-├── package.json            # Contains convex dependency
-├── tsconfig.json           # Backend TypeScript configuration
-└── README.md               # Package documentation
+├── .env.example             # Template for .env.local
+└── package.json
+
+apps/web/
+├── app/
+│   ├── providers.tsx        # ConvexProvider setup
+│   ├── layout.tsx           # Wraps app with Providers
+│   └── page.tsx             # Things CRUD UI
+├── .env.local               # Copy of backend .env.local + NEXT_PUBLIC_*
+└── .env.example
 ```
 
-### Configuration
+## Backend Implementation
 
-**package.json:**
+### Schema (`convex/schema.ts`)
+
+```typescript
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+
+export default defineSchema({
+  things: defineTable({
+    title: v.string(),
+  }),
+});
+```
+
+### Queries and Mutations (`convex/things.ts`)
+
+```typescript
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+
+export const getThings = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("things").collect();
+  },
+});
+
+export const getThing = query({
+  args: {
+    id: v.id("things"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+export const createThing = mutation({
+  args: {
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("things", { title: args.title });
+  },
+});
+```
+
+### Package Exports (`package.json`)
+
+The backend package exports the Convex API for the web app:
+
 ```json
 {
   "name": "backend",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
+  "exports": {
+    "./convex": "./convex/_generated/api.js"
+  },
   "dependencies": {
     "convex": "^1.31.6"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
   }
 }
 ```
 
-**Convex TypeScript config (convex/tsconfig.json):**
-- Targets ESNext with modern features
-- Uses Bundler module resolution (compatible with Bun)
-- Enables JSX for React components
-- Strict mode enabled for maximum type safety
+## Frontend Integration
 
-## Key Dependencies
+### Convex Provider (`apps/web/app/providers.tsx`)
 
-- `convex`: ^1.31.6 - Complete backend platform with database, functions, and real-time subscriptions
+```tsx
+"use client";
 
-## How Convex Works
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ReactNode } from "react";
 
-### Query Functions
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
 
-Convex queries are reactive database reads that automatically update when data changes:
+export function Providers({ children }: { children: ReactNode }) {
+  if (!convexUrl) {
+    return (
+      <div style={{ padding: "2rem", fontFamily: "system-ui" }}>
+        <h1>Convex Not Configured</h1>
+        <p>Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.</p>
+        {/* Setup instructions... */}
+      </div>
+    );
+  }
 
-```ts
-// convex/myFunctions.ts
-import { query } from "./_generated/server";
-import { v } from "convex/values";
-
-export const myQueryFunction = query({
-  args: {
-    first: v.number(),
-    second: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // Read from database with full type safety
-    const documents = await ctx.db.query("tablename").collect();
-    return documents;
-  },
-});
-```
-
-**Usage in React:**
-```ts
-const data = useQuery(api.myFunctions.myQueryFunction, {
-  first: 10,
-  second: "hello",
-});
-// Data automatically updates when database changes
-```
-
-### Mutation Functions
-
-Mutations modify database state with optimistic updates and automatic revalidation:
-
-```ts
-import { mutation } from "./_generated/server";
-import { v } from "convex/values";
-
-export const myMutationFunction = mutation({
-  args: {
-    first: v.string(),
-    second: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const message = { body: args.first, author: args.second };
-    const id = await ctx.db.insert("messages", message);
-    return await ctx.db.get(id);
-  },
-});
-```
-
-**Usage in React:**
-```ts
-const mutation = useMutation(api.myFunctions.myMutationFunction);
-
-function handleButtonPress() {
-  mutation({ first: "Hello!", second: "me" });
+  const convex = new ConvexReactClient(convexUrl);
+  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
 }
 ```
 
-## Integration with Existing Code
+### Layout Integration (`apps/web/app/layout.tsx`)
 
-### With the Web App
+```tsx
+import { Providers } from "./providers";
 
-The backend package is designed to be imported into the Next.js `web` app:
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
 
-1. **Convex Provider**: Wrap the app in `ConvexProvider` (to be added)
-2. **Auto-generated API**: Import types from `convex/_generated/api`
-3. **React Hooks**: Use `useQuery` and `useMutation` in components
-4. **Type Safety**: Full TypeScript inference from backend to frontend
+### Using Convex in Components (`apps/web/app/page.tsx`)
 
-### With Bun
+```tsx
+"use client";
 
-Convex works seamlessly with Bun:
-- Uses `bunx convex` instead of `npx convex`
-- Compatible with Bun's module resolution
-- Leverages Bun's fast TypeScript transpilation
-- No additional configuration needed
+import { useMutation, useQuery } from "convex/react";
+import { api } from "backend/convex";
+import { FormEvent, useState } from "react";
 
-## Context for AI
+export default function Home() {
+  const things = useQuery(api.things.getThings);
+  const createThing = useMutation(api.things.createThing);
+  const [title, setTitle] = useState("");
 
-When working with Convex:
-- **Functions go in `convex/` directory**: All backend logic lives here
-- **Types are auto-generated**: Never manually edit `_generated/` files
-- **Use validators**: Always validate arguments with `v` from `convex/values`
-- **Database queries are reactive**: No need for manual cache invalidation
-- **Use Bun commands**: Always use `bunx convex` instead of `npx convex`
-- **Development workflow**: Run `bunx convex dev` for local development with hot reload
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    await createThing({ title: title.trim() });
+    setTitle("");
+  };
 
-**Common patterns:**
-- Query for reads: `query({ args: {...}, handler: async (ctx, args) => {...} })`
-- Mutation for writes: `mutation({ args: {...}, handler: async (ctx, args) => {...} })`
-- Actions for external API calls: `action({ args: {...}, handler: async (ctx, args) => {...} })`
+  return (
+    <main>
+      <h1>Things Manager</h1>
 
-## Outcomes
+      {/* Create Form */}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter thing title..."
+        />
+        <button type="submit">Create</button>
+      </form>
 
-### Before
-- No backend infrastructure
-- No database
-- No real-time capabilities
-- Manual state management needed
+      {/* List Things */}
+      {things === undefined ? (
+        <p>Loading...</p>
+      ) : things.length === 0 ? (
+        <p>No things yet.</p>
+      ) : (
+        <ul>
+          {things.map((thing) => (
+            <li key={thing._id}>
+              {thing.title}
+              <span>{new Date(thing._creationTime).toLocaleDateString()}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}
+```
 
-### After
-- Complete serverless backend
-- Real-time reactive database
-- TypeScript-first development
-- Automatic type generation and inference
-- Built-in React integration
+## Environment Variables
+
+### Turborepo Configuration (`turbo.json`)
+
+Declare Convex env vars for proper cache invalidation:
+
+```json
+{
+  "globalEnv": [
+    "NEXT_PUBLIC_CONVEX_URL",
+    "CONVEX_DEPLOYMENT"
+  ]
+}
+```
+
+### Backend `.env.local`
+
+Generated by `bunx convex dev`:
+
+```bash
+CONVEX_DEPLOYMENT=dev:your-deployment-name
+CONVEX_URL=https://your-deployment-name.convex.cloud
+```
+
+### Web App `.env.local`
+
+Copy from backend and add `NEXT_PUBLIC_` prefix:
+
+```bash
+CONVEX_DEPLOYMENT=dev:your-deployment-name
+CONVEX_URL=https://your-deployment-name.convex.cloud
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment-name.convex.cloud
+```
+
+**Important**: Both files must point to the same Convex deployment.
+
+## Claude Code Skill
+
+A comprehensive `/convex` skill was added to `.claude/skills/convex/SKILL.md` providing:
+
+- **Function syntax**: Queries, mutations, actions with validators
+- **Schema design**: Tables, indexes, validators
+- **TypeScript patterns**: `Id<"tableName">`, strict typing
+- **Best practices**: Use indexes over `.filter()`, include return validators
+- **Complete examples**: Real-world chat app implementation
+
+**Usage**: Invoke `/convex` when writing Convex code for AI-assisted development.
+
+## Development Workflow
+
+### Initial Setup
+
+```bash
+# 1. Start Convex dev server (generates .env.local)
+cd packages/backend
+bunx convex dev
+
+# 2. Copy env to web app
+cp .env.local ../../apps/web/.env.local
+
+# 3. Add NEXT_PUBLIC prefix to web app's .env.local
+echo "NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud" >> ../../apps/web/.env.local
+
+# 4. Start all apps
+cd ../..
+bun dev
+```
+
+### Ongoing Development
+
+Run both servers in parallel (Turborepo handles this):
+
+```bash
+bun dev
+# Runs: web#dev, docs#dev, backend#dev (convex dev)
+```
+
+Or run individually:
+
+```bash
+turbo dev --filter=backend   # Convex dev server
+turbo dev --filter=web       # Next.js on port 3000
+```
+
+## Key Patterns
+
+### Importing the API
+
+```typescript
+// In web app components
+import { api } from "backend/convex";
+
+// Use with hooks
+const data = useQuery(api.things.getThings);
+const mutate = useMutation(api.things.createThing);
+```
+
+### Reactive Queries
+
+Convex queries are **reactive** - the UI automatically updates when data changes:
+
+```typescript
+const things = useQuery(api.things.getThings);
+// No manual refetching needed - updates automatically
+```
+
+### Type Safety
+
+Full end-to-end type inference:
+
+```typescript
+// Backend defines the shape
+export const createThing = mutation({
+  args: { title: v.string() },
+  handler: async (ctx, args) => { /* ... */ },
+});
+
+// Frontend gets type checking
+createThing({ title: "Hello" });  // ✓
+createThing({ name: "Hello" });   // ✗ Type error
+```
 
 ## Testing/Verification
 
 ```bash
-# Start Convex development server
-cd packages/backend
-bunx convex dev
+# Verify Convex is running
+cd packages/backend && bunx convex dev
+# Should show: "Convex functions ready!"
 
-# Expected output:
-# ✓ Convex dev server running
-# ✓ Watching for file changes in convex/
-# ✓ Dashboard available at https://dashboard.convex.dev
+# Verify web app connects
+turbo dev --filter=web
+# Open http://localhost:3000
+# Should show Things Manager UI
+
+# Test the integration
+# 1. Enter a title and click Create
+# 2. New thing appears instantly (real-time)
+# 3. Open Convex dashboard to see data
 ```
 
-Expected results:
-- Convex dev server starts successfully
-- TypeScript types are generated in `convex/_generated/`
-- Dashboard URL is provided for viewing data and logs
-- Hot reload works when editing functions
+## Troubleshooting
 
-## Next Steps
-
-1. **Create database schema**: Define tables in a Convex schema file
-2. **Write first functions**: Add queries and mutations for core features
-3. **Integrate with web app**: Add ConvexProvider to Next.js app
-4. **Implement authentication**: Add Convex auth for user management
-5. **Deploy**: Push functions to production with `bunx convex deploy`
+| Issue | Solution |
+|-------|----------|
+| "No address provided to ConvexReactClient" | Missing `NEXT_PUBLIC_CONVEX_URL` in `apps/web/.env.local` |
+| "Could not find public function" | Different deployments - sync `.env.local` files |
+| Functions not updating | Restart `bunx convex dev` |
+| Types not found | Run `bun install` at repo root |
 
 ## Related Documentation
 
 - [Convex Documentation](https://docs.convex.dev)
-- [Convex Quickstart](https://docs.convex.dev/quickstart)
-- [Database Reading](https://docs.convex.dev/database/reading-data)
-- [Database Writing](https://docs.convex.dev/database/writing-data)
-- [React Integration](https://docs.convex.dev/client/react)
-- [TypeScript Guide](https://docs.convex.dev/typescript)
+- [Convex React Integration](https://docs.convex.dev/client/react)
+- [Convex TypeScript Guide](https://docs.convex.dev/typescript)
+- `/convex` skill in `.claude/skills/convex/SKILL.md`
