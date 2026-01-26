@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
+import { defineConfig } from "vitest/config"
 
 /**
  * Root Vitest configuration for running tests across the monorepo.

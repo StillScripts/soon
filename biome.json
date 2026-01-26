@@ -12,9 +12,11 @@
       "node_modules/**",
       ".turbo/**",
       ".next/**",
+      ".astro/**",
       "out/**",
       "build/**",
-      "bun.lock"
+      "bun.lock",
+      "**/convex/_generated/**"
     ]
   }
 }

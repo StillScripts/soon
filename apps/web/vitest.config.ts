@@ -1,6 +1,6 @@
-import { defineConfig } from "vitest/config"
-import react from "@vitejs/plugin-react"
 import { sharedConfig } from "@repo/vitest-config"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vitest/config"
 
 /**
  * Web app test configuration.

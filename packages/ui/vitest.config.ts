@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
+import { defineConfig } from "vitest/config"
 
 /**
  * UI package test configuration.
