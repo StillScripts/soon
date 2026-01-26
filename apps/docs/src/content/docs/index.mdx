@@ -1,40 +1,64 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Ember Starter
+description: A modern full-stack starter app built with Next.js, Convex, Tailwind, and more.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: A production-ready starter for building modern web applications with best-in-class tools
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Development Journey
+      link: /guides/00-overview/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
+    - text: Quick Reference
+      link: /reference/quick-reference/
+      icon: document
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Built with Modern Tools
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Next.js 16 + React 19" icon="rocket">
+		App Router architecture with the latest React features and server components.
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Convex Backend" icon="random">
+		Real-time database with type-safe queries, mutations, and automatic subscriptions.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Tailwind CSS v4" icon="seti:css">
+		Utility-first styling with oklch color theme and CSS-first configuration.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="shadcn/ui Components" icon="puzzle">
+		Beautiful, accessible components built on Base UI primitives.
 	</Card>
 </CardGrid>
+
+## Developer Experience
+
+<CardGrid>
+	<Card title="Turborepo" icon="setting">
+		Monorepo organization with optimized task pipelines and smart caching.
+	</Card>
+	<Card title="Biome" icon="approve-check">
+		Lightning-fast linting and formatting in a single Rust-powered tool.
+	</Card>
+	<Card title="Vitest" icon="approve-check-circle">
+		Fast unit testing with native TypeScript support and watch mode.
+	</Card>
+	<Card title="Bun" icon="rocket">
+		All-in-one JavaScript runtime and package manager for speed.
+	</Card>
+</CardGrid>
+
+## Powered by Claude Code
+
+This starter was built with [Claude Code](https://claude.ai/code) and includes professional skills for:
+
+- **Commit workflows** - Well-formatted commits and pull requests
+- **Code review** - Security, performance, and design audits
+- **Documentation** - Collaborative doc writing and updates
+- **Best practices** - React/Next.js optimization and UI/UX guidelines
+
+Explore the [Development Journey](/guides/00-overview/) to see how each piece was integrated.
