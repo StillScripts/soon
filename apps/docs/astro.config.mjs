@@ -31,6 +31,10 @@ export default defineConfig({
             },
             { label: "Convex Backend", slug: "guides/05-convex-backend" },
             { label: "Turborepo Skill", slug: "guides/06-turborepo-skill" },
+            {
+              label: "shadcn/ui Components",
+              slug: "guides/07-shadcn-ui-components",
+            },
           ],
         },
         {

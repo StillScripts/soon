@@ -13,7 +13,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 - `docs`: Astro documentation site using Starlight
 
 **Packages:**
-- `@repo/ui`: Shared React component library
+- `@repo/ui`: shadcn/ui component library (Base UI primitives, Tailwind CSS v4)
 - `@repo/eslint-config`: Shared ESLint configurations
 - `@repo/typescript-config`: Shared TypeScript configurations
 
@@ -178,10 +178,22 @@ The `turbo.json` configuration defines task pipelines:
 
 ### Package Structure
 
-**@repo/ui exports:**
-- Uses wildcard exports: `./*` maps to `./src/*.tsx`
-- Direct file imports: `import { Button } from "@repo/ui/button"`
-- Current components: `button.tsx`, `card.tsx`, `code.tsx`
+**@repo/ui exports (shadcn/ui with Base UI):**
+- Component imports: `import { Button } from "@repo/ui/components/ui/button"`
+- Barrel import: `import { Button, Card, Input } from "@repo/ui/components/ui"`
+- Utility: `import { cn } from "@repo/ui/lib/utils"`
+- Styles: `@import "@repo/ui/styles/globals.css"` (Tailwind v4 + oklch theme)
+
+**Available components:**
+- `AlertDialog`, `Badge`, `Button`, `Card`, `Combobox`, `DropdownMenu`
+- `Field`, `Input`, `InputGroup`, `Label`, `Select`, `Separator`, `Textarea`
+
+**Adding new shadcn components:**
+```bash
+cd packages/ui
+bunx shadcn@latest add <component>
+# Then update imports from @/lib/utils to ../../lib/utils
+```
 
 **@repo/eslint-config exports:**
 - `./base`: Base ESLint configuration
@@ -209,6 +221,7 @@ All packages use:
 - TypeScript 5.9.2
 - React 19.2.0
 - ESLint 9.39.1
+- Tailwind CSS 4.1.0 (with oklch color theme)
 - Node.js >= 18 required
 
 ## Turborepo Filters
