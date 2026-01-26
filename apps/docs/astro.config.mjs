@@ -39,6 +39,10 @@ export default defineConfig({
               label: "Better Auth Integration",
               slug: "guides/08-better-auth",
             },
+            {
+              label: "Biome Migration",
+              slug: "guides/09-biome-migration",
+            },
           ],
         },
         {

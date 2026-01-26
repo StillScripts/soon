@@ -14,7 +14,8 @@
       "Bash(gh api:*)",
       "Bash(bunx tsc:*)",
       "Bash(turbo lint:*)",
-      "Bash(bun format:*)"
+      "Bash(bun format:*)",
+      "Bash(gh repo view:*)"
     ]
   }
 }
