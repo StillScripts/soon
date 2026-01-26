@@ -3,7 +3,14 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "backend/convex";
 import { FormEvent, useState } from "react";
-import styles from "./page.module.css";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/ui/card";
 
 export default function Home() {
   const things = useQuery(api.things.getThings);
@@ -25,75 +32,59 @@ export default function Home() {
   };
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <h1>Things Manager</h1>
+    <div className="min-h-screen grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-20 gap-16">
+      <main className="flex flex-col gap-8 row-start-2 items-center w-full max-w-lg">
+        <h1 className="text-3xl font-bold">Things Manager</h1>
 
-        <div style={{ marginBottom: "2rem", width: "100%", maxWidth: "500px" }}>
-          <h2>Create a Thing</h2>
-          <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.5rem" }}>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter thing title..."
-              disabled={isSubmitting}
-              style={{
-                flex: 1,
-                padding: "0.5rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting || !title.trim()}
-              style={{
-                padding: "0.5rem 1rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                border: "none",
-                backgroundColor: isSubmitting ? "#ccc" : "#0070f3",
-                color: "white",
-                cursor: isSubmitting || !title.trim() ? "not-allowed" : "pointer",
-              }}
-            >
-              {isSubmitting ? "Creating..." : "Create"}
-            </button>
-          </form>
-        </div>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Create a Thing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex gap-2">
+              <Input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter thing title..."
+                disabled={isSubmitting}
+                className="flex-1"
+              />
+              <Button type="submit" disabled={isSubmitting || !title.trim()}>
+                {isSubmitting ? "Creating..." : "Create"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        <div style={{ width: "100%", maxWidth: "500px" }}>
-          <h2>All Things</h2>
-          {things === undefined ? (
-            <p>Loading...</p>
-          ) : things.length === 0 ? (
-            <p style={{ color: "#666" }}>No things yet. Create one above!</p>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {things.map((thing) => (
-                <li
-                  key={thing._id}
-                  style={{
-                    padding: "1rem",
-                    marginBottom: "0.5rem",
-                    backgroundColor: "#f5f5f5",
-                    borderRadius: "4px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <span>{thing.title}</span>
-                  <span style={{ fontSize: "0.75rem", color: "#666" }}>
-                    {new Date(thing._creationTime).toLocaleDateString()}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>All Things</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {things === undefined ? (
+              <p className="text-muted-foreground">Loading...</p>
+            ) : things.length === 0 ? (
+              <p className="text-muted-foreground">
+                No things yet. Create one above!
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {things.map((thing) => (
+                  <li
+                    key={thing._id}
+                    className="p-4 bg-secondary rounded-lg flex justify-between items-center"
+                  >
+                    <span>{thing.title}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(thing._creationTime).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
