@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Turborepo monorepo using Bun as the package manager. The repository contains two applications and three shared packages.
 
+**Documentation:** The `docs` app contains comprehensive development history and tutorials in `src/content/docs/guides/`. These guides document how the project was built, serving as both tutorial and context for future developers and AI assistants.
+
 **Apps:**
 - `web`: Next.js 16.1.0 application (React 19)
 - `docs`: Astro documentation site using Starlight

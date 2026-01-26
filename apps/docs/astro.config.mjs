@@ -6,14 +6,16 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
+			title: 'Ember Docs',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 				{
-					label: 'Guides',
+					label: 'Development Journey',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Overview', slug: 'guides/00-overview' },
+						{ label: 'Initial Setup', slug: 'guides/01-initial-setup' },
+						{ label: 'Astro Documentation Site', slug: 'guides/02-astro-docs' },
+						{ label: 'Claude Code Integration', slug: 'guides/03-claude-code' },
 					],
 				},
 				{
