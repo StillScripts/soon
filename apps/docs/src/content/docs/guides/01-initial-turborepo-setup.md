@@ -1,5 +1,5 @@
 ---
-title: Initial Setup - Creating the TurboRepo
+title: Initial Turborepo Setup - Creating the TurboRepo
 description: How we bootstrapped the Ember project using create-turbo with Bun.
 ---
 

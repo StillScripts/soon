@@ -15,7 +15,7 @@ These guides serve multiple purposes:
 
 ## Development Timeline
 
-1. [Initial Setup](./01-initial-setup) - Creating the TurboRepo foundation with Bun
+1. [Initial Turborepo Setup](./01-initial-turborepo-setup) - Creating the TurboRepo foundation with Bun
 2. [Astro Documentation Site](./02-astro-docs) - Replacing Next.js docs with Starlight
 3. [Claude Code Integration](./03-claude-code) - Setting up AI-assisted development
 

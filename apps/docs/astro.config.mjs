@@ -21,7 +21,7 @@ export default defineConfig({
             { label: "Overview", slug: "guides/00-overview" },
             {
               label: "Initial Turborepo Setup",
-              slug: "guides/01-initial-setup",
+              slug: "guides/01-initial-turborepo-setup",
             },
             { label: "Astro Documentation Site", slug: "guides/02-astro-docs" },
             { label: "Claude Code Integration", slug: "guides/03-claude-code" },
