@@ -17,7 +17,8 @@
       "Bash(bun format:*)",
       "Bash(gh repo view:*)",
       "Bash(bun install:*)",
-      "Bash(turbo run test:*)"
+      "Bash(turbo run test:*)",
+      "Bash(grep:*)"
     ]
   }
 }
