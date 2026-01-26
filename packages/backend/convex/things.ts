@@ -1,71 +1,65 @@
-import { v } from "convex/values"
-import { mutation, query } from "./_generated/server"
-import { authComponent } from "./auth"
+import { z } from "zod"
+import type { Id } from "./_generated/dataModel"
+import { authMutation, authQuery } from "./crpc"
 
-export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      return []
-    }
-    const userId = user._id as string
-    return await ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect()
-  },
-})
+// List all things for the authenticated user
+export const list = authQuery
+	.input(
+		z.object({
+			limit: z.number().min(1).max(100).optional(),
+		}),
+	)
+	.query(async ({ ctx, input }) => {
+		const query = ctx.db
+			.query("things")
+			.withIndex("by_user", (q) => q.eq("userId", ctx.userId))
 
-export const getThing = query({
-  args: {
-    id: v.id("things"),
-  },
-  handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      return null
-    }
-    const userId = user._id as string
-    const thing = await ctx.db.get(args.id)
-    if (thing?.userId !== userId) {
-      return null
-    }
-    return thing
-  },
-})
+		if (input.limit) {
+			return query.take(input.limit)
+		}
+		return query.collect()
+	})
 
-export const createThing = mutation({
-  args: {
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      throw new Error("Not authenticated")
-    }
-    const userId = user._id as string
-    return await ctx.db.insert("things", {
-      title: args.title,
-      userId,
-    })
-  },
-})
+// Get a single thing by ID (with ownership check)
+export const get = authQuery
+	.input(
+		z.object({
+			id: z.string(),
+		}),
+	)
+	.query(async ({ ctx, input }) => {
+		const thing = await ctx.db.get(input.id as Id<"things">)
+		if (!thing || thing.userId !== ctx.userId) {
+			return null
+		}
+		return thing
+	})
 
-export const deleteThing = mutation({
-  args: {
-    id: v.id("things"),
-  },
-  handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      throw new Error("Not authenticated")
-    }
-    const userId = user._id as string
-    const thing = await ctx.db.get(args.id)
-    if (!thing || thing.userId !== userId) {
-      throw new Error("Not found or not authorized")
-    }
-    await ctx.db.delete(args.id)
-  },
-})
+// Create a new thing
+export const create = authMutation
+	.input(
+		z.object({
+			title: z.string().min(1, "Title is required").max(200),
+		}),
+	)
+	.mutation(async ({ ctx, input }) => {
+		return ctx.db.insert("things", {
+			title: input.title,
+			userId: ctx.userId,
+		})
+	})
+
+// Delete a thing (with ownership check)
+export const remove = authMutation
+	.input(
+		z.object({
+			id: z.string(),
+		}),
+	)
+	.mutation(async ({ ctx, input }) => {
+		const thing = await ctx.db.get(input.id as Id<"things">)
+		if (!thing || thing.userId !== ctx.userId) {
+			throw new Error("Not found or not authorized")
+		}
+		await ctx.db.delete(input.id as Id<"things">)
+	})
