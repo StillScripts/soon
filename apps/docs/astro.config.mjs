@@ -56,6 +56,10 @@ export default defineConfig({
               label: "Better Convex",
               slug: "guides/12-better-convex-migration",
             },
+            {
+              label: "Shared Validators Package",
+              slug: "guides/13-shared-validators",
+            },
           ],
         },
         {
