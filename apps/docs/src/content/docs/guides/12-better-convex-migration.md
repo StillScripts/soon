@@ -1,436 +1,363 @@
 ---
-title: Better Convex Migration Plan
-description: Migration plan for adopting the Better Convex framework for tRPC-style APIs with TanStack Query integration
+title: "Guide 12: Better Convex Migration"
+description: How we migrated from standard Convex to Better Convex with cRPC procedures and TanStack Query
 ---
 
-# Better Convex Migration Plan
+# Better Convex Migration
 
-This document outlines the migration plan from standard Convex to [Better Convex](https://github.com/udecode/better-convex) - a comprehensive framework that integrates tRPC-style APIs, TanStack Query, and enhanced database patterns.
+This guide documents how we migrated the project from standard Convex (`convex/react` hooks) to [Better Convex](https://github.com/udecode/better-convex) — a framework that adds tRPC-style procedures, TanStack Query integration, and middleware-based auth to Convex.
 
-## Executive Summary
+## Why We Migrated
 
-**Current State:** Standard Convex with `convex/react` hooks (`useQuery`, `useMutation`) and Better Auth integration.
+| Before | After |
+|--------|-------|
+| Manual `authComponent.getAuthUser(ctx)` in every function | Auth middleware — `ctx.user` guaranteed |
+| `convex/react` hooks (`useQuery`, `useMutation`) | TanStack Query hooks with Convex real-time sync |
+| `v.string()` validators from `convex/values` | Zod schemas with `.min()`, `.max()`, `.optional()` |
+| `ConvexBetterAuthProvider` from `@convex-dev/better-auth/react` | `ConvexAuthProvider` from `better-convex/auth-client` with unauthorized redirect handling |
 
-**Target State:** Better Convex with cRPC procedures, TanStack Query native hooks, and unified type-safe patterns.
+## What Changed
 
-**Key Benefits:**
-- tRPC-style procedure builder with `.input()`, `.use()`, and middleware
-- Native TanStack Query integration (real-time subscriptions flow into query cache)
-- Type inference from schema through procedures to client
-- RSC prefetching and server-side calling for Next.js
+### New Dependencies
 
-## What is Better Convex?
+**Backend (`packages/backend/package.json`):**
 
-Better Convex is a production-ready framework built on top of Convex that combines:
+- `better-convex@^0.5.3` — cRPC server, middleware, meta codegen
+- `convex-helpers@^0.1.111` — utility helpers
+- `zod@^4.3.6` — input validation
 
-| Layer | Feature | Description |
-|-------|---------|-------------|
-| **Server** | cRPC | tRPC-style procedure builder with middleware support |
-| **Database** | Triggers | Automatic side effects on insert/update/delete |
-| **Database** | Aggregates | O(log n) counts, sums, leaderboards |
-| **Client** | React | TanStack Query integration with real-time sync |
-| **Client** | Next.js | RSC prefetching, hydration, server caller |
-| **Auth** | Better Auth | Lifecycle hooks, session management, guards |
+**Frontend (`apps/web/package.json`):**
 
-### Code Comparison
+- `better-convex@^0.5.3` — React client, `ConvexAuthProvider`, cRPC context
+- `@tanstack/react-query@^5.90.20` — query/mutation hooks, cache invalidation
+- `@convex-dev/react-query@^0.1.0` — Convex + TanStack Query bridge
+- `zod@^4.3.6` — shared validation schemas
 
-**Current (Standard Convex):**
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `packages/backend/convex/crpc.ts` | cRPC procedure builder with auth middleware |
+| `packages/backend/convex/types.ts` | API type exports for the client-side cRPC context |
+| `packages/backend/convex/shared/meta.ts` | Auto-generated metadata (auth requirements, function types) |
+| `packages/backend/convex/shared/types.ts` | `Api`, `ApiInputs`, `ApiOutputs` type helpers |
+| `apps/web/lib/convex/crpc.tsx` | Client-side cRPC context (`useCRPC`, `CRPCProvider`) |
+
+### Modified Files
+
+| File | What Changed |
+|------|-------------|
+| `packages/backend/convex/things.ts` | Rewrote all functions as cRPC procedures |
+| `apps/web/app/providers.tsx` | Replaced `ConvexBetterAuthProvider` with Better Convex providers |
+| `apps/web/app/page.tsx` | Switched to TanStack Query hooks via `useCRPC()` |
+| `apps/web/tsconfig.json` | Added `@convex/*` path alias for generated/shared types |
+| `packages/backend/package.json` | Added `./meta` and `./types` exports |
+| `biome.json` | Disabled formatter for `convex/shared/**` (auto-generated) |
+
+---
+
+## Backend Changes
+
+### The cRPC Procedure Builder (`convex/crpc.ts`)
+
+This is the central piece. It initializes Better Convex's `initCRPC` with our data model and creates reusable procedure builders with middleware:
 
 ```typescript
-// Server: convex/things.ts
-import { v } from "convex/values"
-import { mutation, query } from "./_generated/server"
+import { CRPCError, initCRPC } from "better-convex/server"
+import type { DataModel } from "./_generated/dataModel"
+import { action, mutation, query } from "./_generated/server"
 import { authComponent } from "./auth"
 
+const c = initCRPC.dataModel<DataModel>().create({
+  query,
+  mutation,
+  action,
+})
+
+// Auth middleware — throws UNAUTHORIZED if no user
+export const authQuery = c.query
+  .meta({ auth: "required" })
+  .use(async ({ ctx, next }) => {
+    const user = requireAuth(await authComponent.getAuthUser(ctx))
+    return next({
+      ctx: { ...ctx, user, userId: user._id as string },
+    })
+  })
+
+export const authMutation = c.mutation
+  .meta({ auth: "required" })
+  .use(async ({ ctx, next }) => {
+    const user = requireAuth(await authComponent.getAuthUser(ctx))
+    return next({
+      ctx: { ...ctx, user, userId: user._id as string },
+    })
+  })
+```
+
+Key details:
+
+- `.meta({ auth: "required" })` marks functions for the codegen metadata, which the client uses to know auth is needed.
+- `CRPCError` with `code: "UNAUTHORIZED"` provides structured error handling.
+- `ctx.user` and `ctx.userId` are added by middleware — no manual auth checks in functions.
+
+### Migrated Functions (`convex/things.ts`)
+
+**Before** — standard Convex with `v` validators and manual auth:
+
+```typescript
 export const getThings = query({
   args: {},
   handler: async (ctx) => {
     const user = await authComponent.getAuthUser(ctx)
     if (!user) return []
+    const userId = user._id as string
     return await ctx.db
       .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .collect()
-  },
-})
-
-export const createThing = mutation({
-  args: { title: v.string() },
-  handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) throw new Error("Not authenticated")
-    return await ctx.db.insert("things", {
-      title: args.title,
-      userId: user._id,
-    })
-  },
-})
-```
-
-```typescript
-// Client: app/page.tsx
-import { useMutation, useQuery } from "convex/react"
-import { api } from "backend/convex"
-
-function ThingsManager() {
-  const things = useQuery(api.things.getThings)
-  const createThing = useMutation(api.things.createThing)
-  // ...
-}
-```
-
-**Target (Better Convex):**
-
-```typescript
-// Server: convex/things.ts
-import { z } from "zod"
-import { authQuery, authMutation } from "./crpc"
-
-export const list = authQuery
-  .input(z.object({ limit: z.number().optional() }))
-  .query(async ({ ctx, input }) => {
-    return ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.user._id))
-      .take(input.limit ?? 50)
-  })
-
-export const create = authMutation
-  .input(z.object({ title: z.string().min(1) }))
-  .mutation(async ({ ctx, input }) => {
-    return ctx.db.insert("things", {
-      title: input.title,
-      userId: ctx.user._id,
-    })
-  })
-```
-
-```typescript
-// Client: app/page.tsx
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { useCRPC } from "@/lib/crpc"
-
-function ThingsManager() {
-  const crpc = useCRPC()
-  const { data: things } = useQuery(crpc.things.list.queryOptions({ limit: 50 }))
-  const createThing = useMutation(crpc.things.create.mutationOptions())
-  // ...
-}
-```
-
-## Current State Analysis
-
-### Packages in Use
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `convex` | ^1.31.6 | Core Convex SDK |
-| `convex/react` | included | React hooks for queries/mutations |
-| `@convex-dev/better-auth` | ^0.10.10 | Better Auth integration |
-| `better-auth` | 1.4.9 | Authentication library |
-
-### Current Architecture
-
-```
-apps/web/
-├── app/
-│   ├── providers.tsx      # ConvexBetterAuthProvider
-│   ├── page.tsx           # Uses useQuery/useMutation from convex/react
-│   └── lib/auth-client.ts # Better Auth client
-
-packages/backend/
-└── convex/
-    ├── schema.ts          # Standard defineSchema
-    ├── auth.ts            # Better Auth setup
-    ├── http.ts            # HTTP router for auth
-    └── things.ts          # Standard query/mutation exports
-```
-
-### Current Data Flow
-
-1. Client uses `useQuery(api.things.getThings)` from `convex/react`
-2. Server receives request, runs handler with `ctx.db`
-3. Auth checked manually via `authComponent.getAuthUser(ctx)`
-4. Results returned directly (no caching layer)
-
-## Migration Phases
-
-### Phase 1: Install Dependencies
-
-Add Better Convex packages:
-
-```bash
-cd packages/backend
-bun add better-convex zod
-
-cd apps/web
-bun add better-convex @tanstack/react-query
-```
-
-**Package Structure:**
-- `better-convex/server` - cRPC builder, middleware, server caller
-- `better-convex/react` - React client, providers, auth hooks
-- `better-convex/rsc` - RSC prefetching and hydration (optional)
-
-### Phase 2: Set Up cRPC Procedure Builder
-
-Create the cRPC configuration:
-
-```typescript
-// convex/crpc.ts
-import { createCRPC } from "better-convex/server"
-import { z } from "zod"
-import { authComponent } from "./auth"
-
-// Base procedure with context
-const crpc = createCRPC()
-
-// Public procedure (no auth required)
-export const publicQuery = crpc.query
-export const publicMutation = crpc.mutation
-
-// Authenticated procedure with auth middleware
-export const authQuery = crpc
-  .use(async ({ ctx, next }) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      throw new Error("Not authenticated")
-    }
-    return next({ ctx: { ...ctx, user } })
-  })
-  .query
-
-export const authMutation = crpc
-  .use(async ({ ctx, next }) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      throw new Error("Not authenticated")
-    }
-    return next({ ctx: { ...ctx, user } })
-  })
-  .mutation
-```
-
-### Phase 3: Migrate Server Functions
-
-Migrate functions one at a time (Better Convex supports incremental adoption):
-
-**Before:**
-```typescript
-// convex/things.ts
-export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) return []
-    return await ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect()
   },
 })
 ```
 
-**After:**
-```typescript
-// convex/things.ts
-import { z } from "zod"
-import { authQuery, publicQuery } from "./crpc"
+**After** — cRPC procedure with Zod input and middleware auth:
 
+```typescript
 export const list = authQuery
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().default(50),
-  }))
-  .query(async ({ ctx, input }) => {
-    // User is guaranteed to exist via middleware
-    return ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.user._id))
-      .take(input.limit)
-  })
-```
-
-### Phase 4: Set Up Client Provider
-
-Update the React providers to include TanStack Query:
-
-```typescript
-// apps/web/app/providers.tsx
-"use client"
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ConvexReactClient } from "convex/react"
-import { CRPCProvider } from "better-convex/react"
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
-import { useState, type ReactNode } from "react"
-import { authClient } from "../lib/auth-client"
-
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-
-export function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60, // 1 minute
-      },
-    },
-  }))
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-        <CRPCProvider convex={convex}>
-          {children}
-        </CRPCProvider>
-      </ConvexBetterAuthProvider>
-    </QueryClientProvider>
+  .input(
+    z.object({
+      limit: z.number().min(1).max(100).optional(),
+    }),
   )
-}
+  .query(async ({ ctx, input }) => {
+    const query = ctx.db
+      .query("things")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+
+    if (input.limit) {
+      return query.take(input.limit)
+    }
+    return query.collect()
+  })
 ```
 
-### Phase 5: Migrate Client Components
+All four functions were migrated:
 
-Update components to use TanStack Query hooks:
+| Old Name | New Name | Notes |
+|----------|----------|-------|
+| `getThings` | `list` | Added optional `limit` input |
+| `getThing` | `get` | Takes `id` as Zod string, casts to `Id<"things">` |
+| `createThing` | `create` | Zod validation: `title` min 1, max 200 chars |
+| `deleteThing` | `remove` | Named `remove` to avoid JS reserved word conflict |
 
-**Before:**
+### Type Exports (`convex/types.ts`)
+
+The client-side cRPC context needs to know the full API shape including procedure types. This file re-exports the generated API type augmented with the procedure types:
+
 ```typescript
-import { useMutation, useQuery } from "convex/react"
-import { api } from "backend/convex"
-
-function ThingsManager() {
-  const things = useQuery(api.things.getThings)
-  const createThing = useMutation(api.things.createThing)
-
-  const handleCreate = async () => {
-    await createThing({ title: "New Thing" })
+export type Api = typeof convexApi & {
+  things: {
+    list: typeof things.list
+    get: typeof things.get
+    create: typeof things.create
+    remove: typeof things.remove
   }
-  // ...
 }
 ```
 
-**After:**
+### Meta Codegen (`convex/shared/meta.ts`)
+
+Better Convex generates a metadata file that the client uses to determine auth requirements and function types at runtime:
+
 ```typescript
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useCRPC } from "@/lib/crpc"
+export const meta = {
+  things: {
+    create: { auth: 'required', type: 'mutation' },
+    get: { auth: 'required', type: 'query' },
+    list: { auth: 'required', type: 'query' },
+    remove: { auth: 'required', type: 'mutation' },
+  },
+  _http: {},
+} as const;
+```
 
-function ThingsManager() {
-  const crpc = useCRPC()
-  const queryClient = useQueryClient()
+The `biome.json` was updated to skip formatting on `convex/shared/**` since these files are auto-generated.
 
-  const { data: things, isLoading } = useQuery(
-    crpc.things.list.queryOptions({ limit: 50 })
-  )
+---
 
-  const createThing = useMutation({
-    ...crpc.things.create.mutationOptions(),
+## Frontend Changes
+
+### cRPC Client Context (`apps/web/lib/convex/crpc.tsx`)
+
+Creates the React context that makes `useCRPC()` available throughout the app:
+
+```typescript
+import { api } from "@convex/api"
+import { meta } from "@convex/meta"
+import type { Api } from "@convex/types"
+import { createCRPCContext } from "better-convex/react"
+
+const crpcContext = createCRPCContext<Api>({
+  api,
+  meta,
+  convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
+})
+
+export const CRPCProvider = crpcContext.CRPCProvider
+export const useCRPC = crpcContext.useCRPC
+```
+
+This requires the `@convex/*` path alias added to `tsconfig.json`:
+
+```json
+{
+  "paths": {
+    "@/*": ["./*"],
+    "@convex/*": [
+      "../../packages/backend/convex/_generated/*",
+      "../../packages/backend/convex/shared/*"
+    ]
+  }
+}
+```
+
+### Providers (`apps/web/app/providers.tsx`)
+
+The provider stack changed significantly:
+
+**Before:**
+
+```
+ConvexBetterAuthProvider (from @convex-dev/better-auth/react)
+  └── children
+```
+
+**After:**
+
+```
+ConvexAuthProvider (from better-convex/auth-client)
+  └── QueryClientProvider (TanStack Query)
+      └── CRPCProvider (cRPC context with convexQueryClient)
+          └── children
+```
+
+Key details in the new provider setup:
+
+- `ConvexReactClient` is now created inside the component via `useState` (not module-level).
+- `QueryClient` uses `staleTime: Infinity` because Convex handles real-time updates via WebSocket — no polling needed.
+- `getConvexQueryClientSingleton` bridges Convex's real-time subscriptions into TanStack Query's cache.
+- `ConvexAuthProvider` accepts `onMutationUnauthorized` and `onQueryUnauthorized` callbacks that redirect to `/login`.
+
+### Page Component (`apps/web/app/page.tsx`)
+
+**Before** — `convex/react` hooks:
+
+```typescript
+import { useMutation, useQuery } from "convex/react"
+import { api } from "backend/convex"
+
+const things = useQuery(api.things.getThings)
+const createThing = useMutation(api.things.createThing)
+```
+
+**After** — TanStack Query via cRPC:
+
+```typescript
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useCRPC } from "@/lib/convex/crpc"
+
+const crpc = useCRPC()
+const queryClient = useQueryClient()
+
+const { data, isPending, error } = useQuery(
+  crpc.things.list.queryOptions({})
+)
+
+const createThing = useMutation(
+  crpc.things.create.mutationOptions({
     onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["things", "list"] })
+      queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
     },
   })
-
-  const handleCreate = () => {
-    createThing.mutate({ title: "New Thing" })
-  }
-  // ...
-}
+)
 ```
 
-### Phase 6: Add RSC Support (Optional)
+Notable changes in the component:
 
-For Next.js RSC prefetching:
+- Loading state uses `isPending` (TanStack Query) instead of checking `=== undefined`.
+- Error state is now explicitly handled (`error` from the query result).
+- Cache invalidation on mutation success via `queryClient.invalidateQueries()`.
+- Delete button gets `disabled={deleteThing.isPending}` to prevent double-clicks.
+- The `data` from queries needs a type assertion since the cRPC type inference doesn't fully resolve through `queryOptions`.
+
+---
+
+## Issues and Workarounds
+
+### 1. Type Inference on Query Data
+
+The query data returned via `crpc.things.list.queryOptions({})` does not fully infer the return type. The page component uses an explicit type assertion:
 
 ```typescript
-// app/things/page.tsx
-import { createServerCaller } from "better-convex/rsc"
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
-import { getQueryClient } from "@/lib/query-client"
-import { ThingsManager } from "./things-manager"
+const things = data as Array<{
+  _id: string; title: string; _creationTime: number; userId: string
+}> | undefined
+```
 
-export default async function ThingsPage() {
-  const queryClient = getQueryClient()
-  const serverCaller = createServerCaller()
+This is a rough edge — ideally the types would flow through without a cast.
 
-  // Prefetch on server
-  await queryClient.prefetchQuery({
-    queryKey: ["things", "list"],
-    queryFn: () => serverCaller.things.list({ limit: 50 }),
-  })
+### 2. Manual `types.ts` Augmentation
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ThingsManager />
-    </HydrationBoundary>
-  )
+The `convex/types.ts` file manually re-declares the API type with explicit procedure references. This is fragile — adding a new cRPC function requires updating this file. Better Convex may improve this with codegen in the future.
+
+### 3. Zod `Id` Validation
+
+Convex document IDs (`Id<"things">`) don't have a Zod validator. The procedures accept `z.string()` and cast:
+
+```typescript
+const thing = await ctx.db.get(input.id as Id<"things">)
+```
+
+This loses the type-level safety that `v.id("things")` provided with Convex's native validators. A custom Zod refinement could help here but wasn't added.
+
+### 4. Meta File Maintenance
+
+The `convex/shared/meta.ts` file is described as auto-generated, but the codegen step isn't integrated into the dev workflow yet. If you add new cRPC procedures, you need to regenerate this file or update it manually.
+
+### 5. `ConvexReactClient` Initialization
+
+The client moved from module-level (`const convex = new ConvexReactClient(...)`) to inside the component via `useState`. The `convexUrl` check for the "not configured" fallback now happens after the client is already created, which means a missing URL would throw during `useState` initialization before the guard runs.
+
+### 6. Function Renaming
+
+All function names changed (`getThings` → `list`, `deleteThing` → `remove`, etc.). Any code referencing the old `api.things.getThings` style will break. Since the client was migrated simultaneously this wasn't an issue here, but it's worth noting for larger codebases where incremental migration matters.
+
+---
+
+## Package Export Changes
+
+The backend package now exports additional entry points:
+
+```json
+{
+  "exports": {
+    "./convex": "./convex/_generated/api.js",
+    "./meta": "./convex/shared/meta.ts",
+    "./types": "./convex/types.ts"
+  }
 }
 ```
 
-## Migration Checklist
+The web app's `tsconfig.json` uses path aliases instead of the package exports for the generated/shared files, since the TypeScript paths resolve directly to the source files in the monorepo.
 
-### Phase 1: Dependencies
-- [ ] Install `better-convex` in backend package
-- [ ] Install `better-convex` and `@tanstack/react-query` in web app
-- [ ] Add `zod` for input validation
+---
 
-### Phase 2: Server Setup
-- [ ] Create `convex/crpc.ts` with procedure builders
-- [ ] Set up auth middleware
-- [ ] Create type exports for client
+## Summary
 
-### Phase 3: Migrate Functions (per function)
-- [ ] Convert to cRPC procedure syntax
-- [ ] Add Zod input validation
-- [ ] Remove manual auth checks (use middleware)
-- [ ] Add return type validators
-- [ ] Test function works
+The migration touched 10 files (excluding config/lockfile changes) across 5 commits. The core pattern shift is:
 
-### Phase 4: Client Setup
-- [ ] Add QueryClientProvider
-- [ ] Add CRPCProvider
-- [ ] Create crpc client hook
+1. **Server:** `query({args, handler})` → `authQuery.input(zod).query(({ctx, input}) => ...)`
+2. **Client:** `useQuery(api.things.getThings)` → `useQuery(crpc.things.list.queryOptions({}))`
+3. **Auth:** Manual `getAuthUser` per function → middleware adds `ctx.user` automatically
+4. **State:** Direct Convex reactivity → Convex WebSocket → TanStack Query cache
 
-### Phase 5: Migrate Components (per component)
-- [ ] Replace `useQuery` import
-- [ ] Replace `useMutation` import
-- [ ] Update query/mutation calls to use queryOptions/mutationOptions
-- [ ] Add cache invalidation where needed
-- [ ] Handle loading/error states with TanStack Query patterns
-
-### Phase 6: Optional Enhancements
-- [ ] Add RSC prefetching
-- [ ] Add triggers for side effects
-- [ ] Add aggregates for counts/sums
-
-## Rollback Strategy
-
-Better Convex supports incremental adoption, so rollback is straightforward:
-
-1. Keep old `query`/`mutation` exports alongside new cRPC procedures
-2. Both can coexist in the same file
-3. Migrate client components one at a time
-4. If issues arise, revert specific components to `convex/react` hooks
-
-## Testing Strategy
-
-1. **Unit Tests:** Test cRPC procedures in isolation with mocked context
-2. **Integration Tests:** Test full flow from client to server
-3. **Type Tests:** Verify type inference works end-to-end
-4. **Performance Tests:** Compare query performance before/after
-
-## Resources
-
-- [Better Convex Documentation](https://www.better-convex.com/docs)
-- [Better Convex GitHub](https://github.com/udecode/better-convex)
-- [TanStack Query Documentation](https://tanstack.com/query/latest)
-- [Zod Documentation](https://zod.dev)
-
-## Decision Points
-
-Before implementation, decide on:
-
-| Decision | Options | Recommendation |
-|----------|---------|----------------|
-| **Adoption Approach** | Top-down (all at once) vs Bottom-up (incremental) | Bottom-up - migrate one function at a time |
-| **SSR/RSC** | Client-only vs Server prefetching | Add RSC prefetching for key pages |
-| **Triggers** | None vs On insert/update/delete | Add as needed for specific use cases |
-| **Aggregates** | None vs Counts/sums | Add if performance becomes an issue |
+The old `convex/react` hooks are no longer used anywhere in the codebase. The migration was done all-at-once rather than incrementally, since the app currently only has one entity (`things`) with four functions.
