@@ -250,6 +250,7 @@ This repository includes professional skills and agents from [Sentry](https://gi
 - `/convex` - Comprehensive Convex development guidelines and best practices
 - `/turborepo` - Turborepo monorepo build system guidance for tasks, caching, and CI
 - `/vercel-react-best-practices` - React/Next.js performance optimization (57 rules)
+- `/vitest` - Vitest testing framework guidance (configuration, APIs, mocking, coverage)
 - `/web-design-guidelines` - UI/UX best practices audit (100+ rules)
 
 **Available Agents:**

@@ -28,6 +28,7 @@ These agents and skills are adapted from [Sentry's professional skills repositor
     ├── iterate-pr/
     ├── turborepo/
     ├── vercel-react-best-practices/
+    ├── vitest/
     └── web-design-guidelines/
 ```
 
@@ -80,6 +81,9 @@ Turborepo monorepo build system guidance. Covers task configuration, caching, re
 ### vercel-react-best-practices
 React and Next.js performance optimization guidelines from Vercel Engineering. 57 rules across 8 categories including waterfalls, bundle size, server-side performance, and re-render optimization.
 
+### vitest
+A blazing fast unit testing framework powered by Vite. Comprehensive reference covering configuration, CLI, test/describe/expect APIs, mocking, snapshots, coverage, concurrent testing, and advanced features like type testing and multi-project workspaces. Based on official Vitest documentation.
+
 ### web-design-guidelines
 Review UI code for Web Interface Guidelines compliance. Checks accessibility, performance, forms, animations, and more against 100+ rules.
 
@@ -111,5 +115,10 @@ Modified for general professional use while maintaining references to Sentry's e
 https://github.com/vercel-labs/agent-skills
 
 Official React/Next.js best practices and web design guidelines from Vercel Engineering.
+
+**Anthony Fu's Skills** - From:
+https://github.com/antfu/skills
+
+Auto-generated skills from official documentation including Vitest testing framework guidance.
 
 **Convex Skills** - Custom skill developed for this project to provide comprehensive Convex development guidelines and best practices.
