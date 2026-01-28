@@ -1,6 +1,6 @@
-import starlight from "@astrojs/starlight"
+import starlight from "@astrojs/starlight";
 // @ts-check
-import { defineConfig } from "astro/config"
+import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
@@ -51,6 +51,10 @@ export default defineConfig({
               label: "Authentication",
               slug: "guides/11-authentication",
             },
+            {
+              label: "Better Convex",
+              slug: "guides/12-better-convex-migration",
+            },
           ],
         },
         {
@@ -66,4 +70,4 @@ export default defineConfig({
       ],
     }),
   ],
-})
+});
