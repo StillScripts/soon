@@ -28,7 +28,7 @@ export const removeThingSchema = z.object({
  * Schema for listing things with optional limit
  */
 export const listThingsSchema = z.object({
-  limit: z.number().min(1).max(100).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
 })
 
 /**

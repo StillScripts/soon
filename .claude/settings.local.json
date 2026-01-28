@@ -72,7 +72,8 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:better-convex.com)",
       "Bash(bun convex codegen:*)",
-      "Bash(turbo check-types:*)"
+      "Bash(turbo check-types:*)",
+      "Bash(turbo test:*)"
     ]
   }
 }

@@ -120,7 +120,9 @@
       "devDependencies": {
         "@repo/biome-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
+        "@repo/vitest-config": "workspace:*",
         "typescript": "^5.9.2",
+        "vitest": "^3.0.0",
       },
     },
     "packages/vitest-config": {
