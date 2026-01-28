@@ -1,119 +1,61 @@
-/**
- * CRPC - Convex RPC
- * tRPC-style fluent API for Convex functions
- */
+import { CRPCError, initCRPC } from "better-convex/server";
+import type { DataModel } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
+import { authComponent } from "./auth";
 
-import { CRPCError, initCRPC } from "better-convex/server"
-import type { DataModel } from "./_generated/dataModel"
-import type { MutationCtx, QueryCtx } from "./_generated/server"
-import { action, mutation, query } from "./_generated/server"
-import { authComponent } from "./auth"
-
-// =============================================================================
-// Context Types
-// =============================================================================
+// Context types
 
 type AuthUser = NonNullable<
-	Awaited<ReturnType<typeof authComponent.getAuthUser>>
->
+  Awaited<ReturnType<typeof authComponent.getAuthUser>>
+>;
 
-/** Context with required auth - user/userId guaranteed */
-export type AuthQueryCtx = QueryCtx & {
-	user: AuthUser
-	userId: string
+interface AuthFields {
+  user: AuthUser;
+  userId: string;
 }
 
-export type AuthMutationCtx = MutationCtx & {
-	user: AuthUser
-	userId: string
-}
+export type AuthQueryCtx = QueryCtx & AuthFields;
+export type AuthMutationCtx = MutationCtx & AuthFields;
 
-// =============================================================================
-// Initialize cRPC
-// =============================================================================
+// cRPC initialization
 
 const c = initCRPC.dataModel<DataModel>().create({
-	query,
-	mutation,
-	action,
-})
+  query,
+  mutation,
+  action,
+});
 
-// =============================================================================
-// Middleware
-// =============================================================================
+// Auth middleware
 
-function requireAuth<T>(user: T | null): T {
-	if (!user) {
-		throw new CRPCError({
-			code: "UNAUTHORIZED",
-			message: "Not authenticated",
-		})
-	}
-	return user
-}
+const withAuth: Parameters<(typeof c)["query"]["use"]>[0] = async ({
+  ctx,
+  next,
+}) => {
+  const user = await authComponent.getAuthUser(ctx);
 
-// =============================================================================
-// Query Procedures
-// =============================================================================
+  if (!user) {
+    throw new CRPCError({
+      code: "UNAUTHORIZED",
+      message: "Not authenticated",
+    });
+  }
 
-/** Public query - no auth required */
-export const publicQuery = c.query
+  return next({
+    ctx: {
+      ...ctx,
+      user,
+      userId: user._id as string,
+    },
+  });
+};
 
-/** Auth query - ctx.user required */
-export const authQuery = c.query
-	.meta({ auth: "required" })
-	.use(async ({ ctx, next }) => {
-		const user = requireAuth(await authComponent.getAuthUser(ctx))
+// Procedures
 
-		return next({
-			ctx: {
-				...ctx,
-				user,
-				userId: user._id as string,
-			},
-		})
-	})
+export const publicQuery = c.query;
+export const publicMutation = c.mutation;
+export const publicAction = c.action;
 
-// =============================================================================
-// Mutation Procedures
-// =============================================================================
-
-/** Public mutation - no auth required */
-export const publicMutation = c.mutation
-
-/** Auth mutation - ctx.user required */
-export const authMutation = c.mutation
-	.meta({ auth: "required" })
-	.use(async ({ ctx, next }) => {
-		const user = requireAuth(await authComponent.getAuthUser(ctx))
-
-		return next({
-			ctx: {
-				...ctx,
-				user,
-				userId: user._id as string,
-			},
-		})
-	})
-
-// =============================================================================
-// Action Procedures
-// =============================================================================
-
-/** Public action - no auth required */
-export const publicAction = c.action
-
-/** Auth action - ctx.user required */
-export const authAction = c.action
-	.meta({ auth: "required" })
-	.use(async ({ ctx, next }) => {
-		const user = requireAuth(await authComponent.getAuthUser(ctx))
-
-		return next({
-			ctx: {
-				...ctx,
-				user,
-				userId: user._id as string,
-			},
-		})
-	})
+export const authQuery = c.query.meta({ auth: "required" }).use(withAuth);
+export const authMutation = c.mutation.meta({ auth: "required" }).use(withAuth);
+export const authAction = c.action.meta({ auth: "required" }).use(withAuth);

@@ -9,7 +9,7 @@ import {
 	useAuthStore,
 } from "better-convex/react"
 import { useRouter } from "next/navigation"
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useCallback, useState } from "react"
 
 import { CRPCProvider } from "@/lib/convex/crpc"
 import { authClient } from "../lib/auth-client"
@@ -60,29 +60,17 @@ export function Providers({
 }: { children: ReactNode; initialToken?: string | null }) {
 	const router = useRouter()
 	const [convex] = useState(() => new ConvexReactClient(convexUrl))
-
-	if (!convexUrl) {
-		return (
-			<div style={{ padding: "2rem", fontFamily: "system-ui" }}>
-				<h1>Convex Not Configured</h1>
-				<p>
-					Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.
-				</p>
-			</div>
-		)
-	}
+	const handleUnauthorized = useCallback(() => {
+		router.push("/login")
+	}, [router])
 
 	return (
 		<ConvexAuthProvider
 			authClient={authClient}
 			client={convex}
 			initialToken={initialToken ?? undefined}
-			onMutationUnauthorized={() => {
-				router.push("/login")
-			}}
-			onQueryUnauthorized={() => {
-				router.push("/login")
-			}}
+			onMutationUnauthorized={handleUnauthorized}
+			onQueryUnauthorized={handleUnauthorized}
 		>
 			<QueryProvider convex={convex}>{children}</QueryProvider>
 		</ConvexAuthProvider>

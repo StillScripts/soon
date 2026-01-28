@@ -19,35 +19,26 @@ function ThingsManager() {
 	const queryClient = useQueryClient()
 	const [title, setTitle] = useState("")
 
-	// Query things using TanStack Query with Convex real-time subscriptions
 	const {
-		data,
+		data: things,
 		isPending: isLoading,
 		error,
 	} = useQuery(crpc.things.list.queryOptions({}))
-	const things = data as Array<{ _id: string; title: string; _creationTime: number; userId: string }> | undefined
 
-	// Mutations with TanStack Query
-	// Using explicit type annotation to help TypeScript infer correctly
-	const createThing = useMutation<
-		Awaited<ReturnType<typeof crpc.things.create.mutationOptions>["mutationFn"]>,
-		Error,
-		{ title: string }
-	>(crpc.things.create.mutationOptions({
-		onSuccess: () => {
-			queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
-		},
-	}))
+	const invalidateThings = () =>
+		queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
 
-	const deleteThing = useMutation<
-		void,
-		Error,
-		{ id: string }
-	>(crpc.things.remove.mutationOptions({
-		onSuccess: () => {
-			queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
-		},
-	}))
+	const createThing = useMutation(
+		crpc.things.create.mutationOptions({
+			onSuccess: invalidateThings,
+		}),
+	)
+
+	const deleteThing = useMutation(
+		crpc.things.remove.mutationOptions({
+			onSuccess: invalidateThings,
+		}),
+	)
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
@@ -59,10 +50,6 @@ function ThingsManager() {
 				onSuccess: () => setTitle(""),
 			},
 		)
-	}
-
-	const handleDelete = (id: string) => {
-		deleteThing.mutate({ id })
 	}
 
 	return (
@@ -119,7 +106,7 @@ function ThingsManager() {
 										<Button
 											variant="ghost"
 											size="sm"
-											onClick={() => handleDelete(thing._id)}
+											onClick={() => deleteThing.mutate({ id: thing._id })}
 											disabled={deleteThing.isPending}
 											className="text-destructive hover:text-destructive"
 										>

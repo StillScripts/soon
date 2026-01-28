@@ -17,9 +17,14 @@ import {
 } from "@repo/ui/components/ui/field"
 import { Input } from "@repo/ui/components/ui/input"
 import { useForm } from "@tanstack/react-form"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
 type AuthMode = "login" | "signup"
+
+const BUTTON_LABELS: Record<AuthMode, { idle: string; pending: string }> = {
+  login: { idle: "Sign in", pending: "Signing in..." },
+  signup: { idle: "Create account", pending: "Creating account..." },
+}
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>("login")
@@ -63,10 +68,10 @@ export function AuthForm() {
     },
   })
 
-  const toggleMode = () => {
-    setMode(mode === "login" ? "signup" : "login")
+  const toggleMode = useCallback(() => {
+    setMode((prev) => (prev === "login" ? "signup" : "login"))
     setError(null)
-  }
+  }, [])
 
   return (
     <Card className="w-full max-w-md">
@@ -193,13 +198,7 @@ export function AuthForm() {
             )}
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading
-                ? mode === "login"
-                  ? "Signing in..."
-                  : "Creating account..."
-                : mode === "login"
-                  ? "Sign in"
-                  : "Create account"}
+              {BUTTON_LABELS[mode][isLoading ? "pending" : "idle"]}
             </Button>
           </FieldGroup>
         </form>
