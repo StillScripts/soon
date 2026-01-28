@@ -31,13 +31,13 @@ function ThingsManager() {
 	const createThing = useMutation(
 		crpc.things.create.mutationOptions({
 			onSuccess: invalidateThings,
-		}),
+		})
 	)
 
 	const deleteThing = useMutation(
 		crpc.things.remove.mutationOptions({
 			onSuccess: invalidateThings,
-		}),
+		})
 	)
 
 	const handleSubmit = (e: FormEvent) => {
@@ -48,7 +48,7 @@ function ThingsManager() {
 			{ title: title.trim() },
 			{
 				onSuccess: () => setTitle(""),
-			},
+			}
 		)
 	}
 
