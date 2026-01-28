@@ -3,7 +3,7 @@ title: Development Journey Overview
 description: A chronological history of how this application was built, serving as both tutorial and context.
 ---
 
-This section documents the complete development history of Ember, from initial setup to current state. Each guide represents a significant milestone in the project's evolution.
+This section documents the complete development history of Soon, from initial setup to current state. Each guide represents a significant milestone in the project's evolution.
 
 ## Purpose
 
@@ -18,6 +18,16 @@ These guides serve multiple purposes:
 1. [Initial Turborepo Setup](./01-initial-turborepo-setup) - Creating the TurboRepo foundation with Bun
 2. [Astro Documentation Site](./02-astro-docs) - Replacing Next.js docs with Starlight
 3. [Claude Code Integration](./03-claude-code) - Setting up AI-assisted development
+4. [Professional Claude Code Skills](./04-claude-skills) - Adding skills from Sentry and Vercel
+5. [Convex Backend](./05-convex-backend) - Setting up Convex as the backend
+6. [Turborepo Skill](./06-turborepo-skill) - Adding Turborepo-specific Claude skill
+7. [shadcn/ui Components](./07-shadcn-ui-components) - Building the shared UI component library
+8. [Better Auth Integration](./08-better-auth) - Adding authentication with Better Auth
+9. [Biome Migration](./09-biome-migration) - Migrating from ESLint/Prettier to Biome
+10. [Vitest Testing Setup](./10-vitest-testing) - Configuring Vitest for testing
+11. [Authentication](./11-authentication) - Implementing the authentication flow
+12. [Better Convex Migration](./12-better-convex-migration) - Migrating to better-convex patterns
+13. [Shared Validators Package](./13-shared-validators) - Creating shared validation utilities
 
 ## Documentation Pattern
 

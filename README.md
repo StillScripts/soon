@@ -1,135 +1,117 @@
-# Turborepo starter
+# Soon
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern monorepo starter with Bun, Turborepo, and AI-assisted development.
 
-## Using this example
+## Tech Stack
 
-Run the following command:
+- **Runtime**: [Bun](https://bun.sh) - Fast JavaScript runtime and package manager
+- **Monorepo**: [Turborepo](https://turborepo.dev) - High-performance build system
+- **Frontend**: [Next.js 16](https://nextjs.org) with React 19
+- **Backend**: [Convex](https://convex.dev) - Reactive backend platform
+- **Auth**: [Better Auth](https://better-auth.com) - Authentication library
+- **UI**: [shadcn/ui](https://ui.shadcn.com) with Base UI primitives
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com) with oklch color theme
+- **Linting**: [Biome](https://biomejs.dev) - Fast linter and formatter
+- **Testing**: [Vitest](https://vitest.dev) - Fast unit testing framework
+- **Docs**: [Astro Starlight](https://starlight.astro.build) - Documentation site
 
-```sh
-npx create-turbo@latest
+## Project Structure
+
+```
+apps/
+├── web/          # Next.js application (port 3000)
+└── docs/         # Astro documentation site (port 4321)
+
+packages/
+├── backend/      # Convex backend with Better Auth
+├── ui/           # Shared UI components (shadcn/ui)
+├── validators/   # Shared validation utilities
+├── biome-config/ # Shared Biome configurations
+├── typescript-config/ # Shared TypeScript configurations
+└── vitest-config/     # Shared Vitest configurations
 ```
 
-## What's inside?
+## Getting Started
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- [Bun](https://bun.sh) >= 1.3.6
+- Node.js >= 18
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Installation
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+```bash
+bun install
+```
 
-### Utilities
+### Environment Setup
 
-This Turborepo has some additional tools already setup for you:
+Copy the example environment files and configure them:
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+```bash
+# Backend (Convex)
+cp packages/backend/.env.example packages/backend/.env.local
+
+# Web app
+cp apps/web/.env.example apps/web/.env.local
+```
+
+Then run `bunx convex dev` in `packages/backend` to set up your Convex deployment.
+
+### Development
+
+```bash
+# Run all apps
+bun dev
+
+# Run specific app
+turbo dev --filter=web    # Next.js on port 3000
+turbo dev --filter=docs   # Docs on port 4321
+
+# Run Convex backend
+cd packages/backend && bunx convex dev
+```
 
 ### Build
 
-To build all apps and packages, run the following command:
+```bash
+# Build all apps
+bun build
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Build specific app
+turbo build --filter=web
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Code Quality
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+```bash
+# Lint all packages
+bun lint
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+# Format code
+bun format
 
-### Develop
+# Type checking
+bun check-types
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+# Run tests
+bun test
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Claude Code Integration
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+This repository includes professional Claude Code skills and agents. See [.claude/README.md](.claude/README.md) for details.
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+**Available Skills:**
+- `/commit` - Create well-formatted commits
+- `/create-pr` - Create professional pull requests
+- `/code-review` - Perform thorough code reviews
+- `/find-bugs` - Security and bug auditing
 
-### Remote Caching
+## Documentation
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+The `apps/docs` site contains comprehensive development guides documenting how this project was built. Run `turbo dev --filter=docs` to view locally.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## License
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+MIT
