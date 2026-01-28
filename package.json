@@ -1,5 +1,5 @@
 {
-  "name": "ember",
+  "name": "soon",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -6,7 +6,7 @@ description: Monorepo task runner configuration and usage patterns.
 ## Workspace Structure
 
 ```
-ember/
+soon/
 ├── apps/
 │   ├── web/          # Next.js application
 │   └── docs/         # Astro documentation site

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "ember",
+      "name": "soon",
       "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@repo/vitest-config": "*",
