@@ -1,14 +1,15 @@
-import { z } from "zod"
+import {
+  createThingSchema,
+  getThingSchema,
+  listThingsSchema,
+  removeThingSchema,
+} from "@repo/validators/things"
 import type { Id } from "./_generated/dataModel"
 import { authMutation, authQuery } from "./crpc"
 
 // List all things for the authenticated user
 export const list = authQuery
-  .input(
-    z.object({
-      limit: z.number().min(1).max(100).optional(),
-    })
-  )
+  .input(listThingsSchema)
   .query(async ({ ctx, input }) => {
     const query = ctx.db
       .query("things")
@@ -22,11 +23,7 @@ export const list = authQuery
 
 // Get a single thing by ID (with ownership check)
 export const get = authQuery
-  .input(
-    z.object({
-      id: z.string(),
-    })
-  )
+  .input(getThingSchema)
   .query(async ({ ctx, input }) => {
     const thing = await ctx.db.get(input.id as Id<"things">)
     if (!thing || thing.userId !== ctx.userId) {
@@ -37,11 +34,7 @@ export const get = authQuery
 
 // Create a new thing
 export const create = authMutation
-  .input(
-    z.object({
-      title: z.string().min(1, "Title is required").max(200),
-    })
-  )
+  .input(createThingSchema)
   .mutation(async ({ ctx, input }) => {
     return ctx.db.insert("things", {
       title: input.title,
@@ -51,11 +44,7 @@ export const create = authMutation
 
 // Delete a thing (with ownership check)
 export const remove = authMutation
-  .input(
-    z.object({
-      id: z.string(),
-    })
-  )
+  .input(removeThingSchema)
   .mutation(async ({ ctx, input }) => {
     const thing = await ctx.db.get(input.id as Id<"things">)
     if (!thing || thing.userId !== ctx.userId) {

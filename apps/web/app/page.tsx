@@ -10,14 +10,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/ui/card"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@repo/ui/components/ui/field"
 import { Input } from "@repo/ui/components/ui/input"
+import { createThingSchema } from "@repo/validators/things"
+import { useForm } from "@tanstack/react-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { type FormEvent, useState } from "react"
 
 function ThingsManager() {
   const crpc = useCRPC()
   const queryClient = useQueryClient()
-  const [title, setTitle] = useState("")
 
   const {
     data: things,
@@ -40,17 +46,19 @@ function ThingsManager() {
     })
   )
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return
-
-    createThing.mutate(
-      { title: title.trim() },
-      {
-        onSuccess: () => setTitle(""),
+  const form = useForm({
+    defaultValues: {
+      title: "",
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await createThing.mutateAsync({ title: value.title.trim() })
+        form.reset()
+      } catch (_err) {
+        // Error is handled by the mutation
       }
-    )
-  }
+    },
+  })
 
   return (
     <>
@@ -59,21 +67,59 @@ function ThingsManager() {
           <CardTitle>Create a Thing</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <Input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter thing title..."
-              disabled={createThing.isPending}
-              className="flex-1"
-            />
-            <Button
-              type="submit"
-              disabled={createThing.isPending || !title.trim()}
-            >
-              {createThing.isPending ? "Creating..." : "Create"}
-            </Button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              form.handleSubmit()
+            }}
+          >
+            <FieldGroup>
+              <form.Field
+                name="title"
+                validators={{
+                  onChange: ({ value }) => {
+                    const result =
+                      createThingSchema.shape.title.safeParse(value)
+                    return result.success
+                      ? undefined
+                      : result.error.issues[0]?.message
+                  },
+                }}
+              >
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="title">Title</FieldLabel>
+                    <div className="flex gap-2">
+                      <Input
+                        id="title"
+                        type="text"
+                        placeholder="Enter thing title..."
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        disabled={createThing.isPending}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="submit"
+                        disabled={
+                          createThing.isPending || !field.state.value.trim()
+                        }
+                      >
+                        {createThing.isPending ? "Creating..." : "Create"}
+                      </Button>
+                    </div>
+                    {field.state.meta.isTouched &&
+                      field.state.meta.errors.length > 0 && (
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
+                      )}
+                  </Field>
+                )}
+              </form.Field>
+            </FieldGroup>
           </form>
         </CardContent>
       </Card>
