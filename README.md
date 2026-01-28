@@ -11,7 +11,7 @@ A modern monorepo starter with Bun, Turborepo, and AI-assisted development.
 - **Auth**: [Better Auth](https://better-auth.com) - Authentication library
 - **UI**: [shadcn/ui](https://ui.shadcn.com) with Base UI primitives
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com) with oklch color theme
-- **Linting**: [Biome](https://biomejs.dev) - Fast linter and formatter
+- **Linting**: [oxlint](https://oxc.rs) - Fast linter from oxc
 - **Testing**: [Vitest](https://vitest.dev) - Fast unit testing framework
 - **Docs**: [Astro Starlight](https://starlight.astro.build) - Documentation site
 
@@ -26,7 +26,7 @@ packages/
 ├── backend/      # Convex backend with Better Auth
 ├── ui/           # Shared UI components (shadcn/ui)
 ├── validators/   # Shared validation utilities
-├── biome-config/ # Shared Biome configurations
+├── oxlint-config/ # Shared oxlint configurations
 ├── typescript-config/ # Shared TypeScript configurations
 └── vitest-config/     # Shared Vitest configurations
 ```
@@ -87,9 +87,6 @@ turbo build --filter=web
 ```bash
 # Lint all packages
 bun lint
-
-# Format code
-bun format
 
 # Type checking
 bun check-types

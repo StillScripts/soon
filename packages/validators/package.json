@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "lint": "biome check --write .",
+    "lint": "oxlint .",
     "check-types": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch",
@@ -20,7 +20,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@repo/biome-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "typescript": "^5.9.2",

@@ -7,7 +7,7 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check --write",
+    "lint": "oxlint .",
     "check-types": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch"
@@ -30,7 +30,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@repo/biome-config": "*",
+    "@repo/oxlint-config": "*",
     "@repo/typescript-config": "*",
     "@repo/vitest-config": "*",
     "@tailwindcss/postcss": "^4.1.0",

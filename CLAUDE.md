@@ -14,7 +14,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 
 **Packages:**
 - `@repo/ui`: shadcn/ui component library (Base UI primitives, Tailwind CSS v4)
-- `@repo/biome-config`: Shared Biome configurations for linting and formatting
+- `@repo/oxlint-config`: Shared oxlint configurations for linting
 - `@repo/typescript-config`: Shared TypeScript configurations
 
 ## Strict Bun Usage Policy
@@ -155,9 +155,6 @@ turbo lint --filter=web
 # Type checking
 bun check-types
 turbo check-types --filter=web
-
-# Format code
-bun format
 ```
 
 ### UI Package Development
@@ -195,17 +192,17 @@ bunx shadcn@latest add <component>
 # Then update imports from @/lib/utils to ../../lib/utils
 ```
 
-**@repo/biome-config exports:**
-- `./base`: Base Biome configuration (linting + formatting)
-- `./next-js`: Next.js-specific configuration (extends base)
-- `./react-internal`: React library configuration (extends base)
+**@repo/oxlint-config exports:**
+- `./base`: Base oxlint configuration
+- `./react`: React-specific configuration (extends base)
+- `./next`: Next.js-specific configuration (extends react)
 
 ### Next.js App (web)
 
 - Uses App Router (not Pages Router)
 - Port: 3000
 - Type generation via `next typegen` before type checking
-- Linting via Biome (`biome check --write`)
+- Linting via oxlint (`oxlint .`)
 
 ### Astro Docs App
 
@@ -220,7 +217,7 @@ bunx shadcn@latest add <component>
 All packages use:
 - TypeScript 5.9.2
 - React 19.2.0
-- Biome 1.9.4 (linting + formatting)
+- oxlint (fast linting)
 - Tailwind CSS 4.1.0 (with oklch color theme)
 - Node.js >= 18 required
 

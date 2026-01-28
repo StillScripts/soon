@@ -73,7 +73,9 @@
       "WebFetch(domain:better-convex.com)",
       "Bash(bun convex codegen:*)",
       "Bash(turbo check-types:*)",
-      "Bash(turbo test:*)"
+      "Bash(turbo test:*)",
+      "WebFetch(domain:oxc.rs)",
+      "Bash(bun lint:*)"
     ]
   }
 }
