@@ -10,6 +10,7 @@ Create documentation for new Claude Code skills added to the repository.
 ## When to Use This Skill
 
 Use this skill whenever:
+
 - A new skill is added to `.claude/skills/`
 - An existing skill is significantly updated
 - Skill documentation needs to be synchronized across files
@@ -28,6 +29,7 @@ When documenting a new skill, update these files:
 ### Step 1: Read the New Skill
 
 Read the skill's `SKILL.md` to understand:
+
 - What the skill does
 - When to use it
 - Key features and patterns
@@ -42,15 +44,16 @@ Add the skill to the structure tree:
 
 ```markdown
 └── skills/
-    ├── ...existing skills...
-    ├── <skill-name>/
-    ...
+├── ...existing skills...
+├── <skill-name>/
+...
 ```
 
 Add a description under **Available Skills**:
 
 ```markdown
 ### <skill-name>
+
 Brief description of what the skill does and when to use it.
 ```
 
@@ -60,6 +63,7 @@ Add the skill to the **Available Skills** list:
 
 ```markdown
 **Available Skills:**
+
 - ...existing skills...
 - `/<skill-name>` - Brief description
 ```
@@ -69,11 +73,13 @@ Add the skill to the **Available Skills** list:
 For major skills that add significant functionality, create a guide:
 
 1. Determine next guide number:
+
    ```bash
    ls apps/docs/src/content/docs/guides/
    ```
 
 2. Create guide following this structure:
+
    ```markdown
    ---
    title: <Skill Name> Skill
@@ -100,7 +106,9 @@ For major skills that add significant functionality, create a guide:
 
    Invoke the skill with:
    ```
+
    /<skill-name>
+
    ```
 
    [Include usage examples]
@@ -116,6 +124,7 @@ For major skills that add significant functionality, create a guide:
 ### Step 5: Verify Updates
 
 Ensure all files are consistent:
+
 - Skill name matches across all files
 - Descriptions are accurate and concise
 - Structure tree is correct
@@ -132,6 +141,7 @@ Ensure all files are consistent:
    - Add description under Available Skills
 
 2. **`CLAUDE.md`:**
+
    ```markdown
    - `/turborepo` - Turborepo monorepo build system guidance
    ```
@@ -150,11 +160,13 @@ When writing skill descriptions:
 - **Use active voice** - "Guides Turborepo configuration" not "Is used for..."
 
 **Good examples:**
+
 - `Turborepo monorepo build system guidance for tasks, caching, and CI optimization`
 - `Comprehensive Convex development guidelines and best practices`
 - `Document development updates in the guides folder`
 
 **Avoid:**
+
 - Vague descriptions like "Helps with code"
 - Too much detail in short descriptions
 - Passive voice
@@ -162,6 +174,7 @@ When writing skill descriptions:
 ## Output
 
 After documenting a skill:
+
 1. Confirm all files were updated
 2. List the specific changes made
 3. Note if a guide was created and its number

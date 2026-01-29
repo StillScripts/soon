@@ -10,11 +10,13 @@ Initialized a new TurboRepo monorepo called "ember" using Bun as the package man
 ## Why These Choices
 
 **TurboRepo**: Provides efficient monorepo management with:
+
 - Smart caching of build outputs
 - Parallel task execution
 - Clear dependency graphs between packages
 
 **Bun**: Critical choice for this project because:
+
 - Significantly faster than npm/yarn/pnpm
 - Native TypeScript support
 - Drop-in replacement for Node.js
@@ -29,6 +31,7 @@ bunx create-turbo@latest
 ```
 
 **Selections made:**
+
 - Where would you like to create your Turborepo? `./ember`
 - Which package manager do you want to use? `bun`
 
@@ -64,11 +67,13 @@ ember/
 ## Key Configuration Files
 
 ### package.json (root)
+
 - Uses Bun workspaces: `apps/*` and `packages/*`
 - Main scripts: `build`, `dev`, `lint`, `format`, `check-types`
 - All use `turbo run` for orchestration
 
 ### turbo.json
+
 - Defines task pipelines with dependency graphs
 - Build outputs cached in `.next/` (excluding cache directory)
 - Dev tasks run persistently without caching
@@ -76,6 +81,7 @@ ember/
 ## Context for AI
 
 When working in this codebase:
+
 - Always use `bun` commands, never `npm` or `yarn`
 - Use `turbo --filter=<package>` to target specific packages
 - The monorepo pattern means changes in `packages/*` affect `apps/*`
@@ -84,6 +90,7 @@ When working in this codebase:
 ## Next Steps
 
 After initialization, we:
+
 1. Navigated to the project: `cd ember`
 2. Verified the structure: `ls`
 3. Prepared to replace the docs app with Astro (see [next guide](./02-astro-docs))

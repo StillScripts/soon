@@ -25,6 +25,7 @@ This is Claude Code's official audit tool for generating recommended `settings.j
 ## Critical Constraints
 
 The tool explicitly prohibits:
+
 - Absolute file paths (no `/home/user/scripts/foo`)
 - Custom project scripts with potential side effects
 - Alternative package managers (if pnpm detected, exclude npm/yarn)

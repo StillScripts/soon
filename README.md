@@ -12,6 +12,7 @@ A modern monorepo starter with Bun, Turborepo, and AI-assisted development.
 - **UI**: [shadcn/ui](https://ui.shadcn.com) with Base UI primitives
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com) with oklch color theme
 - **Linting**: [oxlint](https://oxc.rs) - Fast linter from oxc
+- **Formatting**: [Prettier](https://prettier.io) - Code formatter (tabs, no semicolons)
 - **Testing**: [Vitest](https://vitest.dev) - Fast unit testing framework
 - **Docs**: [Astro Starlight](https://starlight.astro.build) - Documentation site
 
@@ -88,6 +89,9 @@ turbo build --filter=web
 # Lint all packages
 bun lint
 
+# Format code
+bun format
+
 # Type checking
 bun check-types
 
@@ -100,6 +104,7 @@ bun test
 This repository includes professional Claude Code skills and agents. See [.claude/README.md](.claude/README.md) for details.
 
 **Available Skills:**
+
 - `/commit` - Create well-formatted commits
 - `/create-pr` - Create professional pull requests
 - `/code-review` - Perform thorough code reviews

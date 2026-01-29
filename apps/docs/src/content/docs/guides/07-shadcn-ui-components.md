@@ -10,6 +10,7 @@ Replaced the placeholder UI components in `@repo/ui` with a full shadcn/ui compo
 ## Why This Approach
 
 **Key reasons:**
+
 - **Base UI primitives**: shadcn's new `@base-ui/react` provides unstyled, accessible components that are more lightweight than Radix UI
 - **oklch color space**: Modern color system with better perceptual uniformity for consistent light/dark themes
 - **Tailwind CSS v4**: Latest version with native CSS variables and improved performance
@@ -17,6 +18,7 @@ Replaced the placeholder UI components in `@repo/ui` with a full shadcn/ui compo
 - **Full customization**: shadcn components are copied into your codebase, not imported from node_modules
 
 **Alternatives considered:**
+
 - **Radix UI + old shadcn**: More mature but heavier; Base UI is the future direction
 - **Headless UI**: Less comprehensive component set
 - **Build from scratch**: Too time-consuming; shadcn provides battle-tested patterns
@@ -71,12 +73,12 @@ The `@repo/ui` package exports are configured in `package.json`:
 
 ```json
 {
-  "exports": {
-    "./components/ui/*": "./src/components/ui/*.tsx",
-    "./components/ui": "./src/components/ui/index.ts",
-    "./lib/utils": "./src/lib/utils.ts",
-    "./styles/globals.css": "./src/styles/globals.css"
-  }
+	"exports": {
+		"./components/ui/*": "./src/components/ui/*.tsx",
+		"./components/ui": "./src/components/ui/index.ts",
+		"./lib/utils": "./src/lib/utils.ts",
+		"./styles/globals.css": "./src/styles/globals.css"
+	}
 }
 ```
 
@@ -86,23 +88,23 @@ The `components.json` file configures shadcn for the monorepo:
 
 ```json
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-vega",
-  "rsc": true,
-  "tsx": true,
-  "tailwind": {
-    "config": "",
-    "css": "src/styles/globals.css",
-    "baseColor": "neutral",
-    "cssVariables": true,
-    "prefix": ""
-  },
-  "iconLibrary": "lucide",
-  "aliases": {
-    "components": "@repo/ui/components",
-    "utils": "@repo/ui/lib/utils",
-    "ui": "@repo/ui/components/ui"
-  }
+	"$schema": "https://ui.shadcn.com/schema.json",
+	"style": "base-vega",
+	"rsc": true,
+	"tsx": true,
+	"tailwind": {
+		"config": "",
+		"css": "src/styles/globals.css",
+		"baseColor": "neutral",
+		"cssVariables": true,
+		"prefix": ""
+	},
+	"iconLibrary": "lucide",
+	"aliases": {
+		"components": "@repo/ui/components",
+		"utils": "@repo/ui/lib/utils",
+		"ui": "@repo/ui/components/ui"
+	}
 }
 ```
 
@@ -117,24 +119,24 @@ The theme uses oklch color space for better color consistency. Key variables in 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  /* ... mapped from CSS variables to Tailwind */
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-primary: var(--primary);
+	/* ... mapped from CSS variables to Tailwind */
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --primary: oklch(0.67 0.16 58);
-  /* ... full light theme */
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.145 0 0);
+	--primary: oklch(0.67 0.16 58);
+	/* ... full light theme */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --primary: oklch(0.77 0.16 70);
-  /* ... full dark theme */
+	--background: oklch(0.145 0 0);
+	--foreground: oklch(0.985 0 0);
+	--primary: oklch(0.77 0.16 70);
+	/* ... full dark theme */
 }
 ```
 
@@ -151,8 +153,8 @@ And configures Next.js to transpile the package in `next.config.js`:
 
 ```javascript
 const nextConfig = {
-  transpilePackages: ["@repo/ui"],
-};
+	transpilePackages: ["@repo/ui"],
+}
 ```
 
 ## Key Dependencies
@@ -179,11 +181,11 @@ Components can be imported individually or from the barrel export:
 
 ```tsx
 // Individual imports (tree-shakeable)
-import { Button } from "@repo/ui/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
+import { Button } from "@repo/ui/components/ui/button"
+import { Card, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 
 // Barrel import
-import { Button, Card, Input } from "@repo/ui/components/ui";
+import { Button, Card, Input } from "@repo/ui/components/ui"
 ```
 
 ### Using the cn() Utility
@@ -191,32 +193,32 @@ import { Button, Card, Input } from "@repo/ui/components/ui";
 The `cn()` function merges Tailwind classes safely:
 
 ```tsx
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "@repo/ui/lib/utils"
 
-<div className={cn("base-class", conditional && "conditional-class", className)} />
+;<div className={cn("base-class", conditional && "conditional-class", className)} />
 ```
 
 ### Example Usage
 
 ```tsx
-import { Button } from "@repo/ui/components/ui/button";
-import { Input } from "@repo/ui/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
+import { Button } from "@repo/ui/components/ui/button"
+import { Input } from "@repo/ui/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 
 export function MyForm() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create Item</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form className="flex gap-2">
-          <Input placeholder="Enter title..." className="flex-1" />
-          <Button type="submit">Create</Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Create Item</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<form className="flex gap-2">
+					<Input placeholder="Enter title..." className="flex-1" />
+					<Button type="submit">Create</Button>
+				</form>
+			</CardContent>
+		</Card>
+	)
 }
 ```
 
@@ -233,30 +235,32 @@ When working with the UI components:
 
 ### Available Components
 
-| Component | Description |
-|-----------|-------------|
-| `AlertDialog` | Modal dialog for important actions |
-| `Badge` | Status indicators and labels |
-| `Button` | Primary interactive element (6 variants) |
-| `Card` | Container with header/content/footer |
-| `Combobox` | Searchable select with autocomplete |
-| `DropdownMenu` | Context menus and action menus |
-| `Field` | Form field wrapper with label/error |
-| `Input` | Text input field |
-| `InputGroup` | Input with addons (icons, buttons) |
-| `Label` | Form label component |
-| `Select` | Dropdown select component |
-| `Separator` | Visual divider |
-| `Textarea` | Multi-line text input |
+| Component      | Description                              |
+| -------------- | ---------------------------------------- |
+| `AlertDialog`  | Modal dialog for important actions       |
+| `Badge`        | Status indicators and labels             |
+| `Button`       | Primary interactive element (6 variants) |
+| `Card`         | Container with header/content/footer     |
+| `Combobox`     | Searchable select with autocomplete      |
+| `DropdownMenu` | Context menus and action menus           |
+| `Field`        | Form field wrapper with label/error      |
+| `Input`        | Text input field                         |
+| `InputGroup`   | Input with addons (icons, buttons)       |
+| `Label`        | Form label component                     |
+| `Select`       | Dropdown select component                |
+| `Separator`    | Visual divider                           |
+| `Textarea`     | Multi-line text input                    |
 
 ## Outcomes
 
 ### Before
+
 - 3 placeholder components (button, card, code) with no styling
 - No design system or theme
 - Inline styles in page components
 
 ### After
+
 - 13 fully-styled, accessible components
 - Complete oklch-based theme with light/dark mode
 - Consistent design language across the app
@@ -273,6 +277,7 @@ turbo dev --filter=web
 ```
 
 Expected results:
+
 - Page renders at http://localhost:3000 with styled components
 - Cards have subtle shadows and rounded corners
 - Button has primary color styling

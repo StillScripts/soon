@@ -21,11 +21,13 @@ description: [Brief description of what was accomplished]
 [Explain the reasoning behind decisions made]
 
 **Key reasons:**
+
 - [Reason 1]
 - [Reason 2]
 - [Reason 3]
 
 **Alternatives considered:**
+
 - [Alternative 1]: [Why not chosen]
 - [Alternative 2]: [Why not chosen]
 
@@ -40,15 +42,18 @@ another-command
 ```
 
 **Selections/Options:**
+
 - [Option 1]: [Choice made]
 - [Option 2]: [Choice made]
 
 ## Implementation Details
 
 ### File Changes
+
 [Describe files that were created, modified, or deleted]
 
 ### Configuration
+
 [Show important configuration snippets]
 
 ```javascript
@@ -56,6 +61,7 @@ another-command
 ```
 
 ### Project Structure
+
 ```
 [Show relevant directory structure if applicable]
 ```
@@ -75,6 +81,7 @@ another-command
 [Important details that AI assistants should know when working with this code]
 
 When working with [feature]:
+
 - [Key point 1]
 - [Key point 2]
 - [Key point 3]
@@ -84,9 +91,11 @@ When working with [feature]:
 [What changed as a result of this work]
 
 ### Before
+
 [State before the change]
 
 ### After
+
 [State after the change]
 
 ## Testing/Verification
@@ -98,6 +107,7 @@ When working with [feature]:
 ```
 
 Expected results:
+
 - [Expected outcome 1]
 - [Expected outcome 2]
 

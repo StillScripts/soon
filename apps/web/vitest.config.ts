@@ -7,14 +7,14 @@ import { defineConfig } from "vitest/config"
  * Uses jsdom environment for React component testing with Next.js.
  */
 export default defineConfig({
-  plugins: [react()],
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    environment: "jsdom",
-    passWithNoTests: true,
-    alias: {
-      "@/": new URL("./src/", import.meta.url).pathname,
-    },
-  },
+	plugins: [react()],
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		environment: "jsdom",
+		passWithNoTests: true,
+		alias: {
+			"@/": new URL("./src/", import.meta.url).pathname,
+		},
+	},
 })

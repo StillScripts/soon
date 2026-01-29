@@ -46,25 +46,25 @@ import { Button } from "@repo/ui/components/ui/button"
 
 ```tsx
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@repo/ui/components/ui/card"
 
-<Card>
-  <CardHeader>
-    <CardTitle>Card Title</CardTitle>
-    <CardDescription>Card description text</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p>Card content goes here</p>
-  </CardContent>
-  <CardFooter>
-    <Button>Action</Button>
-  </CardFooter>
+;<Card>
+	<CardHeader>
+		<CardTitle>Card Title</CardTitle>
+		<CardDescription>Card description text</CardDescription>
+	</CardHeader>
+	<CardContent>
+		<p>Card content goes here</p>
+	</CardContent>
+	<CardFooter>
+		<Button>Action</Button>
+	</CardFooter>
 </Card>
 ```
 
@@ -103,25 +103,25 @@ Complete form field system with labels, descriptions, and errors:
 
 ```tsx
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-  FieldTitle,
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+	FieldTitle,
 } from "@repo/ui/components/ui/field"
 
-<FieldGroup>
-  <Field>
-    <FieldLabel htmlFor="name">Name</FieldLabel>
-    <Input id="name" />
-    <FieldDescription>Enter your full name</FieldDescription>
-    <FieldError errors={[{ message: "Required" }]} />
-  </Field>
+;<FieldGroup>
+	<Field>
+		<FieldLabel htmlFor="name">Name</FieldLabel>
+		<Input id="name" />
+		<FieldDescription>Enter your full name</FieldDescription>
+		<FieldError errors={[{ message: "Required" }]} />
+	</Field>
 </FieldGroup>
 ```
 
@@ -130,9 +130,9 @@ import {
 ```tsx
 import { InputGroup, InputGroupText } from "@repo/ui/components/ui/input-group"
 
-<InputGroup>
-  <InputGroupText>$</InputGroupText>
-  <Input type="number" placeholder="0.00" />
+;<InputGroup>
+	<InputGroupText>$</InputGroupText>
+	<Input type="number" placeholder="0.00" />
 </InputGroup>
 ```
 
@@ -140,32 +140,32 @@ import { InputGroup, InputGroupText } from "@repo/ui/components/ui/input-group"
 
 ```tsx
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectSeparator,
+	SelectTrigger,
+	SelectValue,
 } from "@repo/ui/components/ui/select"
 
-<Select>
-  <SelectTrigger>
-    <SelectValue placeholder="Select option" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectGroup>
-      <SelectLabel>Fruits</SelectLabel>
-      <SelectItem value="apple">Apple</SelectItem>
-      <SelectItem value="banana">Banana</SelectItem>
-    </SelectGroup>
-    <SelectSeparator />
-    <SelectGroup>
-      <SelectLabel>Vegetables</SelectLabel>
-      <SelectItem value="carrot">Carrot</SelectItem>
-    </SelectGroup>
-  </SelectContent>
+;<Select>
+	<SelectTrigger>
+		<SelectValue placeholder="Select option" />
+	</SelectTrigger>
+	<SelectContent>
+		<SelectGroup>
+			<SelectLabel>Fruits</SelectLabel>
+			<SelectItem value="apple">Apple</SelectItem>
+			<SelectItem value="banana">Banana</SelectItem>
+		</SelectGroup>
+		<SelectSeparator />
+		<SelectGroup>
+			<SelectLabel>Vegetables</SelectLabel>
+			<SelectItem value="carrot">Carrot</SelectItem>
+		</SelectGroup>
+	</SelectContent>
 </Select>
 ```
 
@@ -191,26 +191,26 @@ const options = [
 
 ```tsx
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu"
 
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button variant="outline">Open Menu</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Settings</DropdownMenuItem>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>Log out</DropdownMenuItem>
-  </DropdownMenuContent>
+;<DropdownMenu>
+	<DropdownMenuTrigger asChild>
+		<Button variant="outline">Open Menu</Button>
+	</DropdownMenuTrigger>
+	<DropdownMenuContent>
+		<DropdownMenuLabel>My Account</DropdownMenuLabel>
+		<DropdownMenuSeparator />
+		<DropdownMenuItem>Profile</DropdownMenuItem>
+		<DropdownMenuItem>Settings</DropdownMenuItem>
+		<DropdownMenuSeparator />
+		<DropdownMenuItem>Log out</DropdownMenuItem>
+	</DropdownMenuContent>
 </DropdownMenu>
 ```
 
@@ -218,33 +218,31 @@ import {
 
 ```tsx
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
 } from "@repo/ui/components/ui/alert-dialog"
 
-<AlertDialog>
-  <AlertDialogTrigger asChild>
-    <Button variant="destructive">Delete</Button>
-  </AlertDialogTrigger>
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-      <AlertDialogDescription>
-        This action cannot be undone.
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-    <AlertDialogFooter>
-      <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction>Continue</AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
+;<AlertDialog>
+	<AlertDialogTrigger asChild>
+		<Button variant="destructive">Delete</Button>
+	</AlertDialogTrigger>
+	<AlertDialogContent>
+		<AlertDialogHeader>
+			<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+			<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+		</AlertDialogHeader>
+		<AlertDialogFooter>
+			<AlertDialogCancel>Cancel</AlertDialogCancel>
+			<AlertDialogAction>Continue</AlertDialogAction>
+		</AlertDialogFooter>
+	</AlertDialogContent>
 </AlertDialog>
 ```
 
@@ -310,10 +308,10 @@ Theme colors are defined as CSS variables in `globals.css`:
 
 ```css
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  /* ... */
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.145 0 0);
+	--primary: oklch(0.205 0 0);
+	--primary-foreground: oklch(0.985 0 0);
+	/* ... */
 }
 ```

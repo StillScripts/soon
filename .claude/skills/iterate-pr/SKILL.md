@@ -36,16 +36,19 @@ The `bucket` field categorizes state into: `pass`, `fail`, `pending`, `skipping`
 Once CI checks have completed (or at least the bot-related checks), gather human and bot feedback:
 
 **Review Comments and Status:**
+
 ```bash
 gh pr view --json reviews,comments,reviewDecision
 ```
 
 **Inline Code Review Comments:**
+
 ```bash
 gh api repos/{owner}/{repo}/pulls/{pr_number}/comments
 ```
 
 **PR Conversation Comments (includes bot comments):**
+
 ```bash
 gh api repos/{owner}/{repo}/issues/{pr_number}/comments
 ```
@@ -106,6 +109,7 @@ gh pr checks --json name,state,bucket | jq '.[] | select(.bucket != "pass")'
 ### Step 9: Repeat
 
 Return to Step 2 if:
+
 - Any CI checks failed
 - New review feedback appeared
 
@@ -114,15 +118,18 @@ Continue until all checks pass and no unaddressed feedback remains.
 ## Exit Conditions
 
 **Success:**
+
 - All CI checks are green (`bucket: pass`)
 - No unaddressed human review feedback
 
 **Ask for Help:**
+
 - Same failure persists after 3 attempts (likely a flaky test or deeper issue)
 - Review feedback requires clarification or decision from the user
 - CI failure is unrelated to branch changes (infrastructure issue)
 
 **Stop Immediately:**
+
 - No PR exists for the current branch
 - Branch is out of sync and needs rebase (inform user)
 

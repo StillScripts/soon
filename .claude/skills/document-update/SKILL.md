@@ -10,6 +10,7 @@ Create chronological documentation for significant project changes in the develo
 ## When to Use This Skill
 
 Use this skill whenever:
+
 - New packages or dependencies are added
 - Major features are implemented
 - Architectural decisions are made
@@ -40,6 +41,7 @@ cat apps/docs/src/content/docs/guides/_template.md
 ### Step 3: Gather Context
 
 Before writing, gather all relevant information:
+
 - Read relevant `package.json` files to understand what was added
 - Check recent git commits: `git log --oneline -10`
 - Review configuration files if applicable
@@ -50,6 +52,7 @@ Before writing, gather all relevant information:
 Create a new guide file following this structure:
 
 **Frontmatter:**
+
 ```markdown
 ---
 title: Descriptive Title
@@ -58,6 +61,7 @@ description: Brief description of what this update covers.
 ```
 
 **Required Sections:**
+
 1. **What We Did** - Clear, concise summary of the changes
 2. **Why [Technology/Change]** - Explain the reasoning and benefits
 3. **What Was Added/Created** - Detailed breakdown of files, packages, configurations
@@ -66,6 +70,7 @@ description: Brief description of what this update covers.
 6. **References** - Links to documentation, related guides, or external resources
 
 **Best Practices:**
+
 - Explain the "why" extensively - code shows "what", docs explain "why"
 - Include actual code snippets where helpful
 - Link to official documentation
@@ -100,6 +105,7 @@ Maintain chronological order.
 **Scenario:** Added Convex for backend
 
 **Guide structure:**
+
 ```markdown
 ---
 title: Convex Backend
@@ -117,6 +123,7 @@ Added Convex to `packages/backend` as the application's backend-as-a-service sol
 ## What Was Added
 
 **Package:** `packages/backend`
+
 - Added `convex` dependency (^1.31.6)
 - Created backend package structure
 
@@ -139,11 +146,13 @@ Added Convex to `packages/backend` as the application's backend-as-a-service sol
 ## File Naming Convention
 
 Use descriptive, kebab-case names:
+
 - `05-convex-backend.md` ✓
 - `06-authentication-system.md` ✓
 - `07-ui-component-library.md` ✓
 
 NOT:
+
 - `update.md` ✗
 - `new-feature.md` ✗
 - `05.md` ✗
@@ -163,6 +172,7 @@ Always refer to `apps/docs/src/content/docs/guides/_template.md` for the canonic
 ## Output
 
 After creating the guide:
+
 1. Confirm the file was created at the correct path
 2. Confirm the sidebar was updated
 3. Provide a brief summary of what was documented

@@ -65,17 +65,19 @@ Flag for senior engineer review when changes involve:
 ### TypeScript/React
 
 **Unsafe type assertions:**
+
 ```typescript
 // Bad: Unsafe casting
-const user = data as User;
+const user = data as User
 
 // Good: Runtime validation
 function isUser(data: unknown): data is User {
-  return typeof data === 'object' && data !== null && 'id' in data;
+	return typeof data === "object" && data !== null && "id" in data
 }
 ```
 
 **Missing error boundaries:**
+
 ```tsx
 // Bad: No error handling
 <ComponentThatMightThrow />
@@ -87,30 +89,33 @@ function isUser(data: unknown): data is User {
 ```
 
 **Uncontrolled side effects:**
+
 ```typescript
 // Bad: Side effect without dependency
 useEffect(() => {
-  fetchData(userId);
-}, []); // Missing userId dependency
+	fetchData(userId)
+}, []) // Missing userId dependency
 
 // Good: Proper dependencies
 useEffect(() => {
-  fetchData(userId);
-}, [userId]);
+	fetchData(userId)
+}, [userId])
 ```
 
 ### Security Issues
 
 **SQL Injection:**
+
 ```typescript
 // Bad: String interpolation
-db.query(`SELECT * FROM users WHERE id = ${userId}`);
+db.query(`SELECT * FROM users WHERE id = ${userId}`)
 
 // Good: Parameterized query
-db.query('SELECT * FROM users WHERE id = ?', [userId]);
+db.query("SELECT * FROM users WHERE id = ?", [userId])
 ```
 
 **XSS Vulnerabilities:**
+
 ```typescript
 // Bad: Dangerous HTML rendering
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
@@ -120,12 +125,13 @@ db.query('SELECT * FROM users WHERE id = ?', [userId]);
 ```
 
 **Exposed Secrets:**
+
 ```typescript
 // Bad: Hardcoded credentials
-const apiKey = 'sk_live_abc123';
+const apiKey = "sk_live_abc123"
 
 // Good: Environment variables
-const apiKey = process.env.API_KEY;
+const apiKey = process.env.API_KEY
 ```
 
 ## References

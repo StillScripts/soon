@@ -6,9 +6,9 @@ import type { Api } from "@convex/types"
 import { createCRPCContext } from "better-convex/react"
 
 const crpcContext = createCRPCContext<Api>({
-  api,
-  meta,
-  convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
+	api,
+	meta,
+	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
 })
 
 export const CRPCProvider = crpcContext.CRPCProvider

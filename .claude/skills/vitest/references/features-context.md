@@ -10,10 +10,10 @@ description: Test context, custom fixtures with test.extend
 Every test receives context as first argument:
 
 ```ts
-test('context', ({ task, expect, skip }) => {
-  console.log(task.name)  // Test name
-  expect(1).toBe(1)       // Context-bound expect
-  skip()                  // Skip test dynamically
+test("context", ({ task, expect, skip }) => {
+	console.log(task.name) // Test name
+	expect(1).toBe(1) // Context-bound expect
+	skip() // Skip test dynamically
 })
 ```
 
@@ -30,38 +30,38 @@ test('context', ({ task, expect, skip }) => {
 Create reusable test utilities:
 
 ```ts
-import { test as base } from 'vitest'
+import { test as base } from "vitest"
 
 // Define fixture types
 interface Fixtures {
-  db: Database
-  user: User
+	db: Database
+	user: User
 }
 
 // Create extended test
 export const test = base.extend<Fixtures>({
-  // Fixture with setup/teardown
-  db: async ({}, use) => {
-    const db = await createDatabase()
-    await use(db)           // Provide to test
-    await db.close()        // Cleanup
-  },
-  
-  // Fixture depending on another fixture
-  user: async ({ db }, use) => {
-    const user = await db.createUser({ name: 'Test' })
-    await use(user)
-    await db.deleteUser(user.id)
-  },
+	// Fixture with setup/teardown
+	db: async ({}, use) => {
+		const db = await createDatabase()
+		await use(db) // Provide to test
+		await db.close() // Cleanup
+	},
+
+	// Fixture depending on another fixture
+	user: async ({ db }, use) => {
+		const user = await db.createUser({ name: "Test" })
+		await use(user)
+		await db.deleteUser(user.id)
+	},
 })
 ```
 
 Using fixtures:
 
 ```ts
-test('query user', async ({ db, user }) => {
-  const found = await db.findUser(user.id)
-  expect(found).toEqual(user)
+test("query user", async ({ db, user }) => {
+	const found = await db.findUser(user.id)
+	expect(found).toEqual(user)
 })
 ```
 
@@ -71,14 +71,14 @@ Fixtures only initialize when accessed:
 
 ```ts
 const test = base.extend({
-  expensive: async ({}, use) => {
-    console.log('initializing')  // Only runs if test uses it
-    await use('value')
-  },
+	expensive: async ({}, use) => {
+		console.log("initializing") // Only runs if test uses it
+		await use("value")
+	},
 })
 
-test('no fixture', () => {})           // expensive not called
-test('uses fixture', ({ expensive }) => {}) // expensive called
+test("no fixture", () => {}) // expensive not called
+test("uses fixture", ({ expensive }) => {}) // expensive called
 ```
 
 ## Auto Fixtures
@@ -87,14 +87,14 @@ Run fixture for every test:
 
 ```ts
 const test = base.extend({
-  setup: [
-    async ({}, use) => {
-      await globalSetup()
-      await use()
-      await globalTeardown()
-    },
-    { auto: true }  // Always run
-  ],
+	setup: [
+		async ({}, use) => {
+			await globalSetup()
+			await use()
+			await globalTeardown()
+		},
+		{ auto: true }, // Always run
+	],
 })
 ```
 
@@ -106,14 +106,14 @@ Initialize once per file:
 
 ```ts
 const test = base.extend({
-  connection: [
-    async ({}, use) => {
-      const conn = await connect()
-      await use(conn)
-      await conn.close()
-    },
-    { scope: 'file' }
-  ],
+	connection: [
+		async ({}, use) => {
+			const conn = await connect()
+			await use(conn)
+			await conn.close()
+		},
+		{ scope: "file" },
+	],
 })
 ```
 
@@ -123,12 +123,12 @@ Initialize once per worker:
 
 ```ts
 const test = base.extend({
-  sharedResource: [
-    async ({}, use) => {
-      await use(globalResource)
-    },
-    { scope: 'worker' }
-  ],
+	sharedResource: [
+		async ({}, use) => {
+			await use(globalResource)
+		},
+		{ scope: "worker" },
+	],
 })
 ```
 
@@ -139,21 +139,21 @@ Override fixtures per project:
 ```ts
 // test file
 const test = base.extend({
-  apiUrl: ['/default', { injected: true }],
+	apiUrl: ["/default", { injected: true }],
 })
 
 // vitest.config.ts
 defineConfig({
-  test: {
-    projects: [
-      {
-        test: {
-          name: 'prod',
-          provide: { apiUrl: 'https://api.prod.com' },
-        },
-      },
-    ],
-  },
+	test: {
+		projects: [
+			{
+				test: {
+					name: "prod",
+					provide: { apiUrl: "https://api.prod.com" },
+				},
+			},
+		],
+	},
 })
 ```
 
@@ -163,19 +163,19 @@ Override fixture for specific suite:
 
 ```ts
 const test = base.extend({
-  environment: 'development',
+	environment: "development",
 })
 
-describe('production tests', () => {
-  test.scoped({ environment: 'production' })
-  
-  test('uses production', ({ environment }) => {
-    expect(environment).toBe('production')
-  })
+describe("production tests", () => {
+	test.scoped({ environment: "production" })
+
+	test("uses production", ({ environment }) => {
+		expect(environment).toBe("production")
+	})
 })
 
-test('uses default', ({ environment }) => {
-  expect(environment).toBe('development')
+test("uses default", ({ environment }) => {
+	expect(environment).toBe("development")
 })
 ```
 
@@ -185,20 +185,20 @@ Type-aware hooks with fixtures:
 
 ```ts
 const test = base.extend<{ db: Database }>({
-  db: async ({}, use) => {
-    const db = await createDb()
-    await use(db)
-    await db.close()
-  },
+	db: async ({}, use) => {
+		const db = await createDb()
+		await use(db)
+		await db.close()
+	},
 })
 
 // Hooks know about fixtures
 test.beforeEach(({ db }) => {
-  db.seed()
+	db.seed()
 })
 
 test.afterEach(({ db }) => {
-  db.clear()
+	db.clear()
 })
 ```
 
@@ -209,17 +209,19 @@ Extend from another extended test:
 ```ts
 // base-test.ts
 export const test = base.extend<{ db: Database }>({
-  db: async ({}, use) => { /* ... */ },
+	db: async ({}, use) => {
+		/* ... */
+	},
 })
 
 // admin-test.ts
-import { test as dbTest } from './base-test'
+import { test as dbTest } from "./base-test"
 
 export const test = dbTest.extend<{ admin: User }>({
-  admin: async ({ db }, use) => {
-    const admin = await db.createAdmin()
-    await use(admin)
-  },
+	admin: async ({ db }, use) => {
+		const admin = await db.createAdmin()
+		await use(admin)
+	},
 })
 ```
 
@@ -232,7 +234,7 @@ export const test = dbTest.extend<{ admin: User }>({
 - Use `{ scope: 'file' }` for expensive shared resources
 - Fixtures compose - extend from extended tests
 
-<!-- 
+<!--
 Source references:
 - https://vitest.dev/guide/test-context.html
 -->

@@ -5,12 +5,12 @@ import type { UserConfig } from "vitest/config"
  * This provides consistent test settings across the codebase.
  */
 export const sharedConfig: UserConfig = {
-  test: {
-    globals: true,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      reportsDirectory: "./coverage",
-    },
-  },
+	test: {
+		globals: true,
+		coverage: {
+			provider: "v8",
+			reporter: ["text", "json", "html"],
+			reportsDirectory: "./coverage",
+		},
+	},
 }

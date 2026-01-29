@@ -10,12 +10,14 @@ Added Better Auth to the Convex backend for user authentication. This provides a
 ## Why Better Auth
 
 **Key reasons:**
+
 - **Convex-native integration**: `@convex-dev/better-auth` provides seamless adapter for Convex's database
 - **TypeScript-first**: Full type safety from auth config to user sessions
 - **Minimal setup**: Works with Convex's serverless model without external auth services
 - **Extensible**: Supports OAuth, magic links, 2FA via plugins
 
 **Alternatives considered:**
+
 - **Clerk**: Excellent UX but adds external dependency and cost
 - **Auth.js (NextAuth)**: More complex setup with Convex, designed for traditional databases
 - **Convex Auth (built-in)**: Less feature-rich than Better Auth
@@ -26,11 +28,11 @@ Added Better Auth to the Convex backend for user authentication. This provides a
 
 ```json
 {
-  "dependencies": {
-    "@convex-dev/better-auth": "^0.10.10",
-    "better-auth": "1.4.9",
-    "convex": "^1.31.6"
-  }
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.10.10",
+		"better-auth": "1.4.9",
+		"convex": "^1.31.6"
+	}
 }
 ```
 
@@ -53,73 +55,71 @@ packages/backend/convex/
 ### Component Registration (`convex.config.ts`)
 
 ```typescript
-import { defineApp } from "convex/server";
-import betterAuth from "@convex-dev/better-auth/convex.config";
+import { defineApp } from "convex/server"
+import betterAuth from "@convex-dev/better-auth/convex.config"
 
-const app = defineApp();
-app.use(betterAuth);
+const app = defineApp()
+app.use(betterAuth)
 
-export default app;
+export default app
 ```
 
 ### Auth Configuration (`auth.config.ts`)
 
 ```typescript
-import { getAuthConfigProvider } from "@convex-dev/better-auth/auth-config";
-import type { AuthConfig } from "convex/server";
+import { getAuthConfigProvider } from "@convex-dev/better-auth/auth-config"
+import type { AuthConfig } from "convex/server"
 
 export default {
-  providers: [getAuthConfigProvider()],
-} satisfies AuthConfig;
+	providers: [getAuthConfigProvider()],
+} satisfies AuthConfig
 ```
 
 ### Auth Instance (`auth.ts`)
 
 ```typescript
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
-import { components } from "./_generated/api";
-import type { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
-import { betterAuth } from "better-auth/minimal";
-import authConfig from "./auth.config";
+import { createClient, type GenericCtx } from "@convex-dev/better-auth"
+import { convex } from "@convex-dev/better-auth/plugins"
+import { components } from "./_generated/api"
+import type { DataModel } from "./_generated/dataModel"
+import { query } from "./_generated/server"
+import { betterAuth } from "better-auth/minimal"
+import authConfig from "./auth.config"
 
-const siteUrl = process.env.SITE_URL!;
+const siteUrl = process.env.SITE_URL!
 
 // Component client for Convex integration
-export const authComponent = createClient<DataModel>(components.betterAuth);
+export const authComponent = createClient<DataModel>(components.betterAuth)
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
-  return betterAuth({
-    baseURL: siteUrl,
-    database: authComponent.adapter(ctx),
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: false,
-    },
-    plugins: [
-      convex({ authConfig }),
-    ],
-  });
-};
+	return betterAuth({
+		baseURL: siteUrl,
+		database: authComponent.adapter(ctx),
+		emailAndPassword: {
+			enabled: true,
+			requireEmailVerification: false,
+		},
+		plugins: [convex({ authConfig })],
+	})
+}
 
 // Helper to get current authenticated user
 export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => {
-    return authComponent.getAuthUser(ctx);
-  },
-});
+	args: {},
+	handler: async (ctx) => {
+		return authComponent.getAuthUser(ctx)
+	},
+})
 ```
 
 **Important TypeScript note**: Use `import type` for `DataModel` when `verbatimModuleSyntax` is enabled:
 
 ```typescript
 // Correct
-import type { DataModel } from "./_generated/dataModel";
+import type { DataModel } from "./_generated/dataModel"
 
 // Wrong - causes TS1484 error
-import { DataModel } from "./_generated/dataModel";
+import { DataModel } from "./_generated/dataModel"
 ```
 
 ## Environment Variables
@@ -146,19 +146,21 @@ When working with Better Auth in this codebase:
 
 ### Common Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `Type 'AdapterFactory' is not assignable...` | `better-auth` version mismatch | Pin to `1.4.9` exactly |
-| `TS1484: 'DataModel' is a type...` | Missing type-only import | Use `import type { DataModel }` |
-| `SITE_URL` undefined | Missing env var | Run `bunx convex env set SITE_URL` |
+| Error                                        | Cause                          | Fix                                |
+| -------------------------------------------- | ------------------------------ | ---------------------------------- |
+| `Type 'AdapterFactory' is not assignable...` | `better-auth` version mismatch | Pin to `1.4.9` exactly             |
+| `TS1484: 'DataModel' is a type...`           | Missing type-only import       | Use `import type { DataModel }`    |
+| `SITE_URL` undefined                         | Missing env var                | Run `bunx convex env set SITE_URL` |
 
 ## Outcomes
 
 ### Before
+
 - No authentication system
 - All Convex functions publicly accessible
 
 ### After
+
 - Better Auth integrated with Convex
 - Email/password authentication ready
 - `getCurrentUser` query available for auth checks

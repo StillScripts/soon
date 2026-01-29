@@ -56,6 +56,7 @@ The `/turborepo` skill provides this context on-demand without cluttering CLAUDE
 ### Decision Trees
 
 Quick navigation for common scenarios:
+
 - "I need to configure a task"
 - "My cache isn't working"
 - "I want to run only changed packages"
@@ -64,6 +65,7 @@ Quick navigation for common scenarios:
 ### Critical Anti-Patterns
 
 Comprehensive list of mistakes to avoid:
+
 - Using `turbo` shorthand in package.json (use `turbo run`)
 - Root scripts bypassing Turborepo
 - `prebuild` scripts manually building dependencies
@@ -73,6 +75,7 @@ Comprehensive list of mistakes to avoid:
 ### Configuration Patterns
 
 Standard patterns for common setups:
+
 - Build pipelines with `^build` dependencies
 - Transit nodes for parallel tasks with cache invalidation
 - Dev tasks with `turbo watch`
@@ -87,6 +90,7 @@ Invoke the skill when working with Turborepo configuration:
 ```
 
 **Common scenarios:**
+
 - Configuring a new task in `turbo.json`
 - Debugging cache misses
 - Setting up CI with `--affected`
@@ -104,6 +108,7 @@ When cache hits aren't happening as expected:
 ```
 
 The skill guides through:
+
 1. Checking if `outputs` is configured
 2. Verifying environment variables are in `env`
 3. Ensuring `.env` files are in `inputs`

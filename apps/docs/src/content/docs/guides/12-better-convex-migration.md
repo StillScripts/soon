@@ -9,11 +9,11 @@ This guide documents how we migrated the project from standard Convex (`convex/r
 
 ## Why We Migrated
 
-| Before | After |
-|--------|-------|
-| Manual `authComponent.getAuthUser(ctx)` in every function | Auth middleware — `ctx.user` guaranteed |
-| `convex/react` hooks (`useQuery`, `useMutation`) | TanStack Query hooks with Convex real-time sync |
-| `v.string()` validators from `convex/values` | Zod schemas with `.min()`, `.max()`, `.optional()` |
+| Before                                                          | After                                                                                     |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Manual `authComponent.getAuthUser(ctx)` in every function       | Auth middleware — `ctx.user` guaranteed                                                   |
+| `convex/react` hooks (`useQuery`, `useMutation`)                | TanStack Query hooks with Convex real-time sync                                           |
+| `v.string()` validators from `convex/values`                    | Zod schemas with `.min()`, `.max()`, `.optional()`                                        |
 | `ConvexBetterAuthProvider` from `@convex-dev/better-auth/react` | `ConvexAuthProvider` from `better-convex/auth-client` with unauthorized redirect handling |
 
 ## What Changed
@@ -35,24 +35,24 @@ This guide documents how we migrated the project from standard Convex (`convex/r
 
 ### New Files
 
-| File | Purpose |
-|------|---------|
-| `packages/backend/convex/crpc.ts` | cRPC procedure builder with auth middleware |
-| `packages/backend/convex/types.ts` | API type exports for the client-side cRPC context |
-| `packages/backend/convex/shared/meta.ts` | Auto-generated metadata (auth requirements, function types) |
-| `packages/backend/convex/shared/types.ts` | `Api`, `ApiInputs`, `ApiOutputs` type helpers |
-| `apps/web/lib/convex/crpc.tsx` | Client-side cRPC context (`useCRPC`, `CRPCProvider`) |
+| File                                      | Purpose                                                     |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| `packages/backend/convex/crpc.ts`         | cRPC procedure builder with auth middleware                 |
+| `packages/backend/convex/types.ts`        | API type exports for the client-side cRPC context           |
+| `packages/backend/convex/shared/meta.ts`  | Auto-generated metadata (auth requirements, function types) |
+| `packages/backend/convex/shared/types.ts` | `Api`, `ApiInputs`, `ApiOutputs` type helpers               |
+| `apps/web/lib/convex/crpc.tsx`            | Client-side cRPC context (`useCRPC`, `CRPCProvider`)        |
 
 ### Modified Files
 
-| File | What Changed |
-|------|-------------|
-| `packages/backend/convex/things.ts` | Rewrote all functions as cRPC procedures |
-| `apps/web/app/providers.tsx` | Replaced `ConvexBetterAuthProvider` with Better Convex providers |
-| `apps/web/app/page.tsx` | Switched to TanStack Query hooks via `useCRPC()` |
-| `apps/web/tsconfig.json` | Added `@convex/*` path alias for generated/shared types |
-| `packages/backend/package.json` | Added `./meta` and `./types` exports |
-| `biome.json` | Disabled formatter for `convex/shared/**` (auto-generated) |
+| File                                | What Changed                                                     |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `packages/backend/convex/things.ts` | Rewrote all functions as cRPC procedures                         |
+| `apps/web/app/providers.tsx`        | Replaced `ConvexBetterAuthProvider` with Better Convex providers |
+| `apps/web/app/page.tsx`             | Switched to TanStack Query hooks via `useCRPC()`                 |
+| `apps/web/tsconfig.json`            | Added `@convex/*` path alias for generated/shared types          |
+| `packages/backend/package.json`     | Added `./meta` and `./types` exports                             |
+| `biome.json`                        | Disabled formatter for `convex/shared/**` (auto-generated)       |
 
 ---
 
@@ -69,29 +69,25 @@ import { action, mutation, query } from "./_generated/server"
 import { authComponent } from "./auth"
 
 const c = initCRPC.dataModel<DataModel>().create({
-  query,
-  mutation,
-  action,
+	query,
+	mutation,
+	action,
 })
 
 // Auth middleware — throws UNAUTHORIZED if no user
-export const authQuery = c.query
-  .meta({ auth: "required" })
-  .use(async ({ ctx, next }) => {
-    const user = requireAuth(await authComponent.getAuthUser(ctx))
-    return next({
-      ctx: { ...ctx, user, userId: user._id as string },
-    })
-  })
+export const authQuery = c.query.meta({ auth: "required" }).use(async ({ ctx, next }) => {
+	const user = requireAuth(await authComponent.getAuthUser(ctx))
+	return next({
+		ctx: { ...ctx, user, userId: user._id as string },
+	})
+})
 
-export const authMutation = c.mutation
-  .meta({ auth: "required" })
-  .use(async ({ ctx, next }) => {
-    const user = requireAuth(await authComponent.getAuthUser(ctx))
-    return next({
-      ctx: { ...ctx, user, userId: user._id as string },
-    })
-  })
+export const authMutation = c.mutation.meta({ auth: "required" }).use(async ({ ctx, next }) => {
+	const user = requireAuth(await authComponent.getAuthUser(ctx))
+	return next({
+		ctx: { ...ctx, user, userId: user._id as string },
+	})
+})
 ```
 
 Key details:
@@ -106,16 +102,16 @@ Key details:
 
 ```typescript
 export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) return []
-    const userId = user._id as string
-    return await ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect()
-  },
+	args: {},
+	handler: async (ctx) => {
+		const user = await authComponent.getAuthUser(ctx)
+		if (!user) return []
+		const userId = user._id as string
+		return await ctx.db
+			.query("things")
+			.withIndex("by_user", (q) => q.eq("userId", userId))
+			.collect()
+	},
 })
 ```
 
@@ -123,30 +119,28 @@ export const getThings = query({
 
 ```typescript
 export const list = authQuery
-  .input(
-    z.object({
-      limit: z.number().min(1).max(100).optional(),
-    }),
-  )
-  .query(async ({ ctx, input }) => {
-    const query = ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+	.input(
+		z.object({
+			limit: z.number().min(1).max(100).optional(),
+		})
+	)
+	.query(async ({ ctx, input }) => {
+		const query = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", ctx.userId))
 
-    if (input.limit) {
-      return query.take(input.limit)
-    }
-    return query.collect()
-  })
+		if (input.limit) {
+			return query.take(input.limit)
+		}
+		return query.collect()
+	})
 ```
 
 All four functions were migrated:
 
-| Old Name | New Name | Notes |
-|----------|----------|-------|
-| `getThings` | `list` | Added optional `limit` input |
-| `getThing` | `get` | Takes `id` as Zod string, casts to `Id<"things">` |
-| `createThing` | `create` | Zod validation: `title` min 1, max 200 chars |
+| Old Name      | New Name | Notes                                             |
+| ------------- | -------- | ------------------------------------------------- |
+| `getThings`   | `list`   | Added optional `limit` input                      |
+| `getThing`    | `get`    | Takes `id` as Zod string, casts to `Id<"things">` |
+| `createThing` | `create` | Zod validation: `title` min 1, max 200 chars      |
 | `deleteThing` | `remove` | Named `remove` to avoid JS reserved word conflict |
 
 ### Type Exports (`convex/types.ts`)
@@ -155,12 +149,12 @@ The client-side cRPC context needs to know the full API shape including procedur
 
 ```typescript
 export type Api = typeof convexApi & {
-  things: {
-    list: typeof things.list
-    get: typeof things.get
-    create: typeof things.create
-    remove: typeof things.remove
-  }
+	things: {
+		list: typeof things.list
+		get: typeof things.get
+		create: typeof things.create
+		remove: typeof things.remove
+	}
 }
 ```
 
@@ -170,14 +164,14 @@ Better Convex generates a metadata file that the client uses to determine auth r
 
 ```typescript
 export const meta = {
-  things: {
-    create: { auth: 'required', type: 'mutation' },
-    get: { auth: 'required', type: 'query' },
-    list: { auth: 'required', type: 'query' },
-    remove: { auth: 'required', type: 'mutation' },
-  },
-  _http: {},
-} as const;
+	things: {
+		create: { auth: "required", type: "mutation" },
+		get: { auth: "required", type: "query" },
+		list: { auth: "required", type: "query" },
+		remove: { auth: "required", type: "mutation" },
+	},
+	_http: {},
+} as const
 ```
 
 The `biome.json` was updated to skip formatting on `convex/shared/**` since these files are auto-generated.
@@ -197,9 +191,9 @@ import type { Api } from "@convex/types"
 import { createCRPCContext } from "better-convex/react"
 
 const crpcContext = createCRPCContext<Api>({
-  api,
-  meta,
-  convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
+	api,
+	meta,
+	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
 })
 
 export const CRPCProvider = crpcContext.CRPCProvider
@@ -210,13 +204,13 @@ This requires the `@convex/*` path alias added to `tsconfig.json`:
 
 ```json
 {
-  "paths": {
-    "@/*": ["./*"],
-    "@convex/*": [
-      "../../packages/backend/convex/_generated/*",
-      "../../packages/backend/convex/shared/*"
-    ]
-  }
+	"paths": {
+		"@/*": ["./*"],
+		"@convex/*": [
+			"../../packages/backend/convex/_generated/*",
+			"../../packages/backend/convex/shared/*"
+		]
+	}
 }
 ```
 
@@ -268,16 +262,14 @@ import { useCRPC } from "@/lib/convex/crpc"
 const crpc = useCRPC()
 const queryClient = useQueryClient()
 
-const { data, isPending, error } = useQuery(
-  crpc.things.list.queryOptions({})
-)
+const { data, isPending, error } = useQuery(crpc.things.list.queryOptions({}))
 
 const createThing = useMutation(
-  crpc.things.create.mutationOptions({
-    onSuccess: () => {
-      queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
-    },
-  })
+	crpc.things.create.mutationOptions({
+		onSuccess: () => {
+			queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
+		},
+	})
 )
 ```
 
@@ -298,9 +290,14 @@ Notable changes in the component:
 The query data returned via `crpc.things.list.queryOptions({})` does not fully infer the return type. The page component uses an explicit type assertion:
 
 ```typescript
-const things = data as Array<{
-  _id: string; title: string; _creationTime: number; userId: string
-}> | undefined
+const things = data as
+	| Array<{
+			_id: string
+			title: string
+			_creationTime: number
+			userId: string
+	  }>
+	| undefined
 ```
 
 This is a rough edge — ideally the types would flow through without a cast.
@@ -339,11 +336,11 @@ The backend package now exports additional entry points:
 
 ```json
 {
-  "exports": {
-    "./convex": "./convex/_generated/api.js",
-    "./meta": "./convex/shared/meta.ts",
-    "./types": "./convex/types.ts"
-  }
+	"exports": {
+		"./convex": "./convex/_generated/api.js",
+		"./meta": "./convex/shared/meta.ts",
+		"./types": "./convex/types.ts"
+	}
 }
 ```
 

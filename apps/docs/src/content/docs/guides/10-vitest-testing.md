@@ -10,6 +10,7 @@ Added Vitest as the testing framework for the monorepo, following the official [
 ## Why Vitest
 
 **Key reasons:**
+
 - **Fast**: Built on Vite, uses native ES modules for instant test startup
 - **TypeScript-first**: Works with TypeScript out of the box, no configuration needed
 - **Turborepo integration**: Test results are cached, only changed packages re-run tests
@@ -17,6 +18,7 @@ Added Vitest as the testing framework for the monorepo, following the official [
 - **jsdom built-in**: Easy browser environment simulation for React testing
 
 **Alternatives considered:**
+
 - **Jest**: More mature but slower, requires more configuration for TypeScript/ESM
 - **Bun test**: Built into Bun but less ecosystem support for React Testing Library
 - **Playwright**: Better for E2E, overkill for unit tests
@@ -66,14 +68,14 @@ vitest.config.ts          # Root config for multi-project watch mode
 import type { UserConfig } from "vitest/config"
 
 export const sharedConfig: UserConfig = {
-  test: {
-    globals: true,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      reportsDirectory: "./coverage",
-    },
-  },
+	test: {
+		globals: true,
+		coverage: {
+			provider: "v8",
+			reporter: ["text", "json", "html"],
+			reportsDirectory: "./coverage",
+		},
+	},
 }
 ```
 
@@ -85,11 +87,11 @@ import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
 
 export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    environment: "jsdom",
-  },
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		environment: "jsdom",
+	},
 })
 ```
 
@@ -102,16 +104,16 @@ import react from "@vitejs/plugin-react"
 import { sharedConfig } from "@repo/vitest-config"
 
 export default defineConfig({
-  plugins: [react()],
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    environment: "jsdom",
-    passWithNoTests: true,
-    alias: {
-      "@/": new URL("./src/", import.meta.url).pathname,
-    },
-  },
+	plugins: [react()],
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		environment: "jsdom",
+		passWithNoTests: true,
+		alias: {
+			"@/": new URL("./src/", import.meta.url).pathname,
+		},
+	},
 })
 ```
 
@@ -120,20 +122,21 @@ export default defineConfig({
 ```json
 // turbo.json
 {
-  "tasks": {
-    "test": {
-      "dependsOn": ["transit"],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/vitest.config.ts"],
-      "outputs": ["coverage/**"]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
-    }
-  }
+	"tasks": {
+		"test": {
+			"dependsOn": ["transit"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/vitest.config.ts"],
+			"outputs": ["coverage/**"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		}
+	}
 }
 ```
 
 **Why `transit` pattern?**
+
 - Tests can run in parallel (don't need built output from dependencies)
 - But cache must invalidate when dependency source code changes
 - `transit` creates dependency relationships without matching any script, allowing parallel execution with correct cache invalidation
@@ -146,42 +149,45 @@ import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
 
 export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    projects: [
-      {
-        root: "./packages",
-        test: {
-          ...sharedConfig.test,
-          include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
-        },
-      },
-      {
-        root: "./apps",
-        test: {
-          ...sharedConfig.test,
-          environment: "jsdom",
-          include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
-        },
-      },
-    ],
-  },
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		projects: [
+			{
+				root: "./packages",
+				test: {
+					...sharedConfig.test,
+					include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
+				},
+			},
+			{
+				root: "./apps",
+				test: {
+					...sharedConfig.test,
+					environment: "jsdom",
+					include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
+				},
+			},
+		],
+	},
 })
 ```
 
 ## Key Dependencies
 
 **Root `package.json`:**
+
 - `vitest`: ^3.0.0 - Test runner
-- `@repo/vitest-config`: * - Shared configuration
+- `@repo/vitest-config`: \* - Shared configuration
 
 **`@repo/ui` package:**
+
 - `vitest`: ^3.0.0 - Test runner
 - `jsdom`: ^26.0.0 - Browser environment simulation
 - `@testing-library/react`: ^16.0.0 - React testing utilities
 
 **`apps/web`:**
+
 - `vitest`: ^3.0.0 - Test runner
 - `@vitejs/plugin-react`: ^4.4.0 - React JSX transform for Vitest
 - `jsdom`: ^26.0.0 - Browser environment simulation
@@ -200,30 +206,32 @@ When working with tests in this codebase:
 ### Adding Tests to a New Package
 
 1. Add dependencies to `package.json`:
+
 ```json
 {
-  "devDependencies": {
-    "@repo/vitest-config": "*",
-    "vitest": "^3.0.0"
-  },
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest --watch"
-  }
+	"devDependencies": {
+		"@repo/vitest-config": "*",
+		"vitest": "^3.0.0"
+	},
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest --watch"
+	}
 }
 ```
 
 2. Create `vitest.config.ts`:
+
 ```typescript
 import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
 
 export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    environment: "node", // or "jsdom" for UI
-  },
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		environment: "node", // or "jsdom" for UI
+	},
 })
 ```
 
@@ -236,28 +244,30 @@ import { describe, expect, test } from "vitest"
 import { cn } from "../src/lib/utils"
 
 describe("cn utility", () => {
-  test("merges class names", () => {
-    expect(cn("foo", "bar")).toBe("foo bar")
-  })
+	test("merges class names", () => {
+		expect(cn("foo", "bar")).toBe("foo bar")
+	})
 
-  test("handles conditional classes", () => {
-    expect(cn("foo", false && "bar", "baz")).toBe("foo baz")
-  })
+	test("handles conditional classes", () => {
+		expect(cn("foo", false && "bar", "baz")).toBe("foo baz")
+	})
 
-  test("merges Tailwind classes correctly", () => {
-    expect(cn("p-4", "p-2")).toBe("p-2")
-  })
+	test("merges Tailwind classes correctly", () => {
+		expect(cn("p-4", "p-2")).toBe("p-2")
+	})
 })
 ```
 
 ## Outcomes
 
 ### Before
+
 - No testing framework configured
 - No shared test configuration
 - No CI caching for test results
 
 ### After
+
 - Vitest configured for all packages/apps
 - `@repo/vitest-config` provides shared settings
 - Tests cached by Turborepo (only changed packages re-test)
@@ -280,6 +290,7 @@ bun run test
 ```
 
 Expected results:
+
 - `@repo/ui` tests pass (5 tests for cn utility)
 - `apps/web` passes with no tests (passWithNoTests: true)
 - Second run shows cache hits

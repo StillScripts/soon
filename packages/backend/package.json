@@ -1,30 +1,30 @@
 {
-  "name": "backend",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "exports": {
-    "./convex": "./convex/_generated/api.js",
-    "./meta": "./convex/shared/meta.ts",
-    "./types": "./convex/types.ts"
-  },
-  "scripts": {
-    "dev": "convex dev",
-    "start": "convex start"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@convex-dev/better-auth": "^0.10.10",
-    "@repo/validators": "workspace:*",
-    "better-auth": "1.4.9",
-    "better-convex": "^0.5.3",
-    "convex": "^1.31.6",
-    "convex-helpers": "^0.1.111",
-    "zod": "^4.3.6"
-  }
+	"name": "backend",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"exports": {
+		"./convex": "./convex/_generated/api.js",
+		"./meta": "./convex/shared/meta.ts",
+		"./types": "./convex/types.ts"
+	},
+	"scripts": {
+		"dev": "convex dev",
+		"start": "convex start"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "^0.10.10",
+		"@repo/validators": "workspace:*",
+		"better-auth": "1.4.9",
+		"better-convex": "^0.5.3",
+		"convex": "^1.31.6",
+		"convex-helpers": "^0.1.111",
+		"zod": "^4.3.6"
+	}
 }

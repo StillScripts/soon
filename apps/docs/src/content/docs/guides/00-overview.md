@@ -8,6 +8,7 @@ This section documents the complete development history of Soon, from initial se
 ## Purpose
 
 These guides serve multiple purposes:
+
 - **Tutorial**: New developers can follow along to understand how the project was built
 - **Context for AI**: Provides historical context for AI assistants working on the codebase
 - **Living Documentation**: Grows alongside the project as new features are added
@@ -32,6 +33,7 @@ These guides serve multiple purposes:
 ## Documentation Pattern
 
 Each guide follows a consistent structure:
+
 - **What**: What was accomplished
 - **Why**: Rationale behind the decision
 - **How**: Step-by-step implementation

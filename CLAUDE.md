@@ -9,10 +9,12 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 **Documentation:** The `docs` app contains comprehensive development history and tutorials in `src/content/docs/guides/`. These guides document how the project was built, serving as both tutorial and context for future developers and AI assistants.
 
 **Apps:**
+
 - `web`: Next.js 16.1.0 application (React 19)
 - `docs`: Astro documentation site using Starlight
 
 **Packages:**
+
 - `@repo/ui`: shadcn/ui component library (Base UI primitives, Tailwind CSS v4)
 - `@repo/oxlint-config`: Shared oxlint configurations for linting
 - `@repo/typescript-config`: Shared TypeScript configurations
@@ -24,6 +26,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 ### Command Replacements
 
 **Always use Bun commands:**
+
 - Use `bun <file>` instead of `node <file>` or `ts-node <file>`
 - Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
 - Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
@@ -34,24 +37,25 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 ### Bun APIs (Prefer Over npm Packages)
 
 **Built-in Bun APIs to use instead of npm packages:**
+
 - `Bun.serve()` supports WebSockets, HTTPS, and routes - don't use `express`
 - `bun:sqlite` for SQLite - don't use `better-sqlite3`
 - `Bun.redis` for Redis - don't use `ioredis`
 - `Bun.sql` for Postgres - don't use `pg` or `postgres.js`
 - `WebSocket` is built-in - don't use `ws`
 - Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- `Bun.$`ls`` instead of `execa`
+- `Bun.$`ls``instead of`execa`
 
 ### Testing with Bun
 
 Use `bun test` to run tests:
 
 ```ts
-import { test, expect } from "bun:test";
+import { test, expect } from "bun:test"
 
 test("hello world", () => {
-  expect(1).toBe(1);
-});
+	expect(1).toBe(1)
+})
 ```
 
 ### Frontend with Bun (Alternative to Vite)
@@ -59,65 +63,69 @@ test("hello world", () => {
 Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
 
 **Server:**
+
 ```ts
 import index from "./index.html"
 
 Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
+	routes: {
+		"/": index,
+		"/api/users/:id": {
+			GET: (req) => {
+				return new Response(JSON.stringify({ id: req.params.id }))
+			},
+		},
+	},
+	// optional websocket support
+	websocket: {
+		open: (ws) => {
+			ws.send("Hello, world!")
+		},
+		message: (ws, message) => {
+			ws.send(message)
+		},
+		close: (ws) => {
+			// handle close
+		},
+	},
+	development: {
+		hmr: true,
+		console: true,
+	},
 })
 ```
 
 **HTML files can import .tsx, .jsx or .js files directly:**
+
 ```html
 <html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
+	<body>
+		<h1>Hello, world!</h1>
+		<script type="module" src="./frontend.tsx"></script>
+	</body>
 </html>
 ```
 
 **Frontend component:**
+
 ```tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
+import React from "react"
+import { createRoot } from "react-dom/client"
 
 // import .css files directly and it works
-import './index.css';
+import "./index.css"
 
-const root = createRoot(document.body);
+const root = createRoot(document.body)
 
 export default function Frontend() {
-  return <h1>Hello, world!</h1>;
+	return <h1>Hello, world!</h1>
 }
 
-root.render(<Frontend />);
+root.render(<Frontend />)
 ```
 
 **Run with:**
+
 ```bash
 bun --hot ./index.ts
 ```
@@ -128,6 +136,7 @@ For more information, read the Bun API docs in `node_modules/bun-types/docs/**.m
 ## Essential Commands
 
 ### Development
+
 ```bash
 # Run all apps in dev mode
 bun dev
@@ -145,6 +154,7 @@ turbo build --filter=docs
 ```
 
 ### Code Quality
+
 ```bash
 # Lint all packages
 bun lint
@@ -155,9 +165,13 @@ turbo lint --filter=web
 # Type checking
 bun check-types
 turbo check-types --filter=web
+
+# Format code
+bun format
 ```
 
 ### UI Package Development
+
 ```bash
 # Generate new React component in @repo/ui
 cd packages/ui
@@ -169,6 +183,7 @@ bun generate:component
 ### Turborepo Task Dependencies
 
 The `turbo.json` configuration defines task pipelines:
+
 - `build` tasks depend on `^build` (upstream dependencies must build first)
 - `lint` and `check-types` follow the same pattern
 - `dev` tasks are not cached and run persistently
@@ -176,16 +191,19 @@ The `turbo.json` configuration defines task pipelines:
 ### Package Structure
 
 **@repo/ui exports (shadcn/ui with Base UI):**
+
 - Component imports: `import { Button } from "@repo/ui/components/ui/button"`
 - Barrel import: `import { Button, Card, Input } from "@repo/ui/components/ui"`
 - Utility: `import { cn } from "@repo/ui/lib/utils"`
 - Styles: `@import "@repo/ui/styles/globals.css"` (Tailwind v4 + oklch theme)
 
 **Available components:**
+
 - `AlertDialog`, `Badge`, `Button`, `Card`, `Combobox`, `DropdownMenu`
 - `Field`, `Input`, `InputGroup`, `Label`, `Select`, `Separator`, `Textarea`
 
 **Adding new shadcn components:**
+
 ```bash
 cd packages/ui
 bunx shadcn@latest add <component>
@@ -193,6 +211,7 @@ bunx shadcn@latest add <component>
 ```
 
 **@repo/oxlint-config exports:**
+
 - `./base`: Base oxlint configuration
 - `./react`: React-specific configuration (extends base)
 - `./next`: Next.js-specific configuration (extends react)
@@ -215,15 +234,18 @@ bunx shadcn@latest add <component>
 ### Shared Dependencies
 
 All packages use:
+
 - TypeScript 5.9.2
 - React 19.2.0
 - oxlint (fast linting)
+- Prettier (formatting: tabs, no semicolons)
 - Tailwind CSS 4.1.0 (with oklch color theme)
 - Node.js >= 18 required
 
 ## Turborepo Filters
 
 Use filters to target specific packages efficiently:
+
 ```bash
 turbo <task> --filter=<package-name>
 turbo <task> --filter=@repo/ui
@@ -235,6 +257,7 @@ turbo <task> --filter=web
 This repository includes professional skills and agents from [Sentry](https://github.com/getsentry/skills) and [Vercel](https://github.com/vercel-labs/agent-skills). See `.claude/README.md` for details.
 
 **Available Skills:**
+
 - `/commit` - Create well-formatted commits
 - `/create-pr` - Create professional pull requests
 - `/code-review` - Perform thorough code reviews
@@ -251,4 +274,5 @@ This repository includes professional skills and agents from [Sentry](https://gi
 - `/web-design-guidelines` - UI/UX best practices audit (100+ rules)
 
 **Available Agents:**
+
 - `code-simplifier` - Automatically refines code for clarity (runs proactively)

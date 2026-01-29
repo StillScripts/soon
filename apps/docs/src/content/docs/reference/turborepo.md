@@ -25,36 +25,36 @@ Defined in `turbo.json`:
 
 ```json
 {
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    }
-  }
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": [".next/**", "!.next/cache/**"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
+		"check-types": {
+			"dependsOn": ["^check-types"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		}
+	}
 }
 ```
 
 ### Pipeline Concepts
 
-| Symbol | Meaning |
-|--------|---------|
-| `^build` | Run `build` in dependencies first |
-| `dependsOn` | Tasks that must complete before this one |
-| `inputs` | Files that affect task cache |
-| `outputs` | Files produced by task |
-| `persistent: true` | Task runs continuously (dev servers) |
-| `cache: false` | Never cache this task |
+| Symbol             | Meaning                                  |
+| ------------------ | ---------------------------------------- |
+| `^build`           | Run `build` in dependencies first        |
+| `dependsOn`        | Tasks that must complete before this one |
+| `inputs`           | Files that affect task cache             |
+| `outputs`          | Files produced by task                   |
+| `persistent: true` | Task runs continuously (dev servers)     |
+| `cache: false`     | Never cache this task                    |
 
 ## Filters
 
@@ -105,6 +105,7 @@ turbo build --filter=...@repo/ui
 ### How It Works
 
 Turborepo hashes:
+
 - Task inputs (source files, configs)
 - Dependencies' outputs
 - Environment variables (from `globalEnv`)
@@ -117,10 +118,7 @@ Declared in `turbo.json`:
 
 ```json
 {
-  "globalEnv": [
-    "NEXT_PUBLIC_CONVEX_URL",
-    "CONVEX_DEPLOYMENT"
-  ]
+	"globalEnv": ["NEXT_PUBLIC_CONVEX_URL", "CONVEX_DEPLOYMENT"]
 }
 ```
 
@@ -152,14 +150,14 @@ From `package.json`:
 
 ```json
 {
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "biome format --write .",
-    "check-types": "turbo run check-types",
-    "test": "turbo run test"
-  }
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"format": "biome format --write .",
+		"check-types": "turbo run check-types",
+		"test": "turbo run test"
+	}
 }
 ```
 
@@ -176,13 +174,13 @@ From `package.json`:
 
 ```json
 {
-  "name": "@repo/my-package",
-  "private": true,
-  "scripts": {
-    "build": "...",
-    "lint": "biome check --write",
-    "check-types": "tsc --noEmit"
-  }
+	"name": "@repo/my-package",
+	"private": true,
+	"scripts": {
+		"build": "...",
+		"lint": "biome check --write",
+		"check-types": "tsc --noEmit"
+	}
 }
 ```
 

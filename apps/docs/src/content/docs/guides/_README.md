@@ -5,6 +5,7 @@ This directory contains chronological documentation of how the Ember application
 ## Purpose
 
 These guides serve as:
+
 - **Living Tutorial**: New developers can follow the journey from start to current state
 - **AI Context**: Provides comprehensive context for AI assistants (especially Claude Code)
 - **Decision Log**: Records why architectural choices were made
@@ -13,6 +14,7 @@ These guides serve as:
 ## Structure
 
 Guides are numbered sequentially to show chronological order:
+
 - `00-overview.md` - Overview and reading guide
 - `01-initial-setup.md` - First step in the journey
 - `02-astro-docs.md` - Second step
@@ -22,13 +24,17 @@ Guides are numbered sequentially to show chronological order:
 ## Adding New Guides
 
 ### 1. Copy the Template
+
 ```bash
 cp _template.md 0X-your-feature-name.md
 ```
+
 Replace `X` with the next sequential number.
 
 ### 2. Fill in All Sections
+
 Follow the template structure:
+
 - What We Did
 - Why This Approach
 - Commands Used
@@ -37,6 +43,7 @@ Follow the template structure:
 - etc.
 
 ### 3. Update Sidebar
+
 Edit `apps/docs/astro.config.mjs` and add your guide to the "Development Journey" section:
 
 ```javascript
@@ -50,31 +57,37 @@ Edit `apps/docs/astro.config.mjs` and add your guide to the "Development Journey
 ```
 
 ### 4. Delete Template Comments
+
 Remove the comment block at the top of your new guide.
 
 ## Writing Guidelines
 
 ### Be Specific
+
 - Include exact commands used
 - Show actual configuration snippets
 - Reference specific files and line numbers when relevant
 
 ### Explain Why
+
 - Don't just document what was done
 - Explain the reasoning behind decisions
 - Document alternatives that were considered
 
 ### Think About AI
+
 - Include a "Context for AI" section
 - Document non-obvious patterns
 - Explain architectural decisions that span multiple files
 
 ### Stay Chronological
+
 - Each guide should build on previous ones
 - Reference earlier guides when relevant
 - Update the overview when adding new guides
 
 ### Use Consistent Format
+
 - Follow the template structure
 - Use proper Markdown frontmatter
 - Include code examples in fenced blocks
@@ -89,6 +102,7 @@ Remove the comment block at the top of your new guide.
 ## For AI Assistants
 
 When asked to add documentation:
+
 1. Copy `_template.md` to a new numbered file
 2. Fill in all sections completely
 3. Update `astro.config.mjs` sidebar

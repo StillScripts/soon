@@ -125,26 +125,26 @@ turbo <task> --filter=!docs
 
 ## File Locations
 
-| What | Where |
-|------|-------|
-| Web app pages | `apps/web/app/` |
-| UI components | `packages/ui/src/components/ui/` |
-| Convex functions | `packages/backend/convex/` |
-| Docs content | `apps/docs/src/content/docs/` |
-| Biome configs | `packages/biome-config/` |
-| TypeScript configs | `packages/typescript-config/` |
+| What               | Where                            |
+| ------------------ | -------------------------------- |
+| Web app pages      | `apps/web/app/`                  |
+| UI components      | `packages/ui/src/components/ui/` |
+| Convex functions   | `packages/backend/convex/`       |
+| Docs content       | `apps/docs/src/content/docs/`    |
+| Biome configs      | `packages/biome-config/`         |
+| TypeScript configs | `packages/typescript-config/`    |
 
 ## Ports
 
-| App | Port |
-|-----|------|
+| App           | Port |
+| ------------- | ---- |
 | Web (Next.js) | 3000 |
-| Docs (Astro) | 4321 |
+| Docs (Astro)  | 4321 |
 
 ## Environment Variables
 
-| Variable | Location | Purpose |
-|----------|----------|---------|
-| `CONVEX_DEPLOYMENT` | `packages/backend/.env.local` | Convex deployment ID |
-| `CONVEX_URL` | `packages/backend/.env.local` | Convex API URL |
-| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local` | Client-side Convex URL |
+| Variable                 | Location                      | Purpose                |
+| ------------------------ | ----------------------------- | ---------------------- |
+| `CONVEX_DEPLOYMENT`      | `packages/backend/.env.local` | Convex deployment ID   |
+| `CONVEX_URL`             | `packages/backend/.env.local` | Convex API URL         |
+| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local`         | Client-side Convex URL |

@@ -6,6 +6,7 @@ description: Adding login/signup forms with TanStack Form and protected routes w
 ## What We Did
 
 Built the authentication UI layer on top of Better Auth, including:
+
 - Login/signup forms using TanStack Form and shadcn Field components
 - Protected page that requires authentication
 - User-owned "things" with CRUD operations
@@ -14,12 +15,14 @@ Built the authentication UI layer on top of Better Auth, including:
 ## Why This Approach
 
 **Key reasons:**
+
 - **TanStack Form**: Headless form library with excellent TypeScript support and validation
 - **Field components**: Consistent form styling using existing shadcn/ui Field primitives
 - **Client-side auth check**: Better Auth's `useSession` hook for reactive auth state
 - **User ownership pattern**: Simple `userId` field on data for multi-tenant isolation
 
 **Alternatives considered:**
+
 - **React Hook Form**: More popular but TanStack Form has better TypeScript inference
 - **Server-side protection**: Could use middleware, but client-side is simpler for this demo
 - **Separate login/signup pages**: Combined form is more compact for simple auth flows
@@ -45,10 +48,10 @@ Updated `packages/backend/convex/schema.ts` to add user ownership:
 
 ```typescript
 export default defineSchema({
-  things: defineTable({
-    title: v.string(),
-    userId: v.string(),
-  }).index("by_user", ["userId"]),
+	things: defineTable({
+		title: v.string(),
+		userId: v.string(),
+	}).index("by_user", ["userId"]),
 })
 ```
 
@@ -62,33 +65,33 @@ All CRUD operations in `packages/backend/convex/things.ts` now require authentic
 import { authComponent } from "./auth"
 
 export const createThing = mutation({
-  args: { title: v.string() },
-  handler: async (ctx, args) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      throw new Error("Not authenticated")
-    }
-    const userId = user._id as string
-    return await ctx.db.insert("things", {
-      title: args.title,
-      userId,
-    })
-  },
+	args: { title: v.string() },
+	handler: async (ctx, args) => {
+		const user = await authComponent.getAuthUser(ctx)
+		if (!user) {
+			throw new Error("Not authenticated")
+		}
+		const userId = user._id as string
+		return await ctx.db.insert("things", {
+			title: args.title,
+			userId,
+		})
+	},
 })
 
 export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    const user = await authComponent.getAuthUser(ctx)
-    if (!user) {
-      return []
-    }
-    const userId = user._id as string
-    return await ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect()
-  },
+	args: {},
+	handler: async (ctx) => {
+		const user = await authComponent.getAuthUser(ctx)
+		if (!user) {
+			return []
+		}
+		const userId = user._id as string
+		return await ctx.db
+			.query("things")
+			.withIndex("by_user", (q) => q.eq("userId", userId))
+			.collect()
+	},
 })
 ```
 
@@ -198,18 +201,19 @@ Added `@/*` path alias in `apps/web/tsconfig.json`:
 
 ```json
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
-  }
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"]
+		}
+	}
 }
 ```
 
 ## Key Dependencies
 
 **apps/web:**
+
 - `@tanstack/react-form`: ^1.27.7 - Headless form state management
 
 ## Integration with Existing Code
@@ -257,11 +261,13 @@ bunx convex dev --once
 ## Outcomes
 
 ### Before
+
 - Things table had no user association
 - Anyone could see all things
 - No authentication UI
 
 ### After
+
 - Things belong to users via `userId` field
 - Users only see their own things
 - Login/signup forms with validation

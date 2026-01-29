@@ -4,31 +4,28 @@ import { z } from "zod"
  * Schema for creating a new thing
  */
 export const createThingSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(200, "Title must be 200 characters or less"),
+	title: z.string().min(1, "Title is required").max(200, "Title must be 200 characters or less"),
 })
 
 /**
  * Schema for getting a thing by ID
  */
 export const getThingSchema = z.object({
-  id: z.string(),
+	id: z.string(),
 })
 
 /**
  * Schema for removing a thing
  */
 export const removeThingSchema = z.object({
-  id: z.string(),
+	id: z.string(),
 })
 
 /**
  * Schema for listing things with optional limit
  */
 export const listThingsSchema = z.object({
-  limit: z.number().int().min(1).max(100).optional(),
+	limit: z.number().int().min(1).max(100).optional(),
 })
 
 /**

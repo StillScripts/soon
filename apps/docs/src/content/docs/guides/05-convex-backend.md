@@ -14,6 +14,7 @@ description: Adding Convex as the real-time serverless backend with end-to-end N
 **Convex provides a complete backend solution** that aligns perfectly with our Bun-first, TypeScript-native approach.
 
 **Key reasons:**
+
 - **Real-time by default**: Live queries automatically update when data changes
 - **TypeScript-first**: End-to-end type safety from database to client
 - **Serverless**: No infrastructure to manage, scales automatically
@@ -21,6 +22,7 @@ description: Adding Convex as the real-time serverless backend with end-to-end N
 - **React integration**: First-class hooks (`useQuery`, `useMutation`)
 
 **Alternatives considered:**
+
 - **Supabase**: Excellent, but Convex's real-time model is simpler
 - **Firebase**: Good real-time, but TypeScript support is weaker
 - **tRPC + Prisma**: Type-safe, but more complex setup and no built-in real-time
@@ -56,46 +58,46 @@ apps/web/
 ### Schema (`convex/schema.ts`)
 
 ```typescript
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
 
 export default defineSchema({
-  things: defineTable({
-    title: v.string(),
-  }),
-});
+	things: defineTable({
+		title: v.string(),
+	}),
+})
 ```
 
 ### Queries and Mutations (`convex/things.ts`)
 
 ```typescript
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { mutation, query } from "./_generated/server"
+import { v } from "convex/values"
 
 export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("things").collect();
-  },
-});
+	args: {},
+	handler: async (ctx) => {
+		return await ctx.db.query("things").collect()
+	},
+})
 
 export const getThing = query({
-  args: {
-    id: v.id("things"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
-});
+	args: {
+		id: v.id("things"),
+	},
+	handler: async (ctx, args) => {
+		return await ctx.db.get(args.id)
+	},
+})
 
 export const createThing = mutation({
-  args: {
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("things", { title: args.title });
-  },
-});
+	args: {
+		title: v.string(),
+	},
+	handler: async (ctx, args) => {
+		return await ctx.db.insert("things", { title: args.title })
+	},
+})
 ```
 
 ### Package Exports (`package.json`)
@@ -104,13 +106,13 @@ The backend package exports the Convex API for the web app:
 
 ```json
 {
-  "name": "backend",
-  "exports": {
-    "./convex": "./convex/_generated/api.js"
-  },
-  "dependencies": {
-    "convex": "^1.31.6"
-  }
+	"name": "backend",
+	"exports": {
+		"./convex": "./convex/_generated/api.js"
+	},
+	"dependencies": {
+		"convex": "^1.31.6"
+	}
 }
 ```
 
@@ -119,97 +121,99 @@ The backend package exports the Convex API for the web app:
 ### Convex Provider (`apps/web/app/providers.tsx`)
 
 ```tsx
-"use client";
+"use client"
 
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ReactNode } from "react";
+import { ConvexProvider, ConvexReactClient } from "convex/react"
+import { ReactNode } from "react"
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 
 export function Providers({ children }: { children: ReactNode }) {
-  if (!convexUrl) {
-    return (
-      <div style={{ padding: "2rem", fontFamily: "system-ui" }}>
-        <h1>Convex Not Configured</h1>
-        <p>Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.</p>
-        {/* Setup instructions... */}
-      </div>
-    );
-  }
+	if (!convexUrl) {
+		return (
+			<div style={{ padding: "2rem", fontFamily: "system-ui" }}>
+				<h1>Convex Not Configured</h1>
+				<p>
+					Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.
+				</p>
+				{/* Setup instructions... */}
+			</div>
+		)
+	}
 
-  const convex = new ConvexReactClient(convexUrl);
-  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+	const convex = new ConvexReactClient(convexUrl)
+	return <ConvexProvider client={convex}>{children}</ConvexProvider>
 }
 ```
 
 ### Layout Integration (`apps/web/app/layout.tsx`)
 
 ```tsx
-import { Providers } from "./providers";
+import { Providers } from "./providers"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body>
+				<Providers>{children}</Providers>
+			</body>
+		</html>
+	)
 }
 ```
 
 ### Using Convex in Components (`apps/web/app/page.tsx`)
 
 ```tsx
-"use client";
+"use client"
 
-import { useMutation, useQuery } from "convex/react";
-import { api } from "backend/convex";
-import { FormEvent, useState } from "react";
+import { useMutation, useQuery } from "convex/react"
+import { api } from "backend/convex"
+import { FormEvent, useState } from "react"
 
 export default function Home() {
-  const things = useQuery(api.things.getThings);
-  const createThing = useMutation(api.things.createThing);
-  const [title, setTitle] = useState("");
+	const things = useQuery(api.things.getThings)
+	const createThing = useMutation(api.things.createThing)
+	const [title, setTitle] = useState("")
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
-    await createThing({ title: title.trim() });
-    setTitle("");
-  };
+	const handleSubmit = async (e: FormEvent) => {
+		e.preventDefault()
+		if (!title.trim()) return
+		await createThing({ title: title.trim() })
+		setTitle("")
+	}
 
-  return (
-    <main>
-      <h1>Things Manager</h1>
+	return (
+		<main>
+			<h1>Things Manager</h1>
 
-      {/* Create Form */}
-      <form onSubmit={handleSubmit}>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter thing title..."
-        />
-        <button type="submit">Create</button>
-      </form>
+			{/* Create Form */}
+			<form onSubmit={handleSubmit}>
+				<input
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
+					placeholder="Enter thing title..."
+				/>
+				<button type="submit">Create</button>
+			</form>
 
-      {/* List Things */}
-      {things === undefined ? (
-        <p>Loading...</p>
-      ) : things.length === 0 ? (
-        <p>No things yet.</p>
-      ) : (
-        <ul>
-          {things.map((thing) => (
-            <li key={thing._id}>
-              {thing.title}
-              <span>{new Date(thing._creationTime).toLocaleDateString()}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
-  );
+			{/* List Things */}
+			{things === undefined ? (
+				<p>Loading...</p>
+			) : things.length === 0 ? (
+				<p>No things yet.</p>
+			) : (
+				<ul>
+					{things.map((thing) => (
+						<li key={thing._id}>
+							{thing.title}
+							<span>{new Date(thing._creationTime).toLocaleDateString()}</span>
+						</li>
+					))}
+				</ul>
+			)}
+		</main>
+	)
 }
 ```
 
@@ -221,10 +225,7 @@ Declare Convex env vars for proper cache invalidation:
 
 ```json
 {
-  "globalEnv": [
-    "NEXT_PUBLIC_CONVEX_URL",
-    "CONVEX_DEPLOYMENT"
-  ]
+	"globalEnv": ["NEXT_PUBLIC_CONVEX_URL", "CONVEX_DEPLOYMENT"]
 }
 ```
 
@@ -303,11 +304,11 @@ turbo dev --filter=web       # Next.js on port 3000
 
 ```typescript
 // In web app components
-import { api } from "backend/convex";
+import { api } from "backend/convex"
 
 // Use with hooks
-const data = useQuery(api.things.getThings);
-const mutate = useMutation(api.things.createThing);
+const data = useQuery(api.things.getThings)
+const mutate = useMutation(api.things.createThing)
 ```
 
 ### Reactive Queries
@@ -315,7 +316,7 @@ const mutate = useMutation(api.things.createThing);
 Convex queries are **reactive** - the UI automatically updates when data changes:
 
 ```typescript
-const things = useQuery(api.things.getThings);
+const things = useQuery(api.things.getThings)
 // No manual refetching needed - updates automatically
 ```
 
@@ -326,13 +327,15 @@ Full end-to-end type inference:
 ```typescript
 // Backend defines the shape
 export const createThing = mutation({
-  args: { title: v.string() },
-  handler: async (ctx, args) => { /* ... */ },
-});
+	args: { title: v.string() },
+	handler: async (ctx, args) => {
+		/* ... */
+	},
+})
 
 // Frontend gets type checking
-createThing({ title: "Hello" });  // ✓
-createThing({ name: "Hello" });   // ✗ Type error
+createThing({ title: "Hello" }) // ✓
+createThing({ name: "Hello" }) // ✗ Type error
 ```
 
 ## Testing/Verification
@@ -355,12 +358,12 @@ turbo dev --filter=web
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
+| Issue                                      | Solution                                                  |
+| ------------------------------------------ | --------------------------------------------------------- |
 | "No address provided to ConvexReactClient" | Missing `NEXT_PUBLIC_CONVEX_URL` in `apps/web/.env.local` |
-| "Could not find public function" | Different deployments - sync `.env.local` files |
-| Functions not updating | Restart `bunx convex dev` |
-| Types not found | Run `bun install` at repo root |
+| "Could not find public function"           | Different deployments - sync `.env.local` files           |
+| Functions not updating                     | Restart `bunx convex dev`                                 |
+| Types not found                            | Run `bun install` at repo root                            |
 
 ## Related Documentation
 

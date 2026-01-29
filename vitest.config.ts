@@ -10,25 +10,25 @@ import { defineConfig } from "vitest/config"
  * - `bun test:watch` - Watch mode for development
  */
 export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    projects: [
-      {
-        root: "./packages",
-        test: {
-          ...sharedConfig.test,
-          include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
-        },
-      },
-      {
-        root: "./apps",
-        test: {
-          ...sharedConfig.test,
-          environment: "jsdom",
-          include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
-        },
-      },
-    ],
-  },
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		projects: [
+			{
+				root: "./packages",
+				test: {
+					...sharedConfig.test,
+					include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
+				},
+			},
+			{
+				root: "./apps",
+				test: {
+					...sharedConfig.test,
+					environment: "jsdom",
+					include: ["**/tests/**/*.test.{ts,tsx}", "**/src/**/*.test.{ts,tsx}"],
+				},
+			},
+		],
+	},
 })

@@ -19,10 +19,10 @@ packages/biome-config/
 
 ## Available Configs
 
-| Config | Export Path | Use For |
-|--------|-------------|---------|
-| Base | `@repo/biome-config/base` | TypeScript packages |
-| Next.js | `@repo/biome-config/next-js` | Next.js applications |
+| Config         | Export Path                         | Use For                   |
+| -------------- | ----------------------------------- | ------------------------- |
+| Base           | `@repo/biome-config/base`           | TypeScript packages       |
+| Next.js        | `@repo/biome-config/next-js`        | Next.js applications      |
 | React Internal | `@repo/biome-config/react-internal` | React component libraries |
 
 ## Usage
@@ -31,8 +31,8 @@ packages/biome-config/
 
 ```json
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "extends": ["@repo/biome-config/next-js"]
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"extends": ["@repo/biome-config/next-js"]
 }
 ```
 
@@ -63,34 +63,34 @@ Applied to all packages:
 
 ```json
 {
-  "organizeImports": { "enabled": true },
-  "linter": {
-    "rules": {
-      "recommended": true,
-      "correctness": {
-        "noUnusedImports": "warn",
-        "noUnusedVariables": "warn"
-      },
-      "style": {
-        "noNonNullAssertion": "off"
-      },
-      "suspicious": {
-        "noExplicitAny": "warn"
-      }
-    }
-  },
-  "formatter": {
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 80
-  },
-  "javascript": {
-    "formatter": {
-      "semicolons": "asNeeded",
-      "quoteStyle": "double",
-      "trailingCommas": "es5"
-    }
-  }
+	"organizeImports": { "enabled": true },
+	"linter": {
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUnusedImports": "warn",
+				"noUnusedVariables": "warn"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "warn"
+			}
+		}
+	},
+	"formatter": {
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineWidth": 80
+	},
+	"javascript": {
+		"formatter": {
+			"semicolons": "asNeeded",
+			"quoteStyle": "double",
+			"trailingCommas": "es5"
+		}
+	}
 }
 ```
 
@@ -100,23 +100,23 @@ Adds React-specific rules:
 
 ```json
 {
-  "extends": ["./base.json"],
-  "linter": {
-    "rules": {
-      "correctness": {
-        "useExhaustiveDependencies": "warn",
-        "useHookAtTopLevel": "error"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "warn"
-      },
-      "a11y": {
-        "recommended": true,
-        "noBlankTarget": "error",
-        "useAltText": "error"
-      }
-    }
-  }
+	"extends": ["./base.json"],
+	"linter": {
+		"rules": {
+			"correctness": {
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "warn"
+			},
+			"a11y": {
+				"recommended": true,
+				"noBlankTarget": "error",
+				"useAltText": "error"
+			}
+		}
+	}
 }
 ```
 
@@ -126,27 +126,27 @@ For component libraries (like `@repo/ui`):
 
 ```json
 {
-  "extends": ["./base.json"],
-  "linter": {
-    "rules": {
-      "a11y": {
-        "noLabelWithoutControl": "off"
-      }
-    }
-  }
+	"extends": ["./base.json"],
+	"linter": {
+		"rules": {
+			"a11y": {
+				"noLabelWithoutControl": "off"
+			}
+		}
+	}
 }
 ```
 
 ## Formatting Rules
 
-| Setting | Value | Description |
-|---------|-------|-------------|
-| `semicolons` | `asNeeded` | No semicolons unless required |
-| `quoteStyle` | `double` | Use double quotes |
-| `trailingCommas` | `es5` | Trailing commas where valid in ES5 |
-| `indentStyle` | `space` | Use spaces for indentation |
-| `indentWidth` | `2` | 2-space indentation |
-| `lineWidth` | `80` | Wrap at 80 characters |
+| Setting          | Value      | Description                        |
+| ---------------- | ---------- | ---------------------------------- |
+| `semicolons`     | `asNeeded` | No semicolons unless required      |
+| `quoteStyle`     | `double`   | Use double quotes                  |
+| `trailingCommas` | `es5`      | Trailing commas where valid in ES5 |
+| `indentStyle`    | `space`    | Use spaces for indentation         |
+| `indentWidth`    | `2`        | 2-space indentation                |
+| `lineWidth`      | `80`       | Wrap at 80 characters              |
 
 ## Linting Rules
 
@@ -186,9 +186,9 @@ const value: any = getData()
 
 ```json
 {
-  "files": {
-    "ignore": ["**/generated/**", "**/dist/**"]
-  }
+	"files": {
+		"ignore": ["**/generated/**", "**/dist/**"]
+	}
 }
 ```
 
@@ -202,12 +202,12 @@ Settings:
 
 ```json
 {
-  "editor.defaultFormatter": "biomejs.biome",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
-  }
+	"editor.defaultFormatter": "biomejs.biome",
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"quickfix.biome": "explicit",
+		"source.organizeImports.biome": "explicit"
+	}
 }
 ```
 

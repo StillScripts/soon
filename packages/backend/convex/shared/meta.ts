@@ -2,13 +2,13 @@
 // Do not edit manually. Run `better-convex codegen` to regenerate.
 
 export const meta = {
-  things: {
-    create: { auth: 'required', type: 'mutation' },
-    get: { auth: 'required', type: 'query' },
-    list: { auth: 'required', type: 'query' },
-    remove: { auth: 'required', type: 'mutation' },
-  },
-  _http: {},
-} as const;
+	things: {
+		create: { auth: "required", type: "mutation" },
+		get: { auth: "required", type: "query" },
+		list: { auth: "required", type: "query" },
+		remove: { auth: "required", type: "mutation" },
+	},
+	_http: {},
+} as const
 
-export type Meta = typeof meta;
+export type Meta = typeof meta

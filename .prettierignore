@@ -1,0 +1,8 @@
+node_modules
+dist
+.next
+.astro
+.turbo
+bun.lock
+coverage
+**/convex/_generated

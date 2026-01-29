@@ -24,32 +24,32 @@ import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
 
 export default defineSchema({
-  things: defineTable({
-    title: v.string(),
-  }),
+	things: defineTable({
+		title: v.string(),
+	}),
 
-  users: defineTable({
-    name: v.string(),
-    email: v.string(),
-    role: v.optional(v.union(v.literal("admin"), v.literal("user"))),
-  }).index("by_email", ["email"]),
+	users: defineTable({
+		name: v.string(),
+		email: v.string(),
+		role: v.optional(v.union(v.literal("admin"), v.literal("user"))),
+	}).index("by_email", ["email"]),
 })
 ```
 
 ### Validators
 
-| Validator | Description |
-|-----------|-------------|
-| `v.string()` | String value |
-| `v.number()` | Number value |
-| `v.boolean()` | Boolean value |
-| `v.null()` | Null value |
-| `v.id("tableName")` | Document ID reference |
-| `v.array(v.string())` | Array of strings |
-| `v.object({ key: v.string() })` | Object with shape |
-| `v.optional(v.string())` | Optional string |
-| `v.union(v.literal("a"), v.literal("b"))` | Union type |
-| `v.any()` | Any value (avoid if possible) |
+| Validator                                 | Description                   |
+| ----------------------------------------- | ----------------------------- |
+| `v.string()`                              | String value                  |
+| `v.number()`                              | Number value                  |
+| `v.boolean()`                             | Boolean value                 |
+| `v.null()`                                | Null value                    |
+| `v.id("tableName")`                       | Document ID reference         |
+| `v.array(v.string())`                     | Array of strings              |
+| `v.object({ key: v.string() })`           | Object with shape             |
+| `v.optional(v.string())`                  | Optional string               |
+| `v.union(v.literal("a"), v.literal("b"))` | Union type                    |
+| `v.any()`                                 | Any value (avoid if possible) |
 
 ## Queries
 
@@ -60,33 +60,33 @@ import { v } from "convex/values"
 
 // Query without arguments
 export const getThings = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("things").collect()
-  },
+	args: {},
+	handler: async (ctx) => {
+		return await ctx.db.query("things").collect()
+	},
 })
 
 // Query with arguments
 export const getThing = query({
-  args: {
-    id: v.id("things"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id)
-  },
+	args: {
+		id: v.id("things"),
+	},
+	handler: async (ctx, args) => {
+		return await ctx.db.get(args.id)
+	},
 })
 
 // Query with filter
 export const getThingsByTitle = query({
-  args: {
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("things")
-      .filter((q) => q.eq(q.field("title"), args.title))
-      .collect()
-  },
+	args: {
+		title: v.string(),
+	},
+	handler: async (ctx, args) => {
+		return await ctx.db
+			.query("things")
+			.filter((q) => q.eq(q.field("title"), args.title))
+			.collect()
+	},
 })
 ```
 
@@ -95,19 +95,19 @@ export const getThingsByTitle = query({
 ```typescript
 // Define index in schema
 defineTable({
-  title: v.string(),
-  status: v.string(),
+	title: v.string(),
+	status: v.string(),
 }).index("by_status", ["status"])
 
 // Use index in query
 export const getByStatus = query({
-  args: { status: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("things")
-      .withIndex("by_status", (q) => q.eq("status", args.status))
-      .collect()
-  },
+	args: { status: v.string() },
+	handler: async (ctx, args) => {
+		return await ctx.db
+			.query("things")
+			.withIndex("by_status", (q) => q.eq("status", args.status))
+			.collect()
+	},
 })
 ```
 
@@ -119,44 +119,44 @@ import { v } from "convex/values"
 
 // Create
 export const createThing = mutation({
-  args: {
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("things", { title: args.title })
-  },
+	args: {
+		title: v.string(),
+	},
+	handler: async (ctx, args) => {
+		return await ctx.db.insert("things", { title: args.title })
+	},
 })
 
 // Update
 export const updateThing = mutation({
-  args: {
-    id: v.id("things"),
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { title: args.title })
-  },
+	args: {
+		id: v.id("things"),
+		title: v.string(),
+	},
+	handler: async (ctx, args) => {
+		await ctx.db.patch(args.id, { title: args.title })
+	},
 })
 
 // Delete
 export const deleteThing = mutation({
-  args: {
-    id: v.id("things"),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.delete(args.id)
-  },
+	args: {
+		id: v.id("things"),
+	},
+	handler: async (ctx, args) => {
+		await ctx.db.delete(args.id)
+	},
 })
 
 // Replace entire document
 export const replaceThing = mutation({
-  args: {
-    id: v.id("things"),
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.replace(args.id, { title: args.title })
-  },
+	args: {
+		id: v.id("things"),
+		title: v.string(),
+	},
+	handler: async (ctx, args) => {
+		await ctx.db.replace(args.id, { title: args.title })
+	},
 })
 ```
 
@@ -179,10 +179,7 @@ const things = useQuery(api.things.getThings)
 const thing = useQuery(api.things.getThing, { id: thingId })
 
 // Skip query conditionally
-const thing = useQuery(
-  thingId ? api.things.getThing : "skip",
-  thingId ? { id: thingId } : "skip"
-)
+const thing = useQuery(thingId ? api.things.getThing : "skip", thingId ? { id: thingId } : "skip")
 ```
 
 ### useMutation
@@ -204,60 +201,57 @@ import { useMutation, useQuery } from "convex/react"
 import { FormEvent, useState } from "react"
 
 export default function ThingsPage() {
-  const things = useQuery(api.things.getThings)
-  const createThing = useMutation(api.things.createThing)
-  const [title, setTitle] = useState("")
+	const things = useQuery(api.things.getThings)
+	const createThing = useMutation(api.things.createThing)
+	const [title, setTitle] = useState("")
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return
-    await createThing({ title: title.trim() })
-    setTitle("")
-  }
+	const handleSubmit = async (e: FormEvent) => {
+		e.preventDefault()
+		if (!title.trim()) return
+		await createThing({ title: title.trim() })
+		setTitle("")
+	}
 
-  if (things === undefined) {
-    return <p>Loading...</p>
-  }
+	if (things === undefined) {
+		return <p>Loading...</p>
+	}
 
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <button type="submit">Create</button>
-      </form>
+	return (
+		<div>
+			<form onSubmit={handleSubmit}>
+				<input value={title} onChange={(e) => setTitle(e.target.value)} />
+				<button type="submit">Create</button>
+			</form>
 
-      <ul>
-        {things.map((thing) => (
-          <li key={thing._id}>{thing.title}</li>
-        ))}
-      </ul>
-    </div>
-  )
+			<ul>
+				{things.map((thing) => (
+					<li key={thing._id}>{thing.title}</li>
+				))}
+			</ul>
+		</div>
+	)
 }
 ```
 
 ## Database Operations
 
-| Operation | Method | Description |
-|-----------|--------|-------------|
-| Get by ID | `ctx.db.get(id)` | Get single document |
-| Insert | `ctx.db.insert(table, doc)` | Create new document |
-| Patch | `ctx.db.patch(id, fields)` | Update specific fields |
-| Replace | `ctx.db.replace(id, doc)` | Replace entire document |
-| Delete | `ctx.db.delete(id)` | Delete document |
+| Operation | Method                      | Description             |
+| --------- | --------------------------- | ----------------------- |
+| Get by ID | `ctx.db.get(id)`            | Get single document     |
+| Insert    | `ctx.db.insert(table, doc)` | Create new document     |
+| Patch     | `ctx.db.patch(id, fields)`  | Update specific fields  |
+| Replace   | `ctx.db.replace(id, doc)`   | Replace entire document |
+| Delete    | `ctx.db.delete(id)`         | Delete document         |
 
 ## Query Methods
 
-| Method | Description |
-|--------|-------------|
-| `.collect()` | Return all matching documents as array |
-| `.first()` | Return first matching document or null |
-| `.unique()` | Return exactly one document (throws if 0 or >1) |
-| `.take(n)` | Return first n documents |
-| `.order("asc")` / `.order("desc")` | Order by `_creationTime` |
+| Method                             | Description                                     |
+| ---------------------------------- | ----------------------------------------------- |
+| `.collect()`                       | Return all matching documents as array          |
+| `.first()`                         | Return first matching document or null          |
+| `.unique()`                        | Return exactly one document (throws if 0 or >1) |
+| `.take(n)`                         | Return first n documents                        |
+| `.order("asc")` / `.order("desc")` | Order by `_creationTime`                        |
 
 ## Type Safety
 
@@ -269,11 +263,11 @@ type ThingId = Id<"things">
 
 // Use in functions
 export const getThing = query({
-  args: { id: v.id("things") },
-  handler: async (ctx, args) => {
-    // args.id is typed as Id<"things">
-    return await ctx.db.get(args.id)
-  },
+	args: { id: v.id("things") },
+	handler: async (ctx, args) => {
+		// args.id is typed as Id<"things">
+		return await ctx.db.get(args.id)
+	},
 })
 ```
 
@@ -293,8 +287,8 @@ bunx convex deploy
 
 ## Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `CONVEX_DEPLOYMENT` | Deployment identifier |
-| `CONVEX_URL` | Convex API endpoint |
+| Variable                 | Purpose                  |
+| ------------------------ | ------------------------ |
+| `CONVEX_DEPLOYMENT`      | Deployment identifier    |
+| `CONVEX_URL`             | Convex API endpoint      |
 | `NEXT_PUBLIC_CONVEX_URL` | Client-side API endpoint |

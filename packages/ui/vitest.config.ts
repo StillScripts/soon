@@ -6,9 +6,9 @@ import { defineConfig } from "vitest/config"
  * Uses jsdom environment for React component testing.
  */
 export default defineConfig({
-  ...sharedConfig,
-  test: {
-    ...sharedConfig.test,
-    environment: "jsdom",
-  },
+	...sharedConfig,
+	test: {
+		...sharedConfig.test,
+		environment: "jsdom",
+	},
 })
