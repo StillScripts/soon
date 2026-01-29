@@ -29,6 +29,7 @@ These guides serve multiple purposes:
 11. [Authentication](./11-authentication) - Implementing the authentication flow
 12. [Better Convex Migration](./12-better-convex-migration) - Migrating to better-convex patterns
 13. [Shared Validators Package](./13-shared-validators) - Creating shared validation utilities
+14. [oxlint + Prettier Migration](./14-oxlint-prettier-migration) - Replacing Biome with oxlint and Prettier
 
 ## Documentation Pattern
 

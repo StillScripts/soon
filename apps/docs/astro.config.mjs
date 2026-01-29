@@ -60,6 +60,10 @@ export default defineConfig({
 							label: "Shared Validators Package",
 							slug: "guides/13-shared-validators",
 						},
+						{
+							label: "oxlint + Prettier Migration",
+							slug: "guides/14-oxlint-prettier-migration",
+						},
 					],
 				},
 				{
