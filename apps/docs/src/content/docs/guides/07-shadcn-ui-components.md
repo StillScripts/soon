@@ -194,7 +194,6 @@ The `cn()` function merges Tailwind classes safely:
 
 ```tsx
 import { cn } from "@repo/ui/lib/utils"
-
 ;<div className={cn("base-class", conditional && "conditional-class", className)} />
 ```
 
