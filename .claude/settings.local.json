@@ -76,7 +76,9 @@
 			"Bash(turbo test:*)",
 			"WebFetch(domain:oxc.rs)",
 			"Bash(bun lint:*)",
-			"Bash(bun format:check:*)"
+			"Bash(bun format:check:*)",
+			"Bash(git pull:*)",
+			"Bash(git checkout:*)"
 		]
 	}
 }

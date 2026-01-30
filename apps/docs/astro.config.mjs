@@ -67,6 +67,10 @@ export default defineConfig({
 					],
 				},
 				{
+					label: "Skills",
+					autogenerate: { directory: "skills" },
+				},
+				{
 					label: "Reference",
 					items: [
 						{ label: "Quick Reference", slug: "reference/quick-reference" },

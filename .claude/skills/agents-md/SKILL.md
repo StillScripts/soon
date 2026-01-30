@@ -1,3 +1,8 @@
+---
+name: agents-md
+description: Maintain minimal agent-facing documentation (AGENTS.md/CLAUDE.md). Use when creating or updating AI assistant context files.
+---
+
 # AGENTS.md Maintenance Skill
 
 This documentation covers creating and maintaining minimal agent-facing instructions.
