@@ -7,7 +7,7 @@
 	},
 	"rules": {
 		"no-unused-vars": "warn",
-		"no-console": "off",
+		"no-console": "warn",
 		"eqeqeq": "error",
 		"no-var": "error",
 		"prefer-const": "warn"

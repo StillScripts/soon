@@ -1,10 +1,8 @@
-import type { UserConfig } from "vitest/config"
-
 /**
  * Shared Vitest configuration for all packages in the monorepo.
  * This provides consistent test settings across the codebase.
  */
-export const sharedConfig: UserConfig = {
+export const sharedConfig = {
 	test: {
 		globals: true,
 		coverage: {
