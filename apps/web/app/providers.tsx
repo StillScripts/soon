@@ -1,5 +1,9 @@
 "use client"
 
+import { type ReactNode, useCallback, useState } from "react"
+
+import { useRouter } from "next/navigation"
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ConvexAuthProvider } from "better-convex/auth-client"
 import {
@@ -8,10 +12,9 @@ import {
 	getQueryClientSingleton,
 	useAuthStore,
 } from "better-convex/react"
-import { useRouter } from "next/navigation"
-import { type ReactNode, useCallback, useState } from "react"
 
 import { CRPCProvider } from "@/lib/convex/crpc"
+
 import { authClient } from "../lib/auth-client"
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!

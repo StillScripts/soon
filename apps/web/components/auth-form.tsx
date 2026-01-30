@@ -1,6 +1,7 @@
 "use client"
 
-import { authClient } from "@/lib/auth-client"
+import { useCallback, useState } from "react"
+
 import { Button } from "@repo/ui/components/ui/button"
 import {
 	Card,
@@ -12,7 +13,8 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/ui/field"
 import { Input } from "@repo/ui/components/ui/input"
 import { useForm } from "@tanstack/react-form"
-import { useCallback, useState } from "react"
+
+import { authClient } from "@/lib/auth-client"
 
 type AuthMode = "login" | "signup"
 
@@ -185,7 +187,7 @@ export function AuthForm() {
 							<button
 								type="button"
 								onClick={toggleMode}
-								className="text-primary underline underline-offset-4 hover:text-primary/80"
+								className="text-primary hover:text-primary/80 underline underline-offset-4"
 							>
 								Sign up
 							</button>
@@ -196,7 +198,7 @@ export function AuthForm() {
 							<button
 								type="button"
 								onClick={toggleMode}
-								className="text-primary underline underline-offset-4 hover:text-primary/80"
+								className="text-primary hover:text-primary/80 underline underline-offset-4"
 							>
 								Sign in
 							</button>

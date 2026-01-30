@@ -11,6 +11,8 @@ Group related tests into suites for organization and shared setup.
 
 ```ts
 import { describe, expect, test } from "vitest"
+// Alias: suite
+import { suite } from "vitest"
 
 describe("Math", () => {
 	test("adds numbers", () => {
@@ -22,8 +24,6 @@ describe("Math", () => {
 	})
 })
 
-// Alias: suite
-import { suite } from "vitest"
 suite("equivalent to describe", () => {})
 ```
 

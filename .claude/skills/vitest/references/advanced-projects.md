@@ -201,6 +201,9 @@ vitest --project.ignore browser
 Share values from config to tests:
 
 ```ts
+// In tests, use inject
+import { inject } from "vitest"
+
 // vitest.config.ts
 defineConfig({
 	test: {
@@ -226,9 +229,6 @@ defineConfig({
 		],
 	},
 })
-
-// In tests, use inject
-import { inject } from "vitest"
 
 test("uses correct api", () => {
 	const url = inject("apiUrl")

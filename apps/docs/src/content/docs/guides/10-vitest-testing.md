@@ -83,8 +83,8 @@ export const sharedConfig: UserConfig = {
 
 ```typescript
 // packages/ui/vitest.config.ts
-import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
 	...sharedConfig,
@@ -99,9 +99,9 @@ export default defineConfig({
 
 ```typescript
 // apps/web/vitest.config.ts
-import { defineConfig } from "vitest/config"
-import react from "@vitejs/plugin-react"
 import { sharedConfig } from "@repo/vitest-config"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
 	plugins: [react()],
@@ -145,8 +145,8 @@ export default defineConfig({
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
 	...sharedConfig,
@@ -223,8 +223,8 @@ When working with tests in this codebase:
 2. Create `vitest.config.ts`:
 
 ```typescript
-import { defineConfig } from "vitest/config"
 import { sharedConfig } from "@repo/vitest-config"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
 	...sharedConfig,
@@ -241,6 +241,7 @@ export default defineConfig({
 
 ```typescript
 import { describe, expect, test } from "vitest"
+
 import { cn } from "../src/lib/utils"
 
 describe("cn utility", () => {

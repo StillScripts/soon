@@ -114,6 +114,7 @@ import {
 	listThingsSchema,
 	removeThingSchema,
 } from "@repo/validators/things.js"
+
 import { authMutation, authQuery } from "./crpc"
 
 export const create = authMutation.input(createThingSchema).mutation(async ({ ctx, input }) => {

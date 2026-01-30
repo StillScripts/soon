@@ -223,6 +223,7 @@ TypeScript helper for mocked values:
 
 ```ts
 import { myFn } from "./module"
+
 vi.mock("./module")
 
 // Type as mock

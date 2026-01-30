@@ -194,6 +194,7 @@ The `cn()` function merges Tailwind classes safely:
 
 ```tsx
 import { cn } from "@repo/ui/lib/utils"
+
 ;<div className={cn("base-class", conditional && "conditional-class", className)} />
 ```
 
@@ -201,8 +202,8 @@ import { cn } from "@repo/ui/lib/utils"
 
 ```tsx
 import { Button } from "@repo/ui/components/ui/button"
-import { Input } from "@repo/ui/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
+import { Input } from "@repo/ui/components/ui/input"
 
 export function MyForm() {
 	return (

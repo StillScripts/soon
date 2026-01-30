@@ -1,4 +1,5 @@
 import { CRPCError, initCRPC } from "better-convex/server"
+
 import type { DataModel } from "./_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "./_generated/server"
 import { action, mutation, query } from "./_generated/server"

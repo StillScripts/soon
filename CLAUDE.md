@@ -51,7 +51,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 Use `bun test` to run tests:
 
 ```ts
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
 
 test("hello world", () => {
 	expect(1).toBe(1)

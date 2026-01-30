@@ -55,8 +55,9 @@ export default defineSchema({
 
 ```typescript
 // convex/things.ts
-import { query } from "./_generated/server"
 import { v } from "convex/values"
+
+import { query } from "./_generated/server"
 
 // Query without arguments
 export const getThings = query({
@@ -114,8 +115,9 @@ export const getByStatus = query({
 ## Mutations
 
 ```typescript
-import { mutation } from "./_generated/server"
 import { v } from "convex/values"
+
+import { mutation } from "./_generated/server"
 
 // Create
 export const createThing = mutation({
@@ -166,7 +168,7 @@ export const replaceThing = mutation({
 
 ```typescript
 import { api } from "backend/convex"
-import { useQuery, useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 ```
 
 ### useQuery
@@ -196,9 +198,10 @@ await createThing({ title: "New Thing" })
 ```tsx
 "use client"
 
+import { FormEvent, useState } from "react"
+
 import { api } from "backend/convex"
 import { useMutation, useQuery } from "convex/react"
-import { FormEvent, useState } from "react"
 
 export default function ThingsPage() {
 	const things = useQuery(api.things.getThings)

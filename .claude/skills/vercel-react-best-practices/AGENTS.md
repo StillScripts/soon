@@ -384,30 +384,35 @@ Popular icon and component libraries can have **up to 10,000 re-exports** in the
 **Incorrect: imports entire library**
 
 ```tsx
-import { Check, X, Menu } from "lucide-react"
 // Loads 1,583 modules, takes ~2.8s extra in dev
 // Runtime cost: 200-800ms on every cold start
 
 import { Button, TextField } from "@mui/material"
+import { Check, Menu, X } from "lucide-react"
+
 // Loads 2,225 modules, takes ~4.2s extra in dev
 ```
 
 **Correct: imports only what you need**
 
 ```tsx
-import Check from "lucide-react/dist/esm/icons/check"
-import X from "lucide-react/dist/esm/icons/x"
-import Menu from "lucide-react/dist/esm/icons/menu"
 // Loads only 3 modules (~2KB vs ~1MB)
 
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
+import Check from "lucide-react/dist/esm/icons/check"
+import Menu from "lucide-react/dist/esm/icons/menu"
+import X from "lucide-react/dist/esm/icons/x"
+
 // Loads only what you use
 ```
 
 **Alternative: Next.js 13.5+**
 
 ```js
+// Then you can keep the ergonomic barrel imports:
+import { Check, Menu, X } from "lucide-react"
+
 // next.config.js - use optimizePackageImports
 module.exports = {
 	experimental: {
@@ -415,8 +420,6 @@ module.exports = {
 	},
 }
 
-// Then you can keep the ergonomic barrel imports:
-import { Check, X, Menu } from "lucide-react"
 // Automatically transformed to direct imports at build time
 ```
 
@@ -632,8 +635,9 @@ export async function deleteUser(userId: string) {
 ```typescript
 "use server"
 
-import { verifySession } from "@/lib/auth"
 import { z } from "zod"
+
+import { verifySession } from "@/lib/auth"
 
 const updateProfileSchema = z.object({
 	userId: z.string().uuid(),
@@ -977,8 +981,9 @@ export async function POST(request: Request) {
 **Correct: non-blocking**
 
 ```tsx
+import { cookies, headers } from "next/headers"
 import { after } from "next/server"
-import { headers, cookies } from "next/headers"
+
 import { logUserAction } from "@/app/utils"
 
 export async function POST(request: Request) {
@@ -1860,7 +1865,7 @@ Apply `content-visibility: auto` to defer off-screen rendering.
 ```tsx
 function MessageList({ messages }: { messages: Message[] }) {
 	return (
-		<div className="overflow-y-auto h-screen">
+		<div className="h-screen overflow-y-auto">
 			{messages.map((msg) => (
 				<div key={msg.id} className="message-item">
 					<Avatar user={msg.author} />
@@ -1884,7 +1889,7 @@ Extract static JSX outside components to avoid re-creation.
 
 ```tsx
 function LoadingSkeleton() {
-	return <div className="animate-pulse h-20 bg-gray-200" />
+	return <div className="h-20 animate-pulse bg-gray-200" />
 }
 
 function Container() {
@@ -1895,7 +1900,7 @@ function Container() {
 **Correct: reuses same element**
 
 ```tsx
-const loadingSkeleton = <div className="animate-pulse h-20 bg-gray-200" />
+const loadingSkeleton = <div className="h-20 animate-pulse bg-gray-200" />
 
 function Container() {
 	return <div>{loading && loadingSkeleton}</div>
@@ -2105,7 +2110,7 @@ function SearchResults() {
 **Correct: useTransition with built-in pending state**
 
 ```tsx
-import { useTransition, useState } from "react"
+import { useState, useTransition } from "react"
 
 function SearchResults() {
 	const [query, setQuery] = useState("")

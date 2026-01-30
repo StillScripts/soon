@@ -55,8 +55,8 @@ packages/backend/convex/
 ### Component Registration (`convex.config.ts`)
 
 ```typescript
-import { defineApp } from "convex/server"
 import betterAuth from "@convex-dev/better-auth/convex.config"
+import { defineApp } from "convex/server"
 
 const app = defineApp()
 app.use(betterAuth)
@@ -78,12 +78,13 @@ export default {
 ### Auth Instance (`auth.ts`)
 
 ```typescript
-import { createClient, type GenericCtx } from "@convex-dev/better-auth"
+import { type GenericCtx, createClient } from "@convex-dev/better-auth"
 import { convex } from "@convex-dev/better-auth/plugins"
+import { betterAuth } from "better-auth/minimal"
+
 import { components } from "./_generated/api"
 import type { DataModel } from "./_generated/dataModel"
 import { query } from "./_generated/server"
-import { betterAuth } from "better-auth/minimal"
 import authConfig from "./auth.config"
 
 const siteUrl = process.env.SITE_URL!
@@ -117,7 +118,6 @@ export const getCurrentUser = query({
 ```typescript
 // Correct
 import type { DataModel } from "./_generated/dataModel"
-
 // Wrong - causes TS1484 error
 import { DataModel } from "./_generated/dataModel"
 ```

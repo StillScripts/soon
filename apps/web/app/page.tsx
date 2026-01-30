@@ -1,8 +1,5 @@
 "use client"
 
-import { AuthForm } from "@/components/auth-form"
-import { authClient } from "@/lib/auth-client"
-import { useCRPC } from "@/lib/convex/crpc"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/ui/field"
@@ -10,6 +7,10 @@ import { Input } from "@repo/ui/components/ui/input"
 import { createThingSchema } from "@repo/validators/things"
 import { useForm } from "@tanstack/react-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
+import { AuthForm } from "@/components/auth-form"
+import { authClient } from "@/lib/auth-client"
+import { useCRPC } from "@/lib/convex/crpc"
 
 function ThingsManager() {
 	const crpc = useCRPC()
@@ -117,11 +118,11 @@ function ThingsManager() {
 							{things?.map((thing) => (
 								<li
 									key={thing._id}
-									className="p-4 bg-secondary rounded-lg flex justify-between items-center"
+									className="bg-secondary flex items-center justify-between rounded-lg p-4"
 								>
 									<span>{thing.title}</span>
 									<div className="flex items-center gap-4">
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{new Date(thing._creationTime).toLocaleDateString()}
 										</span>
 										<Button
@@ -153,7 +154,7 @@ function UserHeader() {
 
 	return (
 		<div className="flex items-center gap-4">
-			<span className="text-sm text-muted-foreground">{session?.user?.email}</span>
+			<span className="text-muted-foreground text-sm">{session?.user?.email}</span>
 			<Button variant="outline" size="sm" onClick={handleSignOut}>
 				Sign out
 			</Button>
@@ -166,7 +167,7 @@ export default function Home() {
 
 	if (isPending) {
 		return (
-			<div className="min-h-screen grid place-items-center">
+			<div className="grid min-h-screen place-items-center">
 				<p className="text-muted-foreground">Loading...</p>
 			</div>
 		)
@@ -174,24 +175,24 @@ export default function Home() {
 
 	if (!session) {
 		return (
-			<div className="min-h-screen grid place-items-center p-4">
+			<div className="grid min-h-screen place-items-center p-4">
 				<AuthForm />
 			</div>
 		)
 	}
 
 	return (
-		<div className="min-h-screen grid grid-rows-[auto_1fr_auto] p-8 gap-8">
+		<div className="grid min-h-screen grid-rows-[auto_1fr_auto] gap-8 p-8">
 			<header className="flex items-center justify-between">
 				<h1 className="text-3xl font-bold">Things Manager</h1>
 				<UserHeader />
 			</header>
 
-			<main className="flex flex-col gap-8 items-center w-full max-w-lg mx-auto">
+			<main className="mx-auto flex w-full max-w-lg flex-col items-center gap-8">
 				<ThingsManager />
 			</main>
 
-			<footer className="text-center text-sm text-muted-foreground">
+			<footer className="text-muted-foreground text-center text-sm">
 				Powered by Convex + Better Auth + TanStack Query
 			</footer>
 		</div>

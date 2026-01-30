@@ -4,6 +4,7 @@ import {
 	listThingsSchema,
 	removeThingSchema,
 } from "@repo/validators/things.js"
+
 import type { Id } from "./_generated/dataModel"
 import { authMutation, authQuery } from "./crpc"
 

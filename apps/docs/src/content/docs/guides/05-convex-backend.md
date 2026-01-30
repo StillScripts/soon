@@ -71,8 +71,9 @@ export default defineSchema({
 ### Queries and Mutations (`convex/things.ts`)
 
 ```typescript
-import { mutation, query } from "./_generated/server"
 import { v } from "convex/values"
+
+import { mutation, query } from "./_generated/server"
 
 export const getThings = query({
 	args: {},
@@ -123,8 +124,9 @@ The backend package exports the Convex API for the web app:
 ```tsx
 "use client"
 
-import { ConvexProvider, ConvexReactClient } from "convex/react"
 import { ReactNode } from "react"
+
+import { ConvexProvider, ConvexReactClient } from "convex/react"
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 
@@ -167,9 +169,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```tsx
 "use client"
 
-import { useMutation, useQuery } from "convex/react"
-import { api } from "backend/convex"
 import { FormEvent, useState } from "react"
+
+import { api } from "backend/convex"
+import { useMutation, useQuery } from "convex/react"
 
 export default function Home() {
 	const things = useQuery(api.things.getThings)

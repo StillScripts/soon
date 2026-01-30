@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+
 import { createThingSchema, getThingSchema, listThingsSchema, removeThingSchema } from "./things.js"
 
 describe("createThingSchema", () => {

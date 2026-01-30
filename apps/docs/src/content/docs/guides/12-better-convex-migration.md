@@ -64,6 +64,7 @@ This is the central piece. It initializes Better Convex's `initCRPC` with our da
 
 ```typescript
 import { CRPCError, initCRPC } from "better-convex/server"
+
 import type { DataModel } from "./_generated/dataModel"
 import { action, mutation, query } from "./_generated/server"
 import { authComponent } from "./auth"
@@ -246,8 +247,8 @@ Key details in the new provider setup:
 **Before** — `convex/react` hooks:
 
 ```typescript
-import { useMutation, useQuery } from "convex/react"
 import { api } from "backend/convex"
+import { useMutation, useQuery } from "convex/react"
 
 const things = useQuery(api.things.getThings)
 const createThing = useMutation(api.things.createThing)
@@ -257,6 +258,7 @@ const createThing = useMutation(api.things.createThing)
 
 ```typescript
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
 import { useCRPC } from "@/lib/convex/crpc"
 
 const crpc = useCRPC()

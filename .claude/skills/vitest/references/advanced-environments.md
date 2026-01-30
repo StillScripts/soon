@@ -46,7 +46,6 @@ Use magic comment at top of file:
 
 ```ts
 // @vitest-environment jsdom
-
 import { expect, test } from "vitest"
 
 test("DOM test", () => {

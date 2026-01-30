@@ -53,6 +53,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@repo/ui/components/ui/card"
+
 ;<Card>
 	<CardHeader>
 		<CardTitle>Card Title</CardTitle>
@@ -113,6 +114,7 @@ import {
 	FieldSet,
 	FieldTitle,
 } from "@repo/ui/components/ui/field"
+
 ;<FieldGroup>
 	<Field>
 		<FieldLabel htmlFor="name">Name</FieldLabel>
@@ -127,6 +129,7 @@ import {
 
 ```tsx
 import { InputGroup, InputGroupText } from "@repo/ui/components/ui/input-group"
+
 ;<InputGroup>
 	<InputGroupText>$</InputGroupText>
 	<Input type="number" placeholder="0.00" />
@@ -146,6 +149,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@repo/ui/components/ui/select"
+
 ;<Select>
 	<SelectTrigger>
 		<SelectValue placeholder="Select option" />
@@ -194,6 +198,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu"
+
 ;<DropdownMenu>
 	<DropdownMenuTrigger asChild>
 		<Button variant="outline">Open Menu</Button>
@@ -223,6 +228,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@repo/ui/components/ui/alert-dialog"
+
 ;<AlertDialog>
 	<AlertDialogTrigger asChild>
 		<Button variant="destructive">Delete</Button>

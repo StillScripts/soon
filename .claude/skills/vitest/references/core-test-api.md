@@ -9,13 +9,12 @@ description: test/it function for defining tests with modifiers
 
 ```ts
 import { expect, test } from "vitest"
+// Alias: it
+import { it } from "vitest"
 
 test("adds numbers", () => {
 	expect(1 + 1).toBe(2)
 })
-
-// Alias: it
-import { it } from "vitest"
 
 it("works the same", () => {
 	expect(true).toBe(true)

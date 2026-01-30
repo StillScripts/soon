@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest"
+
 import { cn } from "../src/lib/utils"
 
 describe("cn utility", () => {

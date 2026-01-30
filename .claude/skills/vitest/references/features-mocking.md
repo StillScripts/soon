@@ -55,12 +55,12 @@ spy.mockRestore()
 ## Module Mocking
 
 ```ts
+import { fetchUser } from "./api"
+
 // vi.mock is hoisted to top of file
 vi.mock("./api", () => ({
 	fetchUser: vi.fn(() => ({ id: 1, name: "Mock" })),
 }))
-
-import { fetchUser } from "./api"
 
 test("mocked module", () => {
 	expect(fetchUser()).toEqual({ id: 1, name: "Mock" })
@@ -82,10 +82,10 @@ vi.mock("./utils", async (importOriginal) => {
 ### Auto-mock with Spy
 
 ```ts
+import { add } from "./calculator"
+
 // Keep implementation but spy on calls
 vi.mock("./calculator", { spy: true })
-
-import { add } from "./calculator"
 
 test("spy on module", () => {
 	const result = add(1, 2) // Real implementation
@@ -243,13 +243,13 @@ defineConfig({
 ## Hoisted Variables for Mocks
 
 ```ts
+import { getData } from "./module"
+
 const mockFn = vi.hoisted(() => vi.fn())
 
 vi.mock("./module", () => ({
 	getData: mockFn,
 }))
-
-import { getData } from "./module"
 
 test("hoisted mock", () => {
 	mockFn.mockReturnValue("test")

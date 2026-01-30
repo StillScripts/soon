@@ -76,7 +76,7 @@ import { cn } from "@repo/ui/lib/utils"
 
 ```tsx
 import { api } from "backend/convex"
-import { useQuery, useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 
 const data = useQuery(api.things.getThings)
 const mutate = useMutation(api.things.createThing)
