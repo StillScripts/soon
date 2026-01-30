@@ -1,3 +1,8 @@
+---
+name: claude-settings-audit
+description: Generate recommended settings.json permissions based on detected tech stacks and tools. Use when auditing or configuring Claude Code permissions.
+---
+
 # Claude Settings Audit - Complete Documentation
 
 ## Overview

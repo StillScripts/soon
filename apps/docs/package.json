@@ -3,9 +3,10 @@
 	"type": "module",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
+		"generate:skills": "bun scripts/generate-skills.ts",
+		"dev": "bun run generate:skills && astro dev",
+		"start": "bun run generate:skills && astro dev",
+		"build": "bun run generate:skills && astro build",
 		"preview": "astro preview",
 		"astro": "astro"
 	},

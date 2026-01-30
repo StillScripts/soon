@@ -64,7 +64,15 @@ export default defineConfig({
 							label: "oxlint + Prettier Migration",
 							slug: "guides/14-oxlint-prettier-migration",
 						},
+						{
+							label: "Auto-Generated Skills Docs",
+							slug: "guides/15-skills-documentation",
+						},
 					],
+				},
+				{
+					label: "Skills",
+					autogenerate: { directory: "skills" },
 				},
 				{
 					label: "Reference",
