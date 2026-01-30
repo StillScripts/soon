@@ -3,5 +3,9 @@
 	"semi": false,
 	"singleQuote": false,
 	"trailingComma": "es5",
-	"printWidth": 100
+	"printWidth": 100,
+	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+	"importOrder": ["^react", "^next", "^@?\\w", "^@repo/", "^@/", "^\\./", "^\\.\\./"],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true
 }
