@@ -2,7 +2,7 @@
 import { convexTest } from "convex-test"
 import { describe, expect, it } from "vitest"
 
-import { internal } from "./_generated/api"
+import { api } from "./_generated/api"
 import type { Id } from "./_generated/dataModel"
 import schema from "./schema"
 
@@ -20,22 +20,27 @@ type ThingResult = {
 /**
  * Tests for Things CRUD operations.
  *
- * These tests use the internal functions which bypass the better-auth middleware,
- * allowing us to test the core business logic with convex-test.
+ * These tests use convex-test's withIdentity() to mock authentication,
+ * which works with our auth middleware that checks ctx.auth.getUserIdentity()
+ * before falling back to better-auth.
  *
- * The auth middleware itself (which uses better-auth) is tested separately
- * through integration tests.
+ * This approach tests the actual production code (things.ts) rather than
+ * internal duplicates, ensuring test coverage matches real behavior.
  */
 
 // Module loading for convex-test
 const modules = import.meta.glob("./**/*.ts")
 
+/** Create a test instance with a mocked user identity */
+function asUser(userId: string) {
+	return convexTest(schema, modules).withIdentity({ subject: userId })
+}
+
 describe("things.create", () => {
 	it("should create a thing with just a title", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
+		const id = await t.mutation(api.things.create, {
 			title: "My First Thing",
 		})
 
@@ -44,18 +49,14 @@ describe("things.create", () => {
 	})
 
 	it("should create a thing with title and description", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
+		const id = await t.mutation(api.things.create, {
 			title: "Thing With Description",
 			description: "This is a detailed description of my thing.",
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing).toMatchObject({
 			title: "Thing With Description",
@@ -65,42 +66,26 @@ describe("things.create", () => {
 	})
 
 	it("should create multiple things for the same user", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing 1",
-		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing 2",
-		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing 3",
-		})
+		await t.mutation(api.things.create, { title: "Thing 1" })
+		await t.mutation(api.things.create, { title: "Thing 2" })
+		await t.mutation(api.things.create, { title: "Thing 3" })
 
-		const things = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-		})
+		const things = await t.query(api.things.list, {})
 
 		expect(things).toHaveLength(3)
 	})
 
 	it("should store the correct userId with the thing", async () => {
-		const t = convexTest(schema, modules)
 		const userId = "specific_user_id"
+		const t = asUser(userId)
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "User's Thing",
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.userId).toBe(userId)
 	})
@@ -108,32 +93,26 @@ describe("things.create", () => {
 
 describe("things.get", () => {
 	it("should return a thing by id", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Get This Thing",
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing).toMatchObject({
 			title: "Get This Thing",
-			userId,
+			userId: "user_123",
 		})
 		expect(thing?._id).toBe(id)
 		expect(thing?._creationTime).toBeDefined()
 	})
 
 	it("should return null for non-existent id", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
+		const thing = await t.query(api.things.get, {
 			id: "nonexistent_id_12345",
 		})
 
@@ -144,33 +123,24 @@ describe("things.get", () => {
 		const t = convexTest(schema, modules)
 
 		// Create thing as user_1
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		const id = await t.withIdentity({ subject: "user_1" }).mutation(api.things.create, {
 			title: "User 1's Private Thing",
 		})
 
 		// Try to access as user_2
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_2",
-			id: id as string,
-		})
+		const thing = await t.withIdentity({ subject: "user_2" }).query(api.things.get, { id })
 
 		expect(thing).toBeNull()
 	})
 
 	it("should return imageUrl as null when no image is attached", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing Without Image",
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageUrl).toBeNull()
 		expect(thing?.imageId).toBeUndefined()
@@ -179,31 +149,20 @@ describe("things.get", () => {
 
 describe("things.list", () => {
 	it("should return empty array when user has no things", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_with_no_things")
 
-		const things = await t.query(internal.thingsInternal.listInternal, {
-			userId: "user_with_no_things",
-		})
+		const things = await t.query(api.things.list, {})
 
 		expect(things).toEqual([])
 	})
 
 	it("should return all things for a user", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing A",
-		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing B",
-		})
+		await t.mutation(api.things.create, { title: "Thing A" })
+		await t.mutation(api.things.create, { title: "Thing B" })
 
-		const things = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-		})
+		const things = await t.query(api.things.list, {})
 
 		expect(things).toHaveLength(2)
 		expect(things.map((thing: ThingResult) => thing.title)).toContain("Thing A")
@@ -213,25 +172,18 @@ describe("things.list", () => {
 	it("should only return things owned by the specified user", async () => {
 		const t = convexTest(schema, modules)
 
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		await t.withIdentity({ subject: "user_1" }).mutation(api.things.create, {
 			title: "User 1's Thing",
 		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_2",
+		await t.withIdentity({ subject: "user_2" }).mutation(api.things.create, {
 			title: "User 2's Thing",
 		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		await t.withIdentity({ subject: "user_1" }).mutation(api.things.create, {
 			title: "User 1's Second Thing",
 		})
 
-		const user1Things = await t.query(internal.thingsInternal.listInternal, {
-			userId: "user_1",
-		})
-		const user2Things = await t.query(internal.thingsInternal.listInternal, {
-			userId: "user_2",
-		})
+		const user1Things = await t.withIdentity({ subject: "user_1" }).query(api.things.list, {})
+		const user2Things = await t.withIdentity({ subject: "user_2" }).query(api.things.list, {})
 
 		expect(user1Things).toHaveLength(2)
 		expect(user2Things).toHaveLength(1)
@@ -240,56 +192,37 @@ describe("things.list", () => {
 	})
 
 	it("should respect the limit parameter", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		// Create 5 things
 		for (let i = 1; i <= 5; i++) {
-			await t.mutation(internal.thingsInternal.createInternal, {
-				userId,
-				title: `Thing ${i}`,
-			})
+			await t.mutation(api.things.create, { title: `Thing ${i}` })
 		}
 
-		const limitedThings = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-			limit: 3,
-		})
+		const limitedThings = await t.query(api.things.list, { limit: 3 })
 
 		expect(limitedThings).toHaveLength(3)
 	})
 
 	it("should return all things when limit is not provided", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		// Create 5 things
 		for (let i = 1; i <= 5; i++) {
-			await t.mutation(internal.thingsInternal.createInternal, {
-				userId,
-				title: `Thing ${i}`,
-			})
+			await t.mutation(api.things.create, { title: `Thing ${i}` })
 		}
 
-		const allThings = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-		})
+		const allThings = await t.query(api.things.list, {})
 
 		expect(allThings).toHaveLength(5)
 	})
 
 	it("should include imageUrl as null for things without images", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing Without Image",
-		})
+		await t.mutation(api.things.create, { title: "Thing Without Image" })
 
-		const things = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-		})
+		const things = await t.query(api.things.list, {})
 
 		expect(things[0]?.imageUrl).toBeNull()
 	})
@@ -297,108 +230,69 @@ describe("things.list", () => {
 
 describe("things.update", () => {
 	it("should update the title of a thing", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Original Title",
-		})
+		const id = await t.mutation(api.things.create, { title: "Original Title" })
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			title: "Updated Title",
-		})
+		await t.mutation(api.things.update, { id, title: "Updated Title" })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.title).toBe("Updated Title")
 	})
 
 	it("should update the description of a thing", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing",
 			description: "Original description",
 		})
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			description: "Updated description",
-		})
+		await t.mutation(api.things.update, { id, description: "Updated description" })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.description).toBe("Updated description")
 	})
 
 	it("should clear description when set to null", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing",
 			description: "Has a description",
 		})
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			description: null,
-		})
+		await t.mutation(api.things.update, { id, description: null })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.description).toBeUndefined()
 	})
 
 	it("should not modify fields that are not provided", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Original Title",
 			description: "Original description",
 		})
 
 		// Only update title, not description
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			title: "New Title",
-		})
+		await t.mutation(api.things.update, { id, title: "New Title" })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.title).toBe("New Title")
 		expect(thing?.description).toBe("Original description")
 	})
 
 	it("should throw when updating non-existent thing", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
 		await expect(
-			t.mutation(internal.thingsInternal.updateInternal, {
-				userId: "user_123",
+			t.mutation(api.things.update, {
 				id: "nonexistent_id",
 				title: "New Title",
 			})
@@ -408,47 +302,34 @@ describe("things.update", () => {
 	it("should throw when updating another user's thing", async () => {
 		const t = convexTest(schema, modules)
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		const id = await t.withIdentity({ subject: "user_1" }).mutation(api.things.create, {
 			title: "User 1's Thing",
 		})
 
 		await expect(
-			t.mutation(internal.thingsInternal.updateInternal, {
-				userId: "user_2",
-				id: id as string,
+			t.withIdentity({ subject: "user_2" }).mutation(api.things.update, {
+				id,
 				title: "Attempted Hijack",
 			})
 		).rejects.toThrow("Not found or not authorized")
 
 		// Verify original is unchanged
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_1",
-			id: id as string,
-		})
+		const thing = await t.withIdentity({ subject: "user_1" }).query(api.things.get, { id })
 		expect(thing?.title).toBe("User 1's Thing")
 	})
 
 	it("should update multiple fields at once", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Original",
-		})
+		const id = await t.mutation(api.things.create, { title: "Original" })
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
+		await t.mutation(api.things.update, {
+			id,
 			title: "Updated Title",
 			description: "Added description",
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing).toMatchObject({
 			title: "Updated Title",
@@ -459,86 +340,56 @@ describe("things.update", () => {
 
 describe("things.remove", () => {
 	it("should remove a thing", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing to Delete",
-		})
+		const id = await t.mutation(api.things.create, { title: "Thing to Delete" })
 
-		await t.mutation(internal.thingsInternal.removeInternal, {
-			userId,
-			id: id as string,
-		})
+		await t.mutation(api.things.remove, { id })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing).toBeNull()
 	})
 
 	it("should throw when removing non-existent thing", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
-		await expect(
-			t.mutation(internal.thingsInternal.removeInternal, {
-				userId: "user_123",
-				id: "nonexistent_id",
-			})
-		).rejects.toThrow("Not found or not authorized")
+		await expect(t.mutation(api.things.remove, { id: "nonexistent_id" })).rejects.toThrow(
+			"Not found or not authorized"
+		)
 	})
 
 	it("should throw when removing another user's thing", async () => {
 		const t = convexTest(schema, modules)
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		const id = await t.withIdentity({ subject: "user_1" }).mutation(api.things.create, {
 			title: "User 1's Thing",
 		})
 
 		await expect(
-			t.mutation(internal.thingsInternal.removeInternal, {
-				userId: "user_2",
-				id: id as string,
-			})
+			t.withIdentity({ subject: "user_2" }).mutation(api.things.remove, { id })
 		).rejects.toThrow("Not found or not authorized")
 
 		// Verify thing still exists
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_1",
-			id: id as string,
-		})
+		const thing = await t.withIdentity({ subject: "user_1" }).query(api.things.get, { id })
 		expect(thing).not.toBeNull()
 	})
 
 	it("should remove thing from list after deletion", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id1 = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing 1",
-		})
-		const id2 = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing 2",
-		})
+		const id1 = await t.mutation(api.things.create, { title: "Thing 1" })
+		const id2 = await t.mutation(api.things.create, { title: "Thing 2" })
 
 		// Verify both exist
-		let things = await t.query(internal.thingsInternal.listInternal, { userId })
+		let things = await t.query(api.things.list, {})
 		expect(things).toHaveLength(2)
 
 		// Remove one
-		await t.mutation(internal.thingsInternal.removeInternal, {
-			userId,
-			id: id1 as string,
-		})
+		await t.mutation(api.things.remove, { id: id1 })
 
 		// Verify only one remains
-		things = await t.query(internal.thingsInternal.listInternal, { userId })
+		things = await t.query(api.things.list, {})
 		expect(things).toHaveLength(1)
 		expect(things[0]?._id).toBe(id2)
 	})
@@ -546,9 +397,9 @@ describe("things.remove", () => {
 
 describe("things.generateUploadUrl", () => {
 	it("should generate an upload URL", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 
-		const url = await t.mutation(internal.thingsInternal.generateUploadUrlInternal, {})
+		const url = await t.mutation(api.things.generateUploadUrl, {})
 
 		expect(url).toBeDefined()
 		expect(typeof url).toBe("string")
@@ -559,183 +410,124 @@ describe("things.generateUploadUrl", () => {
 describe("user isolation", () => {
 	it("should maintain complete isolation between users", async () => {
 		const t = convexTest(schema, modules)
+		const user1 = t.withIdentity({ subject: "user_1" })
+		const user2 = t.withIdentity({ subject: "user_2" })
 
 		// User 1 creates things
-		const user1Id1 = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
+		const user1Id1 = await user1.mutation(api.things.create, {
 			title: "User 1 - Thing A",
 		})
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_1",
-			title: "User 1 - Thing B",
-		})
+		await user1.mutation(api.things.create, { title: "User 1 - Thing B" })
 
 		// User 2 creates things
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_2",
-			title: "User 2 - Thing X",
-		})
+		await user2.mutation(api.things.create, { title: "User 2 - Thing X" })
 
 		// Verify user 1 only sees their things
-		const user1Things = await t.query(internal.thingsInternal.listInternal, {
-			userId: "user_1",
-		})
+		const user1Things = await user1.query(api.things.list, {})
 		expect(user1Things).toHaveLength(2)
 		expect(user1Things.every((thing: ThingResult) => thing.title.startsWith("User 1"))).toBe(true)
 
 		// Verify user 2 only sees their things
-		const user2Things = await t.query(internal.thingsInternal.listInternal, {
-			userId: "user_2",
-		})
+		const user2Things = await user2.query(api.things.list, {})
 		expect(user2Things).toHaveLength(1)
 		expect(user2Things[0]?.title).toBe("User 2 - Thing X")
 
 		// User 2 cannot get User 1's thing
-		const cannotGet = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_2",
-			id: user1Id1 as string,
-		})
+		const cannotGet = await user2.query(api.things.get, { id: user1Id1 })
 		expect(cannotGet).toBeNull()
 
 		// User 2 cannot update User 1's thing
 		await expect(
-			t.mutation(internal.thingsInternal.updateInternal, {
-				userId: "user_2",
-				id: user1Id1 as string,
-				title: "Hacked!",
-			})
+			user2.mutation(api.things.update, { id: user1Id1, title: "Hacked!" })
 		).rejects.toThrow()
 
 		// User 2 cannot delete User 1's thing
-		await expect(
-			t.mutation(internal.thingsInternal.removeInternal, {
-				userId: "user_2",
-				id: user1Id1 as string,
-			})
-		).rejects.toThrow()
+		await expect(user2.mutation(api.things.remove, { id: user1Id1 })).rejects.toThrow()
 	})
 })
 
 describe("edge cases", () => {
-	it("should handle empty string title (if allowed by schema)", async () => {
-		const t = convexTest(schema, modules)
+	it("should reject empty string title", async () => {
+		const t = asUser("user_123")
 
-		// This should work at the Convex level (schema allows empty strings)
-		// Validation happens at the validator layer, which is tested separately
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
-			title: "",
-		})
-
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
-			id: id as string,
-		})
-
-		expect(thing?.title).toBe("")
+		// The validator requires title to be at least 1 character
+		await expect(t.mutation(api.things.create, { title: "" })).rejects.toThrow()
 	})
 
 	it("should handle very long titles", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 		const longTitle = "A".repeat(200) // Max allowed by validator
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
-			title: longTitle,
-		})
+		const id = await t.mutation(api.things.create, { title: longTitle })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.title).toBe(longTitle)
 		expect(thing?.title.length).toBe(200)
 	})
 
 	it("should handle very long descriptions", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 		const longDescription = "B".repeat(2000) // Max allowed by validator
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with long description",
 			description: longDescription,
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.description).toBe(longDescription)
 		expect(thing?.description?.length).toBe(2000)
 	})
 
 	it("should handle unicode in title and description", async () => {
-		const t = convexTest(schema, modules)
+		const t = asUser("user_123")
 		const unicodeTitle = "日本語タイトル 🎉 Ümläuts"
 		const unicodeDescription = "Описание на русском 中文描述 العربية"
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId: "user_123",
+		const id = await t.mutation(api.things.create, {
 			title: unicodeTitle,
 			description: unicodeDescription,
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId: "user_123",
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.title).toBe(unicodeTitle)
 		expect(thing?.description).toBe(unicodeDescription)
 	})
 
 	it("should handle rapid create/delete cycles", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		// Create and immediately delete
 		for (let i = 0; i < 5; i++) {
-			const id = await t.mutation(internal.thingsInternal.createInternal, {
-				userId,
-				title: `Ephemeral Thing ${i}`,
-			})
-			await t.mutation(internal.thingsInternal.removeInternal, {
-				userId,
-				id: id as string,
-			})
+			const id = await t.mutation(api.things.create, { title: `Ephemeral Thing ${i}` })
+			await t.mutation(api.things.remove, { id })
 		}
 
-		const things = await t.query(internal.thingsInternal.listInternal, { userId })
+		const things = await t.query(api.things.list, {})
 		expect(things).toHaveLength(0)
 	})
 
 	it("should handle update to same values (idempotent)", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Same Title",
 			description: "Same Description",
 		})
 
 		// Update to same values multiple times
 		for (let i = 0; i < 3; i++) {
-			await t.mutation(internal.thingsInternal.updateInternal, {
-				userId,
-				id: id as string,
+			await t.mutation(api.things.update, {
+				id,
 				title: "Same Title",
 				description: "Same Description",
 			})
 		}
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.title).toBe("Same Title")
 		expect(thing?.description).toBe("Same Description")
@@ -744,24 +536,19 @@ describe("edge cases", () => {
 
 describe("storage integration", () => {
 	it("should create thing with imageId", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		// Create a storage entry first using t.run
 		const storageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["test image content"]))
 		})
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with Image",
 			imageId: storageId as string,
 		})
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageId).toBe(storageId)
 		expect(thing?.imageUrl).toBeDefined()
@@ -769,19 +556,12 @@ describe("storage integration", () => {
 	})
 
 	it("should update thing by adding imageId", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
-			title: "Thing Without Image",
-		})
+		const id = await t.mutation(api.things.create, { title: "Thing Without Image" })
 
 		// Verify no image initially
-		let thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		let thing = await t.query(api.things.get, { id })
 		expect(thing?.imageId).toBeUndefined()
 		expect(thing?.imageUrl).toBeNull()
 
@@ -790,61 +570,43 @@ describe("storage integration", () => {
 			return ctx.storage.store(new Blob(["new image"]))
 		})
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			imageId: storageId as string,
-		})
+		await t.mutation(api.things.update, { id, imageId: storageId as string })
 
-		thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		thing = await t.query(api.things.get, { id })
 		expect(thing?.imageId).toBe(storageId)
 		expect(thing?.imageUrl).toBeDefined()
 	})
 
 	it("should clear imageId when set to null", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		const storageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["image to remove"]))
 		})
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with Image to Remove",
 			imageId: storageId as string,
 		})
 
 		// Clear the image
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			imageId: null,
-		})
+		await t.mutation(api.things.update, { id, imageId: null })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageId).toBeUndefined()
 		expect(thing?.imageUrl).toBeNull()
 	})
 
 	it("should delete old image when replacing with new image", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		// Create thing with first image
 		const oldImageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["old image"]))
 		})
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with Replaceable Image",
 			imageId: oldImageId as string,
 		})
@@ -854,95 +616,67 @@ describe("storage integration", () => {
 			return ctx.storage.store(new Blob(["new image"]))
 		})
 
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			imageId: newImageId as string,
-		})
+		await t.mutation(api.things.update, { id, imageId: newImageId as string })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageId).toBe(newImageId)
 	})
 
 	it("should delete associated image when removing thing", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		const storageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["image to be deleted with thing"]))
 		})
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with Image to Delete",
 			imageId: storageId as string,
 		})
 
 		// Delete the thing
-		await t.mutation(internal.thingsInternal.removeInternal, {
-			userId,
-			id: id as string,
-		})
+		await t.mutation(api.things.remove, { id })
 
 		// Thing should be gone
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 		expect(thing).toBeNull()
 	})
 
 	it("should not update imageId when same value is provided", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		const storageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["stable image"]))
 		})
 
-		const id = await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		const id = await t.mutation(api.things.create, {
 			title: "Thing with Stable Image",
 			imageId: storageId as string,
 		})
 
 		// Update with same imageId
-		await t.mutation(internal.thingsInternal.updateInternal, {
-			userId,
-			id: id as string,
-			imageId: storageId as string,
-		})
+		await t.mutation(api.things.update, { id, imageId: storageId as string })
 
-		const thing = await t.query(internal.thingsInternal.getInternal, {
-			userId,
-			id: id as string,
-		})
+		const thing = await t.query(api.things.get, { id })
 
 		// Image should still be there
 		expect(thing?.imageId).toBe(storageId)
 	})
 
 	it("should include imageUrl in list results", async () => {
-		const t = convexTest(schema, modules)
-		const userId = "user_123"
+		const t = asUser("user_123")
 
 		const storageId = await t.run(async (ctx) => {
 			return ctx.storage.store(new Blob(["listed image"]))
 		})
 
-		await t.mutation(internal.thingsInternal.createInternal, {
-			userId,
+		await t.mutation(api.things.create, {
 			title: "Thing in List with Image",
 			imageId: storageId as string,
 		})
 
-		const things = await t.query(internal.thingsInternal.listInternal, {
-			userId,
-		})
+		const things = await t.query(api.things.list, {})
 
 		expect(things).toHaveLength(1)
 		expect(things[0]?.imageUrl).toBeDefined()
