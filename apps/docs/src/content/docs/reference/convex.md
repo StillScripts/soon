@@ -1,19 +1,99 @@
 ---
 title: Convex API
-description: Patterns for writing Convex queries, mutations, and schema.
+description: Better Convex patterns with cRPC, auth middleware, and type-safe queries.
 ---
 
 ## Project Structure
 
 ```
 packages/backend/convex/
-├── _generated/           # Auto-generated (don't edit)
-│   ├── api.d.ts
-│   ├── api.js
-│   ├── dataModel.d.ts
-│   └── server.ts
+├── functions/            # API endpoints
+│   ├── auth.ts           # Better Auth integration
+│   └── things.ts         # Example CRUD operations
+├── lib/
+│   └── crpc.ts           # cRPC builder with auth middleware
 ├── schema.ts             # Database schema
-└── things.ts             # Queries and mutations
+├── auth.config.ts        # Better Auth config
+└── _generated/           # Auto-generated (don't edit)
+```
+
+## Better Convex (cRPC)
+
+This project uses **Better Convex** for type-safe cRPC procedures.
+
+### cRPC Builder
+
+Defined in `lib/crpc.ts`:
+
+```typescript
+import { CRPCError, initCRPC } from "better-convex/server"
+
+const c = initCRPC.dataModel<DataModel>().create({
+  query, mutation, action,
+  internalQuery, internalMutation, internalAction,
+})
+
+export const publicQuery = c.query
+export const publicMutation = c.mutation
+
+// Auth middleware - adds user and userId to context
+export const authQuery = c.query
+  .meta({ auth: "required" })
+  .use(async ({ ctx, next }) => {
+    const user = await authComponent.getAuthUser(ctx)
+    if (!user) {
+      throw new CRPCError({ code: "UNAUTHORIZED" })
+    }
+    return next({ ctx: { ...ctx, user, userId: user._id } })
+  })
+
+export const authMutation = c.mutation
+  .meta({ auth: "required" })
+  .use(async ({ ctx, next }) => {
+    const user = await authComponent.getAuthUser(ctx)
+    if (!user) {
+      throw new CRPCError({ code: "UNAUTHORIZED" })
+    }
+    return next({ ctx: { ...ctx, user, userId: user._id } })
+  })
+```
+
+### Writing Functions
+
+```typescript
+import { z } from "zod"
+import { zid } from "convex-helpers/server/zod4"
+import { authQuery, authMutation } from "../lib/crpc"
+
+// Output schema with typed IDs
+const thingOutputSchema = z.object({
+  _id: zid("things"),
+  _creationTime: z.number(),
+  title: z.string(),
+  userId: z.string(),
+})
+
+// Query with input/output validation
+export const list = authQuery
+  .input(z.object({ limit: z.number().optional() }))
+  .output(z.array(thingOutputSchema))
+  .query(async ({ ctx, input }) => {
+    return ctx.db
+      .query("things")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(input.limit ?? 100)
+  })
+
+// Mutation with input validation
+export const create = authMutation
+  .input(z.object({ title: z.string().min(1).max(100) }))
+  .output(zid("things"))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.db.insert("things", {
+      title: input.title,
+      userId: ctx.userId,
+    })
+  })
 ```
 
 ## Schema Definition
@@ -24,274 +104,104 @@ import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
 
 export default defineSchema({
-	things: defineTable({
-		title: v.string(),
-	}),
-
-	users: defineTable({
-		name: v.string(),
-		email: v.string(),
-		role: v.optional(v.union(v.literal("admin"), v.literal("user"))),
-	}).index("by_email", ["email"]),
+  things: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
+    userId: v.string(),
+  }).index("by_user", ["userId"]),
 })
 ```
 
 ### Validators
 
-| Validator                                 | Description                   |
-| ----------------------------------------- | ----------------------------- |
-| `v.string()`                              | String value                  |
-| `v.number()`                              | Number value                  |
-| `v.boolean()`                             | Boolean value                 |
-| `v.null()`                                | Null value                    |
-| `v.id("tableName")`                       | Document ID reference         |
-| `v.array(v.string())`                     | Array of strings              |
-| `v.object({ key: v.string() })`           | Object with shape             |
-| `v.optional(v.string())`                  | Optional string               |
-| `v.union(v.literal("a"), v.literal("b"))` | Union type                    |
-| `v.any()`                                 | Any value (avoid if possible) |
+| Validator | Description |
+|-----------|-------------|
+| `v.string()` | String value |
+| `v.number()` | Number value |
+| `v.boolean()` | Boolean value |
+| `v.id("table")` | Document ID reference |
+| `v.optional(...)` | Optional field |
+| `v.array(...)` | Array of values |
+| `v.object({...})` | Nested object |
 
-## Queries
+## Shared Validators
+
+Input validation lives in `@repo/validators` (shared with frontend):
 
 ```typescript
-// convex/things.ts
-import { v } from "convex/values"
+// packages/validators/src/things.ts
+import { z } from "zod"
 
-import { query } from "./_generated/server"
-
-// Query without arguments
-export const getThings = query({
-	args: {},
-	handler: async (ctx) => {
-		return await ctx.db.query("things").collect()
-	},
+export const createThingSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
 })
 
-// Query with arguments
-export const getThing = query({
-	args: {
-		id: v.id("things"),
-	},
-	handler: async (ctx, args) => {
-		return await ctx.db.get(args.id)
-	},
-})
-
-// Query with filter
-export const getThingsByTitle = query({
-	args: {
-		title: v.string(),
-	},
-	handler: async (ctx, args) => {
-		return await ctx.db
-			.query("things")
-			.filter((q) => q.eq(q.field("title"), args.title))
-			.collect()
-	},
+// Use z.string() for IDs (not zid - that's server-only)
+export const getThingSchema = z.object({
+  id: z.string(),
 })
 ```
 
-### Using Indexes (Preferred)
+Use in Convex functions:
 
 ```typescript
-// Define index in schema
-defineTable({
-	title: v.string(),
-	status: v.string(),
-}).index("by_status", ["status"])
+import { createThingSchema } from "@repo/validators/things"
 
-// Use index in query
-export const getByStatus = query({
-	args: { status: v.string() },
-	handler: async (ctx, args) => {
-		return await ctx.db
-			.query("things")
-			.withIndex("by_status", (q) => q.eq("status", args.status))
-			.collect()
-	},
-})
-```
-
-## Mutations
-
-```typescript
-import { v } from "convex/values"
-
-import { mutation } from "./_generated/server"
-
-// Create
-export const createThing = mutation({
-	args: {
-		title: v.string(),
-	},
-	handler: async (ctx, args) => {
-		return await ctx.db.insert("things", { title: args.title })
-	},
-})
-
-// Update
-export const updateThing = mutation({
-	args: {
-		id: v.id("things"),
-		title: v.string(),
-	},
-	handler: async (ctx, args) => {
-		await ctx.db.patch(args.id, { title: args.title })
-	},
-})
-
-// Delete
-export const deleteThing = mutation({
-	args: {
-		id: v.id("things"),
-	},
-	handler: async (ctx, args) => {
-		await ctx.db.delete(args.id)
-	},
-})
-
-// Replace entire document
-export const replaceThing = mutation({
-	args: {
-		id: v.id("things"),
-		title: v.string(),
-	},
-	handler: async (ctx, args) => {
-		await ctx.db.replace(args.id, { title: args.title })
-	},
-})
-```
-
-## Frontend Usage
-
-### Import Pattern
-
-```typescript
-import { api } from "backend/convex"
-import { useMutation, useQuery } from "convex/react"
-```
-
-### useQuery
-
-```typescript
-// Returns data or undefined (loading)
-const things = useQuery(api.things.getThings)
-
-// With arguments
-const thing = useQuery(api.things.getThing, { id: thingId })
-
-// Skip query conditionally
-const thing = useQuery(thingId ? api.things.getThing : "skip", thingId ? { id: thingId } : "skip")
-```
-
-### useMutation
-
-```typescript
-const createThing = useMutation(api.things.createThing)
-
-// Call the mutation
-await createThing({ title: "New Thing" })
-```
-
-### Complete Example
-
-```tsx
-"use client"
-
-import { FormEvent, useState } from "react"
-
-import { api } from "backend/convex"
-import { useMutation, useQuery } from "convex/react"
-
-export default function ThingsPage() {
-	const things = useQuery(api.things.getThings)
-	const createThing = useMutation(api.things.createThing)
-	const [title, setTitle] = useState("")
-
-	const handleSubmit = async (e: FormEvent) => {
-		e.preventDefault()
-		if (!title.trim()) return
-		await createThing({ title: title.trim() })
-		setTitle("")
-	}
-
-	if (things === undefined) {
-		return <p>Loading...</p>
-	}
-
-	return (
-		<div>
-			<form onSubmit={handleSubmit}>
-				<input value={title} onChange={(e) => setTitle(e.target.value)} />
-				<button type="submit">Create</button>
-			</form>
-
-			<ul>
-				{things.map((thing) => (
-					<li key={thing._id}>{thing.title}</li>
-				))}
-			</ul>
-		</div>
-	)
-}
+export const create = authMutation
+  .input(createThingSchema)
+  .mutation(async ({ ctx, input }) => {
+    // input is typed from the schema
+  })
 ```
 
 ## Database Operations
 
-| Operation | Method                      | Description             |
-| --------- | --------------------------- | ----------------------- |
-| Get by ID | `ctx.db.get(id)`            | Get single document     |
-| Insert    | `ctx.db.insert(table, doc)` | Create new document     |
-| Patch     | `ctx.db.patch(id, fields)`  | Update specific fields  |
-| Replace   | `ctx.db.replace(id, doc)`   | Replace entire document |
-| Delete    | `ctx.db.delete(id)`         | Delete document         |
+| Operation | Method | Description |
+|-----------|--------|-------------|
+| Get by ID | `ctx.db.get(id)` | Get single document |
+| Insert | `ctx.db.insert(table, doc)` | Create document |
+| Patch | `ctx.db.patch(id, fields)` | Update fields |
+| Delete | `ctx.db.delete(id)` | Delete document |
 
-## Query Methods
+### Query Methods
 
-| Method                             | Description                                     |
-| ---------------------------------- | ----------------------------------------------- |
-| `.collect()`                       | Return all matching documents as array          |
-| `.first()`                         | Return first matching document or null          |
-| `.unique()`                        | Return exactly one document (throws if 0 or >1) |
-| `.take(n)`                         | Return first n documents                        |
-| `.order("asc")` / `.order("desc")` | Order by `_creationTime`                        |
+| Method | Description |
+|--------|-------------|
+| `.collect()` | Return all as array |
+| `.first()` | Return first or null |
+| `.take(n)` | Return first n |
+| `.withIndex(name, q)` | Use index for query |
 
-## Type Safety
+## Frontend Usage
 
-```typescript
-// IDs are typed
-import { Id } from "./_generated/dataModel"
+```tsx
+"use client"
+import { api } from "@repo/backend/convex"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { useConvexQuery, useConvexMutation } from "@repo/backend/react"
 
-type ThingId = Id<"things">
+// With TanStack Query (recommended)
+const { data: things } = useConvexQuery(api.functions.things.list, { limit: 10 })
+const createThing = useConvexMutation(api.functions.things.create)
 
-// Use in functions
-export const getThing = query({
-	args: { id: v.id("things") },
-	handler: async (ctx, args) => {
-		// args.id is typed as Id<"things">
-		return await ctx.db.get(args.id)
-	},
-})
+// Or with Convex hooks
+const things = useQuery(api.functions.things.list, { limit: 10 })
+const create = useMutation(api.functions.things.create)
 ```
 
 ## Development Commands
 
 ```bash
-# Start Convex dev server
 cd packages/backend
+
+# Start dev server
 bunx convex dev
 
 # Open dashboard
 bunx convex dashboard
 
-# Push schema changes
+# Deploy to production
 bunx convex deploy
 ```
-
-## Environment Variables
-
-| Variable                 | Purpose                  |
-| ------------------------ | ------------------------ |
-| `CONVEX_DEPLOYMENT`      | Deployment identifier    |
-| `CONVEX_URL`             | Convex API endpoint      |
-| `NEXT_PUBLIC_CONVEX_URL` | Client-side API endpoint |
