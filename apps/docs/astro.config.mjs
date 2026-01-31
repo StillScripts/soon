@@ -80,6 +80,10 @@ export default defineConfig({
 							label: "Setting Up CI",
 							slug: "guides/18-setting-up-ci",
 						},
+						{
+							label: "Testing Better Convex",
+							slug: "guides/19-convex-test-with-better-convex",
+						},
 					],
 				},
 				{
