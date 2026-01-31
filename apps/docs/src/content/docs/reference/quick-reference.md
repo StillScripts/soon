@@ -3,136 +3,96 @@ title: Quick Reference
 description: Common commands and patterns for daily development.
 ---
 
-## Essential Commands
+## Commands
 
 ### Development
 
 ```bash
-# Start all apps in dev mode
-bun dev
-
-# Start specific app
-turbo dev --filter=web       # Next.js on port 3000
-turbo dev --filter=docs      # Astro docs on port 4321
-turbo dev --filter=backend   # Convex dev server
+bun dev                       # Start all apps
+turbo dev --filter=web        # Next.js on port 3000
+turbo dev --filter=docs       # Astro docs on port 4321
 ```
 
 ### Building
 
 ```bash
-# Build all apps
-bun build
-
-# Build specific app
-turbo build --filter=web
-turbo build --filter=docs
+bun build                     # Build all apps
+turbo build --filter=web      # Build specific app
 ```
 
 ### Code Quality
 
 ```bash
-# Lint all packages (with auto-fix)
-bun lint
-
-# Lint specific package
-turbo lint --filter=web
-turbo lint --filter=@repo/ui
-
-# Format all files
-bun format
-
-# Type checking
-bun check-types
-turbo check-types --filter=web
+bun lint                      # Lint all packages
+bun format                    # Format all files
+bun format:check              # Check formatting (CI)
+bun check-types               # Type check all
+bun test                      # Run all tests
+bun test:watch                # Watch mode
 ```
 
-### Testing
+### Turborepo Filters
 
 ```bash
-# Run all tests
-bun test
-
-# Watch mode
-bun test:watch
+turbo <task> --filter=web           # By name
+turbo <task> --filter=@repo/ui      # By package name
+turbo <task> --filter=./apps/web    # By path
+turbo <task> --affected             # Changed only
+turbo <task> --filter=!docs         # Exclude
 ```
 
-## Import Patterns
+## Imports
 
 ### UI Components
 
 ```tsx
-// Individual imports
+import { Card, Input } from "@repo/ui/components/ui"
 import { Button } from "@repo/ui/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
-
-// Barrel import (all components)
-import { Button, Card, Input } from "@repo/ui/components/ui"
-
-// Utilities
 import { cn } from "@repo/ui/lib/utils"
 ```
 
-### Convex API
+### Convex
 
 ```tsx
-import { api } from "backend/convex"
+import { api } from "@repo/backend/convex"
 import { useMutation, useQuery } from "convex/react"
 
-const data = useQuery(api.things.getThings)
-const mutate = useMutation(api.things.createThing)
+const things = useQuery(api.functions.things.list)
+const create = useMutation(api.functions.things.create)
+```
+
+### Validators
+
+```tsx
+import { createThingSchema } from "@repo/validators/things"
 ```
 
 ### Styles
 
 ```css
-/* In CSS files */
 @import "@repo/ui/styles/globals.css";
 ```
 
-## Adding New Components
-
-### shadcn/ui Components
+## Adding Components
 
 ```bash
 cd packages/ui
 bunx shadcn@latest add <component>
-# Then update imports from @/lib/utils to ../../lib/utils
-```
-
-### Generate Custom Component
-
-```bash
-cd packages/ui
-bun generate:component
-```
-
-## Turborepo Filters
-
-```bash
-# By package name
-turbo <task> --filter=web
-turbo <task> --filter=@repo/ui
-
-# By directory
-turbo <task> --filter=./apps/web
-
-# Only affected packages
-turbo <task> --affected
-
-# Exclude package
-turbo <task> --filter=!docs
+# Update imports: @/lib/utils → ../../lib/utils
 ```
 
 ## File Locations
 
-| What               | Where                            |
-| ------------------ | -------------------------------- |
-| Web app pages      | `apps/web/app/`                  |
-| UI components      | `packages/ui/src/components/ui/` |
-| Convex functions   | `packages/backend/convex/`       |
-| Docs content       | `apps/docs/src/content/docs/`    |
-| Biome configs      | `packages/biome-config/`         |
-| TypeScript configs | `packages/typescript-config/`    |
+| What               | Where                                |
+| ------------------ | ------------------------------------ |
+| Web app pages      | `apps/web/app/`                      |
+| UI components      | `packages/ui/src/components/ui/`     |
+| Convex functions   | `packages/backend/convex/functions/` |
+| Validators         | `packages/validators/src/`           |
+| Docs content       | `apps/docs/src/content/docs/`        |
+| oxlint configs     | `packages/oxlint-config/`            |
+| TypeScript configs | `packages/typescript-config/`        |
+| Vitest config      | `packages/vitest-config/`            |
 
 ## Ports
 
@@ -143,8 +103,8 @@ turbo <task> --filter=!docs
 
 ## Environment Variables
 
-| Variable                 | Location                      | Purpose                |
-| ------------------------ | ----------------------------- | ---------------------- |
-| `CONVEX_DEPLOYMENT`      | `packages/backend/.env.local` | Convex deployment ID   |
-| `CONVEX_URL`             | `packages/backend/.env.local` | Convex API URL         |
-| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local`         | Client-side Convex URL |
+| Variable                 | Location                      | Purpose              |
+| ------------------------ | ----------------------------- | -------------------- |
+| `CONVEX_DEPLOYMENT`      | `packages/backend/.env.local` | Convex deployment    |
+| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local`         | Client Convex URL    |
+| `SITE_URL`               | `packages/backend/.env.local` | Better Auth base URL |

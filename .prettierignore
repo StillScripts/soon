@@ -6,3 +6,5 @@ dist
 bun.lock
 coverage
 **/convex/_generated
+**/convex/**/_generated
+**/next-env.d.ts

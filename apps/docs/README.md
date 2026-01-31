@@ -1,49 +1,52 @@
-# Starlight Starter Kit: Basics
+# Documentation Site
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+Astro Starlight documentation site for the Soon monorepo.
 
-```
-bun create astro@latest -- --template starlight
-```
+## Development
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+From the monorepo root:
 
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```bash
+turbo dev --filter=docs
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+Opens at [http://localhost:4321](http://localhost:4321).
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+## Structure
 
-Static assets, like favicons, can be placed in the `public/` directory.
+```
+src/
+├── assets/           # Embeddable images and assets
+├── content/
+│   └── docs/
+│       ├── guides/   # Development journey (numbered chronologically)
+│       ├── skills/   # Auto-generated Claude Code skill docs
+│       └── reference/# Quick reference pages
+└── content.config.ts # Content collection config
+```
 
-## 🧞 Commands
+## Content
 
-All commands are run from the root of the project, from a terminal:
+- **Guides**: Chronological documentation of how the project was built (01-18)
+- **Skills**: Auto-generated documentation for Claude Code skills
+- **Reference**: Quick lookup for common patterns and APIs
 
-| Command               | Action                                           |
-| :-------------------- | :----------------------------------------------- |
-| `bun install`         | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+## Adding Content
 
-## 👀 Want to learn more?
+### New Guide
 
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+1. Copy `src/content/docs/guides/_template.md`
+2. Name it with the next number: `19-your-feature.md`
+3. Add to sidebar in `astro.config.mjs`
+
+### New Reference Page
+
+Create a `.md` or `.mdx` file in `src/content/docs/reference/` and add to sidebar.
+
+## Build
+
+```bash
+turbo build --filter=docs
+```
+
+Output goes to `dist/` (configured in `vercel.json`).

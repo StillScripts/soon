@@ -41,11 +41,11 @@ packages/backend/
 
 ### Why This Structure?
 
-| Directory | Purpose | Deployed? |
-|-----------|---------|-----------|
-| `functions/` | Convex queries, mutations, actions | Yes |
-| `lib/` | cRPC builder, middleware, server utilities | No |
-| `shared/` | Types and hooks for the web app | No |
+| Directory    | Purpose                                    | Deployed? |
+| ------------ | ------------------------------------------ | --------- |
+| `functions/` | Convex queries, mutations, actions         | Yes       |
+| `lib/`       | cRPC builder, middleware, server utilities | No        |
+| `shared/`    | Types and hooks for the web app            | No        |
 
 ## Configuration: `convex.json`
 
@@ -74,6 +74,7 @@ The cRPC builder lives in `lib/` because it's a server-side helper that shouldn'
 ```typescript
 import { CRPCError, initCRPC } from "better-convex/server"
 
+import type { DataModel } from "../functions/_generated/dataModel"
 import {
 	action,
 	internalAction,
@@ -82,7 +83,6 @@ import {
 	mutation,
 	query,
 } from "../functions/_generated/server"
-import type { DataModel } from "../functions/_generated/dataModel"
 import { authComponent } from "../functions/auth"
 
 const c = initCRPC.dataModel<DataModel>().create({
@@ -122,12 +122,10 @@ The original implementation was missing `.output()` declarations on procedures. 
 **Before (broken):**
 
 ```typescript
-export const list = authQuery
-	.input(listThingsSchema)
-	.query(async ({ ctx, input }) => {
-		// Return type not captured in static API
-		return ctx.db.query("things").collect()
-	})
+export const list = authQuery.input(listThingsSchema).query(async ({ ctx, input }) => {
+	// Return type not captured in static API
+	return ctx.db.query("things").collect()
+})
 ```
 
 **After (correct):**
@@ -205,6 +203,7 @@ Import in `apps/web/lib/convex/crpc.tsx`:
 
 ```typescript
 import { createCRPCContext } from "backend/react"
+
 // NOT: import { createCRPCContext } from "better-convex/react"
 ```
 
@@ -314,10 +313,10 @@ turbo dev --filter=web
 
 The folder structure migration addressed three categories of issues:
 
-| Issue | Solution |
-|-------|----------|
-| Mixed concerns | Separate `functions/`, `lib/`, `shared/` directories |
-| Missing type inference | Add `.output()` with `zid()` to all procedures |
-| Bun symlink resolution | Re-export, direct dependency, disable declarations |
+| Issue                  | Solution                                             |
+| ---------------------- | ---------------------------------------------------- |
+| Mixed concerns         | Separate `functions/`, `lib/`, `shared/` directories |
+| Missing type inference | Add `.output()` with `zid()` to all procedures       |
+| Bun symlink resolution | Re-export, direct dependency, disable declarations   |
 
 This structure follows Better Convex's official recommendations and ensures full type safety from server to client.

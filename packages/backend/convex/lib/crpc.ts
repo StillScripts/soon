@@ -1,5 +1,6 @@
 import { CRPCError, initCRPC } from "better-convex/server"
 
+import type { DataModel } from "../functions/_generated/dataModel"
 import {
 	action,
 	internalAction,
@@ -9,7 +10,6 @@ import {
 	query,
 } from "../functions/_generated/server"
 import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/_generated/server"
-import type { DataModel } from "../functions/_generated/dataModel"
 import { authComponent } from "../functions/auth"
 
 export type GenericCtx = QueryCtx | MutationCtx | ActionCtx

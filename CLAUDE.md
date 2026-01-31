@@ -267,7 +267,7 @@ This repository includes professional skills and agents from [Sentry](https://gi
 - `/doc-coauthoring` - Collaborative documentation workflow
 - `/document-update` - Document development changes in guides folder
 - `/document-skill` - Document new Claude Code skills added to the repository
-- `/convex` - Comprehensive Convex development guidelines and best practices
+- `/convex` - Comprehensive Convex development (functions, schema, realtime, Better Convex, security)
 - `/turborepo` - Turborepo monorepo build system guidance for tasks, caching, and CI
 - `/vercel-react-best-practices` - React/Next.js performance optimization (57 rules)
 - `/vitest` - Vitest testing framework guidance (configuration, APIs, mocking, coverage)

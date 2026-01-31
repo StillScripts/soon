@@ -29,6 +29,7 @@ Added a build-time script that automatically generates documentation pages for a
 **`apps/docs/scripts/generate-skills.ts`**
 
 A Bun script that:
+
 1. Reads all directories in `.claude/skills/`
 2. Parses `SKILL.md` files for frontmatter (`name`, `description`) and content
 3. Generates individual markdown files in `src/content/docs/skills/`
@@ -37,10 +38,10 @@ A Bun script that:
 ```typescript
 // Key interfaces
 interface SkillMeta {
-  name: string
-  description: string
-  content: string
-  dirName: string
+	name: string
+	description: string
+	content: string
+	dirName: string
 }
 ```
 
@@ -52,11 +53,11 @@ Added `generate:skills` script that runs before dev and build:
 
 ```json
 {
-  "scripts": {
-    "generate:skills": "bun scripts/generate-skills.ts",
-    "dev": "bun run generate:skills && astro dev",
-    "build": "bun run generate:skills && astro build"
-  }
+	"scripts": {
+		"generate:skills": "bun scripts/generate-skills.ts",
+		"dev": "bun run generate:skills && astro dev",
+		"build": "bun run generate:skills && astro build"
+	}
 }
 ```
 
