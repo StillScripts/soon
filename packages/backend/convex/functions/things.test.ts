@@ -1,8 +1,21 @@
+/// <reference types="vite/client" />
 import { convexTest } from "convex-test"
 import { describe, expect, it } from "vitest"
 
 import { internal } from "./_generated/api"
+import type { Id } from "./_generated/dataModel"
 import schema from "./schema"
+
+/** Type for a thing returned from list/get queries */
+type ThingResult = {
+	_id: Id<"things">
+	_creationTime: number
+	title: string
+	description?: string
+	imageId?: Id<"_storage">
+	userId: string
+	imageUrl: string | null
+}
 
 /**
  * Tests for Things CRUD operations.
@@ -193,8 +206,8 @@ describe("things.list", () => {
 		})
 
 		expect(things).toHaveLength(2)
-		expect(things.map((t) => t.title)).toContain("Thing A")
-		expect(things.map((t) => t.title)).toContain("Thing B")
+		expect(things.map((thing: ThingResult) => thing.title)).toContain("Thing A")
+		expect(things.map((thing: ThingResult) => thing.title)).toContain("Thing B")
 	})
 
 	it("should only return things owned by the specified user", async () => {
@@ -222,8 +235,8 @@ describe("things.list", () => {
 
 		expect(user1Things).toHaveLength(2)
 		expect(user2Things).toHaveLength(1)
-		expect(user1Things.every((t) => t.userId === "user_1")).toBe(true)
-		expect(user2Things.every((t) => t.userId === "user_2")).toBe(true)
+		expect(user1Things.every((thing: ThingResult) => thing.userId === "user_1")).toBe(true)
+		expect(user2Things.every((thing: ThingResult) => thing.userId === "user_2")).toBe(true)
 	})
 
 	it("should respect the limit parameter", async () => {
@@ -568,7 +581,7 @@ describe("user isolation", () => {
 			userId: "user_1",
 		})
 		expect(user1Things).toHaveLength(2)
-		expect(user1Things.every((t) => t.title.startsWith("User 1"))).toBe(true)
+		expect(user1Things.every((thing: ThingResult) => thing.title.startsWith("User 1"))).toBe(true)
 
 		// Verify user 2 only sees their things
 		const user2Things = await t.query(internal.thingsInternal.listInternal, {
