@@ -25,18 +25,18 @@ cd packages/backend && bunx convex dev  # Convex backend
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Runtime | [Bun](https://bun.sh) |
-| Monorepo | [Turborepo](https://turborepo.dev) |
-| Frontend | [Next.js 16](https://nextjs.org) + React 19 |
-| Backend | [Convex](https://convex.dev) |
-| Auth | [Better Auth](https://better-auth.com) |
-| UI | [shadcn/ui](https://ui.shadcn.com) + Base UI |
-| Styling | [Tailwind CSS 4](https://tailwindcss.com) |
-| Testing | [Vitest](https://vitest.dev) |
-| Linting | [oxlint](https://oxc.rs) |
-| Docs | [Astro Starlight](https://starlight.astro.build) |
+| Category | Technology                                       |
+| -------- | ------------------------------------------------ |
+| Runtime  | [Bun](https://bun.sh)                            |
+| Monorepo | [Turborepo](https://turborepo.dev)               |
+| Frontend | [Next.js 16](https://nextjs.org) + React 19      |
+| Backend  | [Convex](https://convex.dev)                     |
+| Auth     | [Better Auth](https://better-auth.com)           |
+| UI       | [shadcn/ui](https://ui.shadcn.com) + Base UI     |
+| Styling  | [Tailwind CSS 4](https://tailwindcss.com)        |
+| Testing  | [Vitest](https://vitest.dev)                     |
+| Linting  | [oxlint](https://oxc.rs)                         |
+| Docs     | [Astro Starlight](https://starlight.astro.build) |
 
 ## Project Structure
 

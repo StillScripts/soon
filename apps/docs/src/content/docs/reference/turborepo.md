@@ -27,44 +27,44 @@ Defined in `turbo.json`:
 
 ```json
 {
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types", "^transit"]
-    },
-    "test": {
-      "dependsOn": ["transit"],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/vitest.config.ts"],
-      "outputs": ["coverage/**"]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    }
-  }
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
+		"check-types": {
+			"dependsOn": ["^check-types", "^transit"]
+		},
+		"test": {
+			"dependsOn": ["transit"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/vitest.config.ts"],
+			"outputs": ["coverage/**"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		}
+	}
 }
 ```
 
 ### Pipeline Concepts
 
-| Symbol | Meaning |
-|--------|---------|
-| `^build` | Run `build` in dependencies first |
-| `dependsOn` | Tasks that must complete first |
-| `inputs` | Files that affect task cache |
-| `outputs` | Files produced by task |
-| `persistent: true` | Task runs continuously |
-| `cache: false` | Never cache this task |
+| Symbol             | Meaning                           |
+| ------------------ | --------------------------------- |
+| `^build`           | Run `build` in dependencies first |
+| `dependsOn`        | Tasks that must complete first    |
+| `inputs`           | Files that affect task cache      |
+| `outputs`          | Files produced by task            |
+| `persistent: true` | Task runs continuously            |
+| `cache: false`     | Never cache this task             |
 
 ### Transit Task
 
@@ -114,6 +114,7 @@ turbo build --filter=...@repo/ui
 ### How It Works
 
 Turborepo hashes:
+
 - Task inputs (source files, configs)
 - Dependencies' outputs
 - Environment variables (from `globalEnv`)
@@ -124,7 +125,7 @@ If hash matches, outputs are restored from cache.
 
 ```json
 {
-  "globalEnv": ["NEXT_PUBLIC_CONVEX_URL", "CONVEX_DEPLOYMENT"]
+	"globalEnv": ["NEXT_PUBLIC_CONVEX_URL", "CONVEX_DEPLOYMENT"]
 }
 ```
 
@@ -145,15 +146,15 @@ rm -rf .turbo
 
 ```json
 {
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "check-types": "turbo run check-types",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "turbo run test"
-  }
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"check-types": "turbo run check-types",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"test": "turbo run test"
+	}
 }
 ```
 
@@ -167,13 +168,13 @@ rm -rf .turbo
 
 ```json
 {
-  "name": "@repo/my-package",
-  "private": true,
-  "scripts": {
-    "build": "tsc",
-    "lint": "oxlint -c @repo/oxlint-config/base",
-    "check-types": "tsc --noEmit"
-  }
+	"name": "@repo/my-package",
+	"private": true,
+	"scripts": {
+		"build": "tsc",
+		"lint": "oxlint -c @repo/oxlint-config/base",
+		"check-types": "tsc --noEmit"
+	}
 }
 ```
 

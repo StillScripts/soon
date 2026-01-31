@@ -23,14 +23,14 @@ convex/
 All authenticated functions use the cRPC pattern from `lib/crpc.ts`:
 
 ```ts
-import { authQuery, authMutation } from "../lib/crpc"
+import { authMutation, authQuery } from "../lib/crpc"
 
 export const get = authQuery
-  .input(getSchema)
-  .output(outputSchema)
-  .query(async ({ ctx, input }) => {
-    // ctx.userId is guaranteed to exist
-  })
+	.input(getSchema)
+	.output(outputSchema)
+	.query(async ({ ctx, input }) => {
+		// ctx.userId is guaranteed to exist
+	})
 ```
 
 ### Schema + Validators

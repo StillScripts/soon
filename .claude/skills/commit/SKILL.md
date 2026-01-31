@@ -9,7 +9,17 @@ Follow these conventions when creating commits.
 
 ## Prerequisites
 
-Before committing, ensure you're working on a proper branch, not the main branch. Use the `/checkout` skill if you need to checkout a new branch.
+**IMPORTANT: Always check formatting before committing.** Run the format check first to ensure CI will pass:
+
+```bash
+# Check formatting (run this FIRST before any commit)
+bun run format:check
+
+# If there are formatting issues, fix them:
+bun run format
+```
+
+Before committing, also ensure you're working on a proper branch, not the main branch. Use the `/checkout` skill if you need to checkout a new branch.
 
 ```bash
 # Check current branch

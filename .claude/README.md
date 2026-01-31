@@ -23,20 +23,20 @@ Skills and agents for Claude Code integration.
 
 Invoke skills with `/skill-name`:
 
-| Skill | Purpose |
-|-------|---------|
-| `/commit` | Create well-formatted commits |
-| `/create-pr` | Create professional pull requests |
-| `/code-review` | Thorough code reviews |
-| `/find-bugs` | Security and bug auditing |
-| `/convex` | Convex development patterns |
-| `/vitest` | Testing with Vitest |
-| `/turborepo` | Monorepo build guidance |
+| Skill          | Purpose                           |
+| -------------- | --------------------------------- |
+| `/commit`      | Create well-formatted commits     |
+| `/create-pr`   | Create professional pull requests |
+| `/code-review` | Thorough code reviews             |
+| `/find-bugs`   | Security and bug auditing         |
+| `/convex`      | Convex development patterns       |
+| `/vitest`      | Testing with Vitest               |
+| `/turborepo`   | Monorepo build guidance           |
 
 ## Agents
 
-| Agent | Purpose |
-|-------|---------|
+| Agent             | Purpose                                     |
+| ----------------- | ------------------------------------------- |
 | `code-simplifier` | Refines code for clarity (runs proactively) |
 
 ## Sources

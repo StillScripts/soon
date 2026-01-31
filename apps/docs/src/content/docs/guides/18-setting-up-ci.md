@@ -56,21 +56,21 @@ The key to making CI work was configuring `turbo.json` correctly:
 
 ```json
 {
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types", "^transit"]
-    },
-    "test": {
-      "dependsOn": ["transit"]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
-    }
-  }
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
+		},
+		"check-types": {
+			"dependsOn": ["^check-types", "^transit"]
+		},
+		"test": {
+			"dependsOn": ["transit"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		}
+	}
 }
 ```
 
@@ -104,13 +104,13 @@ The `dist/**` in turbo.json build outputs is critical for Vercel deployment:
 
 ## Files Changed
 
-| Action   | Files                          |
-| -------- | ------------------------------ |
-| Created  | `.github/workflows/ci.yml`     |
-| Modified | `turbo.json`                   |
-| Modified | `.prettierignore`              |
-| Created  | `apps/docs/vercel.json`        |
-| Modified | `packages/vitest-config/*`     |
+| Action   | Files                      |
+| -------- | -------------------------- |
+| Created  | `.github/workflows/ci.yml` |
+| Modified | `turbo.json`               |
+| Modified | `.prettierignore`          |
+| Created  | `apps/docs/vercel.json`    |
+| Modified | `packages/vitest-config/*` |
 
 ## Verification
 

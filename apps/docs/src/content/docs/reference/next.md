@@ -37,18 +37,14 @@ app/
 
 ```tsx
 // app/layout.tsx
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html lang="en">
+			<body>
+				<Providers>{children}</Providers>
+			</body>
+		</html>
+	)
 }
 ```
 
@@ -56,17 +52,13 @@ export default function RootLayout({
 
 ```tsx
 // app/(protected)/layout.tsx
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <AuthGuard>
-      <Sidebar />
-      <main>{children}</main>
-    </AuthGuard>
-  )
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<AuthGuard>
+			<Sidebar />
+			<main>{children}</main>
+		</AuthGuard>
+	)
 }
 ```
 
@@ -80,8 +72,8 @@ Use `"use client"` for interactive components:
 import { useState } from "react"
 
 export function Counter() {
-  const [count, setCount] = useState(0)
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>
+	const [count, setCount] = useState(0)
+	return <button onClick={() => setCount((c) => c + 1)}>{count}</button>
 }
 ```
 
@@ -92,8 +84,8 @@ Default behavior - can fetch data directly:
 ```tsx
 // app/page.tsx (Server Component by default)
 export default async function Page() {
-  const data = await fetchData()
-  return <div>{data}</div>
+	const data = await fetchData()
+	return <div>{data}</div>
 }
 ```
 
@@ -104,12 +96,12 @@ export default async function Page() {
 import { NextResponse } from "next/server"
 
 export async function GET() {
-  return NextResponse.json({ message: "Hello" })
+	return NextResponse.json({ message: "Hello" })
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
-  return NextResponse.json({ received: body })
+	const body = await request.json()
+	return NextResponse.json({ received: body })
 }
 ```
 
@@ -135,7 +127,7 @@ import { cn } from "@repo/ui/lib/utils"
 
 ```tsx
 import { api } from "@repo/backend/convex"
-import { useQuery, useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 ```
 
 ## Environment Variables

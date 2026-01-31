@@ -46,8 +46,8 @@ turbo <task> --filter=!docs         # Exclude
 ### UI Components
 
 ```tsx
-import { Button } from "@repo/ui/components/ui/button"
 import { Card, Input } from "@repo/ui/components/ui"
+import { Button } from "@repo/ui/components/ui/button"
 import { cn } from "@repo/ui/lib/utils"
 ```
 
@@ -55,7 +55,7 @@ import { cn } from "@repo/ui/lib/utils"
 
 ```tsx
 import { api } from "@repo/backend/convex"
-import { useQuery, useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 
 const things = useQuery(api.functions.things.list)
 const create = useMutation(api.functions.things.create)
@@ -83,28 +83,28 @@ bunx shadcn@latest add <component>
 
 ## File Locations
 
-| What | Where |
-|------|-------|
-| Web app pages | `apps/web/app/` |
-| UI components | `packages/ui/src/components/ui/` |
-| Convex functions | `packages/backend/convex/functions/` |
-| Validators | `packages/validators/src/` |
-| Docs content | `apps/docs/src/content/docs/` |
-| oxlint configs | `packages/oxlint-config/` |
-| TypeScript configs | `packages/typescript-config/` |
-| Vitest config | `packages/vitest-config/` |
+| What               | Where                                |
+| ------------------ | ------------------------------------ |
+| Web app pages      | `apps/web/app/`                      |
+| UI components      | `packages/ui/src/components/ui/`     |
+| Convex functions   | `packages/backend/convex/functions/` |
+| Validators         | `packages/validators/src/`           |
+| Docs content       | `apps/docs/src/content/docs/`        |
+| oxlint configs     | `packages/oxlint-config/`            |
+| TypeScript configs | `packages/typescript-config/`        |
+| Vitest config      | `packages/vitest-config/`            |
 
 ## Ports
 
-| App | Port |
-|-----|------|
+| App           | Port |
+| ------------- | ---- |
 | Web (Next.js) | 3000 |
-| Docs (Astro) | 4321 |
+| Docs (Astro)  | 4321 |
 
 ## Environment Variables
 
-| Variable | Location | Purpose |
-|----------|----------|---------|
-| `CONVEX_DEPLOYMENT` | `packages/backend/.env.local` | Convex deployment |
-| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local` | Client Convex URL |
-| `SITE_URL` | `packages/backend/.env.local` | Better Auth base URL |
+| Variable                 | Location                      | Purpose              |
+| ------------------------ | ----------------------------- | -------------------- |
+| `CONVEX_DEPLOYMENT`      | `packages/backend/.env.local` | Convex deployment    |
+| `NEXT_PUBLIC_CONVEX_URL` | `apps/web/.env.local`         | Client Convex URL    |
+| `SITE_URL`               | `packages/backend/.env.local` | Better Auth base URL |

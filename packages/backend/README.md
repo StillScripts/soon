@@ -35,14 +35,14 @@ Example function:
 
 ```ts
 export const list = authQuery
-  .input(listThingsSchema)
-  .output(z.array(thingOutputSchema))
-  .query(async ({ ctx, input }) => {
-    return ctx.db
-      .query("things")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect()
-  })
+	.input(listThingsSchema)
+	.output(z.array(thingOutputSchema))
+	.query(async ({ ctx, input }) => {
+		return ctx.db
+			.query("things")
+			.withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+			.collect()
+	})
 ```
 
 ## Environment Variables
