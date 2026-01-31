@@ -1,90 +1,47 @@
-# Welcome to your Convex functions directory!
+# Convex Functions
 
-Write your Convex functions here.
-See https://docs.convex.dev/functions for more.
+This directory contains all Convex backend functions.
 
-A query function that takes two arguments looks like:
+## Structure
 
-```ts
-// convex/myFunctions.ts
-import { v } from "convex/values"
-
-import { query } from "./_generated/server"
-
-export const myQueryFunction = query({
-	// Validators for arguments.
-	args: {
-		first: v.number(),
-		second: v.string(),
-	},
-
-	// Function implementation.
-	handler: async (ctx, args) => {
-		// Read the database as many times as you need here.
-		// See https://docs.convex.dev/database/reading-data.
-		const documents = await ctx.db.query("tablename").collect()
-
-		// Arguments passed from the client are properties of the args object.
-		console.log(args.first, args.second)
-
-		// Write arbitrary JavaScript here: filter, aggregate, build derived data,
-		// remove non-public properties, or create new objects.
-		return documents
-	},
-})
+```
+convex/
+├── functions/          # API endpoints
+│   ├── auth.ts         # Better Auth integration
+│   └── things.ts       # Things CRUD (example model)
+├── lib/
+│   └── crpc.ts         # cRPC builder with auth middleware
+├── schema.ts           # Database schema definition
+├── auth.config.ts      # Better Auth configuration
+└── _generated/         # Auto-generated types (don't edit)
 ```
 
-Using this query function in a React component looks like:
+## Patterns
+
+### cRPC Builder
+
+All authenticated functions use the cRPC pattern from `lib/crpc.ts`:
 
 ```ts
-const data = useQuery(api.myFunctions.myQueryFunction, {
-	first: 10,
-	second: "hello",
-})
+import { authQuery, authMutation } from "../lib/crpc"
+
+export const get = authQuery
+  .input(getSchema)
+  .output(outputSchema)
+  .query(async ({ ctx, input }) => {
+    // ctx.userId is guaranteed to exist
+  })
 ```
 
-A mutation function looks like:
+### Schema + Validators
 
-```ts
-// convex/myFunctions.ts
-import { v } from "convex/values"
+- **Schema** (`schema.ts`): Convex table definitions
+- **Validators** (`@repo/validators`): Shared Zod schemas for input validation
+- **Output schemas**: Use `zid()` for type-safe document IDs
 
-import { mutation } from "./_generated/server"
+### Adding a New Model
 
-export const myMutationFunction = mutation({
-	// Validators for arguments.
-	args: {
-		first: v.string(),
-		second: v.string(),
-	},
-
-	// Function implementation.
-	handler: async (ctx, args) => {
-		// Insert or modify documents in the database here.
-		// Mutations can also read from the database like queries.
-		// See https://docs.convex.dev/database/writing-data.
-		const message = { body: args.first, author: args.second }
-		const id = await ctx.db.insert("messages", message)
-
-		// Optionally, return a value from your mutation.
-		return await ctx.db.get("messages", id)
-	},
-})
-```
-
-Using this mutation function in a React component looks like:
-
-```ts
-const mutation = useMutation(api.myFunctions.myMutationFunction)
-function handleButtonPress() {
-	// fire and forget, the most common way to use mutations
-	mutation({ first: "Hello!", second: "me" })
-	// OR
-	// use the result once the mutation has completed
-	mutation({ first: "Hello!", second: "me" }).then((result) => console.log(result))
-}
-```
-
-Use the Convex CLI to push your functions to a deployment. See everything
-the Convex CLI can do by running `npx convex -h` in your project root
-directory. To learn more, launch the docs with `npx convex docs`.
+1. Add table to `schema.ts`
+2. Create validators in `@repo/validators`
+3. Create functions in `functions/your-model.ts`
+4. Use `authQuery`/`authMutation` for protected routes

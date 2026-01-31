@@ -77,8 +77,8 @@ export default defineConfig({
 							slug: "guides/17-things-description-image",
 						},
 						{
-							label: "Repository Finalization",
-							slug: "guides/18-finalization",
+							label: "Setting Up CI",
+							slug: "guides/18-setting-up-ci",
 						},
 					],
 				},

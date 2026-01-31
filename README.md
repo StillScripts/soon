@@ -1,123 +1,91 @@
 # Soon
 
+[![CI](https://github.com/StillScripts/soon/actions/workflows/ci.yml/badge.svg)](https://github.com/StillScripts/soon/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Bun](https://img.shields.io/badge/Bun-%23000000.svg?logo=bun&logoColor=white)](https://bun.sh)
-[![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)](https://nextjs.org)
-[![Convex](https://img.shields.io/badge/Convex-FF6F00?logo=convex&logoColor=white)](https://convex.dev)
 
-A modern monorepo starter with Bun, Turborepo, and AI-assisted development.
+A modern monorepo starter with Bun, Turborepo, Convex, and AI-assisted development.
 
 **[Documentation](https://soon-starter-docs.vercel.app/)** · **[GitHub](https://github.com/StillScripts/soon)**
 
 ## Quick Start
 
 ```bash
-# Clone the repository
 git clone https://github.com/StillScripts/soon.git my-app
 cd my-app
-
-# Install dependencies
 bun install
 
 # Set up environment variables
 cp packages/backend/.env.example packages/backend/.env.local
 cp apps/web/.env.example apps/web/.env.local
 
-# Start development
-bun dev
+# Start development (run in separate terminals)
+turbo dev --filter=web      # Next.js app
+cd packages/backend && bunx convex dev  # Convex backend
 ```
 
 ## Tech Stack
 
-- **Runtime**: [Bun](https://bun.sh) - Fast JavaScript runtime and package manager
-- **Monorepo**: [Turborepo](https://turborepo.dev) - High-performance build system
-- **Frontend**: [Next.js 16](https://nextjs.org) with React 19
-- **Backend**: [Convex](https://convex.dev) - Reactive backend platform
-- **Auth**: [Better Auth](https://better-auth.com) - Authentication library
-- **UI**: [shadcn/ui](https://ui.shadcn.com) with Base UI primitives
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com) with oklch color theme
-- **Linting**: [oxlint](https://oxc.rs) - Fast linter from oxc
-- **Formatting**: [Prettier](https://prettier.io) - Code formatter (tabs, no semicolons)
-- **Testing**: [Vitest](https://vitest.dev) - Fast unit testing framework
-- **Docs**: [Astro Starlight](https://starlight.astro.build) - Documentation site
+| Category | Technology |
+|----------|------------|
+| Runtime | [Bun](https://bun.sh) |
+| Monorepo | [Turborepo](https://turborepo.dev) |
+| Frontend | [Next.js 16](https://nextjs.org) + React 19 |
+| Backend | [Convex](https://convex.dev) |
+| Auth | [Better Auth](https://better-auth.com) |
+| UI | [shadcn/ui](https://ui.shadcn.com) + Base UI |
+| Styling | [Tailwind CSS 4](https://tailwindcss.com) |
+| Testing | [Vitest](https://vitest.dev) |
+| Linting | [oxlint](https://oxc.rs) |
+| Docs | [Astro Starlight](https://starlight.astro.build) |
 
 ## Project Structure
 
 ```
 apps/
-├── web/          # Next.js application (port 3000)
-└── docs/         # Astro documentation site (port 4321)
+├── web/              # Next.js application
+└── docs/             # Documentation site
 
 packages/
-├── backend/      # Convex backend with Better Auth
-├── ui/           # Shared UI components (shadcn/ui)
-├── validators/   # Shared validation utilities
-├── oxlint-config/ # Shared oxlint configurations
-├── typescript-config/ # Shared TypeScript configurations
-└── vitest-config/     # Shared Vitest configurations
+├── backend/          # Convex backend + Better Auth
+├── ui/               # Shared components (shadcn/ui)
+├── validators/       # Shared Zod schemas
+├── oxlint-config/    # Linting configuration
+├── typescript-config/# TypeScript configuration
+└── vitest-config/    # Test configuration
 ```
 
-## Prerequisites
-
-- [Bun](https://bun.sh) >= 1.3.6
-- Node.js >= 18
-
-## Development
+## Commands
 
 ```bash
-# Run all apps
-bun dev
-
-# Run specific app
-turbo dev --filter=web    # Next.js on port 3000
-turbo dev --filter=docs   # Docs on port 4321
-
-# Run Convex backend (in a separate terminal)
-cd packages/backend && bunx convex dev
-```
-
-## Build
-
-```bash
-# Build all apps
-bun build
-
-# Build specific app
-turbo build --filter=web
-```
-
-## Code Quality
-
-```bash
-# Lint all packages
-bun lint
-
-# Format code
-bun format
-
-# Type checking
-bun check-types
-
-# Run tests
-bun test
+bun dev           # Run all apps
+bun build         # Build all apps
+bun lint          # Lint all packages
+bun format        # Format code
+bun check-types   # Type check
+bun test          # Run tests
 ```
 
 ## Claude Code Integration
 
-This repository includes professional Claude Code skills and agents. See [.claude/README.md](.claude/README.md) for details.
+This repo includes professional Claude Code skills for AI-assisted development:
 
-**Available Skills:**
+```
+/commit       # Create commits
+/create-pr    # Create pull requests
+/code-review  # Code reviews
+/convex       # Convex patterns
+/vitest       # Testing guidance
+```
 
-- `/commit` - Create well-formatted commits
-- `/create-pr` - Create professional pull requests
-- `/code-review` - Perform thorough code reviews
-- `/find-bugs` - Security and bug auditing
+See [.claude/README.md](.claude/README.md) for all available skills.
 
 ## Documentation
 
-Visit the [documentation site](https://soon-starter-docs.vercel.app/) for comprehensive guides on how this project was built.
+The [documentation site](https://soon-starter-docs.vercel.app/) contains:
 
-To run docs locally: `turbo dev --filter=docs`
+- **Development Journey**: 18 guides documenting how this project was built
+- **Skills Reference**: Claude Code skill documentation
+- **Quick Reference**: Common patterns and APIs
 
 ## License
 
