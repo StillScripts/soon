@@ -8,21 +8,8 @@
  * @module
  */
 
-import type * as auth from "../auth.js";
-import type * as http from "../http.js";
-import type * as things from "../things.js";
-
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
-
-declare const fullApi: ApiFromModules<{
-  auth: typeof auth;
-  http: typeof http;
-  things: typeof things;
-}>;
+import type { FunctionReference } from "convex/server";
+import type { GenericId as Id } from "convex/values";
 
 /**
  * A utility for referencing Convex functions in your app's public API.
@@ -32,10 +19,60 @@ declare const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "public">
->;
+export declare const api: {
+  auth: {
+    getCurrentUser: FunctionReference<"query", "public", {}, any>;
+  };
+  things: {
+    create: FunctionReference<
+      "mutation",
+      "public",
+      { description?: string; imageId?: string; title: string },
+      Id<"things">
+    >;
+    generateUploadUrl: FunctionReference<"mutation", "public", {}, string>;
+    get: FunctionReference<
+      "query",
+      "public",
+      { id: string },
+      {
+        _creationTime: number;
+        _id: Id<"things">;
+        description?: string;
+        imageId?: Id<"_storage">;
+        imageUrl: string | null;
+        title: string;
+        userId: string;
+      } | null
+    >;
+    list: FunctionReference<
+      "query",
+      "public",
+      { limit?: number },
+      Array<{
+        _creationTime: number;
+        _id: Id<"things">;
+        description?: string;
+        imageId?: Id<"_storage">;
+        imageUrl: string | null;
+        title: string;
+        userId: string;
+      }>
+    >;
+    remove: FunctionReference<"mutation", "public", { id: string }, any>;
+    update: FunctionReference<
+      "mutation",
+      "public",
+      {
+        description?: string | null;
+        id: string;
+        imageId?: string | null;
+        title?: string;
+      },
+      any
+    >;
+  };
+};
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -45,10 +82,7 @@ export declare const api: FilterApi<
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "internal">
->;
+export declare const internal: {};
 
 export declare const components: {
   betterAuth: {

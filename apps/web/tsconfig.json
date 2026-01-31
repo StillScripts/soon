@@ -6,13 +6,17 @@
 				"name": "next"
 			}
 		],
+		"strictFunctionTypes": false,
+		"declaration": false,
+		"declarationMap": false,
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*"],
 			"@convex/*": [
 				"../../packages/backend/convex/functions/_generated/*",
 				"../../packages/backend/convex/shared/*"
-			]
+			],
+			"backend/react": ["../../packages/backend/convex/shared/react.ts"]
 		}
 	},
 	"include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", "next.config.js", ".next/types/**/*.ts"],

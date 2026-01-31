@@ -6,7 +6,8 @@
 	"exports": {
 		"./convex": "./convex/functions/_generated/api.js",
 		"./meta": "./convex/shared/meta.ts",
-		"./types": "./convex/shared/types.ts"
+		"./types": "./convex/shared/types.ts",
+		"./react": "./convex/shared/react.ts"
 	},
 	"scripts": {
 		"dev": "convex dev",

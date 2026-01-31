@@ -1,18 +1,27 @@
 import { CRPCError, initCRPC } from "better-convex/server"
 
+import {
+	action,
+	internalAction,
+	internalMutation,
+	internalQuery,
+	mutation,
+	query,
+} from "../functions/_generated/server"
+import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/_generated/server"
 import type { DataModel } from "../functions/_generated/dataModel"
-import { action, mutation, query } from "../functions/_generated/server"
 import { authComponent } from "../functions/auth"
 
-// cRPC initialization
+export type GenericCtx = QueryCtx | MutationCtx | ActionCtx
 
 const c = initCRPC.dataModel<DataModel>().create({
 	query,
+	internalQuery,
 	mutation,
+	internalMutation,
 	action,
+	internalAction,
 })
-
-// Procedures
 
 export const publicQuery = c.query
 export const publicMutation = c.mutation
@@ -35,8 +44,3 @@ export const authMutation = c.mutation.meta({ auth: "required" }).use(async ({ c
 	}
 	return next({ ctx: { ...ctx, user, userId: user._id } })
 })
-
-// Note: authAction is not exported because actions don't have ctx.db,
-// which is required by authComponent.getAuthUser(). For authenticated actions,
-// use ctx.runQuery to call an internal query that checks auth, or use
-// HTTP actions with the HTTP adapter via createAuth(ctx).
