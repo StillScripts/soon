@@ -1,1 +1,4 @@
 @import "@repo/ui/styles/globals.css";
+
+/* Scan UI package components for Tailwind classes */
+@source "../../../packages/ui/src/**/*.{ts,tsx}";

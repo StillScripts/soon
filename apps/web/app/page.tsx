@@ -1,3 +1,4 @@
+// oxlint-disable nextjs/no-img-element
 "use client"
 
 import { useRef, useState } from "react"
@@ -58,16 +59,12 @@ function ImageUpload({
 		<div className="space-y-2">
 			{imageUrl ? (
 				<div className="relative">
-					<img
-						src={imageUrl}
-						alt="Thing image"
-						className="h-32 w-full rounded-lg object-cover"
-					/>
+					<img src={imageUrl} alt="Thing" className="h-32 w-full rounded-lg object-cover" />
 					<Button
 						type="button"
 						variant="destructive"
 						size="sm"
-						className="absolute right-2 top-2"
+						className="absolute top-2 right-2"
 						onClick={onRemove}
 						disabled={disabled}
 					>
@@ -76,10 +73,10 @@ function ImageUpload({
 				</div>
 			) : (
 				<div
-					className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50"
+					className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed"
 					onClick={() => fileInputRef.current?.click()}
 				>
-					<span className="text-sm text-muted-foreground">
+					<span className="text-muted-foreground text-sm">
 						{isUploading ? "Uploading..." : "Click to upload image"}
 					</span>
 				</div>
@@ -143,7 +140,7 @@ function ThingItem({
 
 	if (isEditing) {
 		return (
-			<li className="rounded-lg bg-secondary p-4">
+			<li className="bg-secondary rounded-lg p-4">
 				<form
 					onSubmit={(e) => {
 						e.preventDefault()
@@ -217,7 +214,7 @@ function ThingItem({
 	}
 
 	return (
-		<li className="rounded-lg bg-secondary p-4">
+		<li className="bg-secondary rounded-lg p-4">
 			<div className="flex gap-4">
 				{thing.imageUrl && (
 					<img
@@ -230,7 +227,7 @@ function ThingItem({
 					<div className="flex items-start justify-between">
 						<span className="font-medium">{thing.title}</span>
 						<div className="flex items-center gap-2">
-							<span className="text-xs text-muted-foreground">
+							<span className="text-muted-foreground text-xs">
 								{new Date(thing._creationTime).toLocaleDateString()}
 							</span>
 							<Button
@@ -253,7 +250,7 @@ function ThingItem({
 						</div>
 					</div>
 					{thing.description && (
-						<p className="text-sm text-muted-foreground">{thing.description}</p>
+						<p className="text-muted-foreground text-sm">{thing.description}</p>
 					)}
 				</div>
 			</div>
@@ -344,8 +341,8 @@ function ThingsManager() {
 	const isSubmitting = createThing.isPending || generateUploadUrl.isPending
 
 	return (
-		<>
-			<Card className="w-full">
+		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+			<Card className="col-span-1">
 				<CardHeader>
 					<CardTitle>Create a Thing</CardTitle>
 				</CardHeader>
@@ -371,7 +368,7 @@ function ThingsManager() {
 										type="button"
 										variant="destructive"
 										size="sm"
-										className="absolute right-2 top-2"
+										className="absolute top-2 right-2"
 										onClick={clearImage}
 										disabled={isSubmitting}
 									>
@@ -380,10 +377,10 @@ function ThingsManager() {
 								</div>
 							) : (
 								<div
-									className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50"
+									className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed"
 									onClick={() => fileInputRef.current?.click()}
 								>
-									<span className="text-sm text-muted-foreground">Click to upload image</span>
+									<span className="text-muted-foreground text-sm">Click to upload image</span>
 								</div>
 							)}
 							<input
@@ -466,7 +463,7 @@ function ThingsManager() {
 				</CardContent>
 			</Card>
 
-			<Card className="w-full">
+			<Card className="col-span-1">
 				<CardHeader>
 					<CardTitle>Your Things</CardTitle>
 				</CardHeader>
@@ -492,7 +489,7 @@ function ThingsManager() {
 					)}
 				</CardContent>
 			</Card>
-		</>
+		</div>
 	)
 }
 
@@ -539,7 +536,7 @@ export default function Home() {
 				<UserHeader />
 			</header>
 
-			<main className="mx-auto flex w-full max-w-lg flex-col items-center gap-8">
+			<main className="mx-auto flex w-full flex-col items-center gap-8">
 				<ThingsManager />
 			</main>
 
