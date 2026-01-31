@@ -89,8 +89,8 @@ Add the new guide to `apps/docs/src/content/docs/guides/00-overview.md`:
 ## Development Timeline
 
 1. [Initial Turborepo Setup](./01-initial-turborepo-setup) - Creating the TurboRepo foundation
-...
-NN. [New Guide Title](./NN-guide-name) - Brief description of what was done
+   ...
+   NN. [New Guide Title](./NN-guide-name) - Brief description of what was done
 ```
 
 #### 5b. Update Astro Sidebar

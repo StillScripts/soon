@@ -5,8 +5,7 @@
  * extracts their frontmatter and content, and generates markdown files
  * in the docs src/content/docs/skills directory.
  */
-
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 
 const SKILLS_SOURCE = join(import.meta.dirname, "../../../.claude/skills")
@@ -87,10 +86,7 @@ function generateIndexDoc(skills: SkillMeta[]): string {
 	const sorted = [...skills].sort((a, b) => a.name.localeCompare(b.name))
 
 	const skillsList = sorted
-		.map(
-			(s) =>
-				`- [**/${s.name}**](/skills/${s.dirName}/) - ${s.description || "No description"}`
-		)
+		.map((s) => `- [**/${s.name}**](/skills/${s.dirName}/) - ${s.description || "No description"}`)
 		.join("\n")
 
 	return `---

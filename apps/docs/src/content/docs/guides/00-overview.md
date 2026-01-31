@@ -33,6 +33,7 @@ These guides serve multiple purposes:
 15. [Auto-Generated Skills Docs](./15-skills-documentation) - Documenting Claude Code skills
 16. [Better Convex Folder Structure](./16-better-convex-folder-structure) - Fixing folder structure and type inference
 17. [Things Description & Image](./17-things-description-image) - Adding file uploads and descriptions
+18. [Repository Finalization](./18-finalization) - Consolidating skills, adding CI/CD, improving docs
 
 ## Documentation Pattern
 

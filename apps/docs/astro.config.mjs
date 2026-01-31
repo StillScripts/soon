@@ -76,6 +76,10 @@ export default defineConfig({
 							label: "Things Description & Image",
 							slug: "guides/17-things-description-image",
 						},
+						{
+							label: "Repository Finalization",
+							slug: "guides/18-finalization",
+						},
 					],
 				},
 				{

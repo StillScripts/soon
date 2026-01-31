@@ -7,14 +7,13 @@
  * To regenerate, run `npx convex dev`.
  * @module
  */
-
 import type {
-  DocumentByName,
-  TableNamesInDataModel,
-  SystemTableNames,
-  AnyDataModel,
-} from "convex/server";
-import type { GenericId } from "convex/values";
+	AnyDataModel,
+	DocumentByName,
+	SystemTableNames,
+	TableNamesInDataModel,
+} from "convex/server"
+import type { GenericId } from "convex/values"
 
 /**
  * A type describing your Convex data model.
@@ -27,46 +26,37 @@ import type { GenericId } from "convex/values";
  */
 
 export type DataModel = {
-  things: {
-    document: {
-      description?: string;
-      imageId?: Id<"_storage">;
-      title: string;
-      userId: string;
-      _id: Id<"things">;
-      _creationTime: number;
-    };
-    fieldPaths:
-      | "_creationTime"
-      | "_id"
-      | "description"
-      | "imageId"
-      | "title"
-      | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      by_user: ["userId", "_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-};
+	things: {
+		document: {
+			description?: string
+			imageId?: Id<"_storage">
+			title: string
+			userId: string
+			_id: Id<"things">
+			_creationTime: number
+		}
+		fieldPaths: "_creationTime" | "_id" | "description" | "imageId" | "title" | "userId"
+		indexes: {
+			by_id: ["_id"]
+			by_creation_time: ["_creationTime"]
+			by_user: ["userId", "_creationTime"]
+		}
+		searchIndexes: {}
+		vectorIndexes: {}
+	}
+}
 
 /**
  * The names of all of your Convex tables.
  */
-export type TableNames = TableNamesInDataModel<DataModel>;
+export type TableNames = TableNamesInDataModel<DataModel>
 
 /**
  * The type of a document stored in Convex.
  *
  * @typeParam TableName - A string literal type of the table name (like "users").
  */
-export type Doc<TableName extends TableNames> = DocumentByName<
-  DataModel,
-  TableName
->;
+export type Doc<TableName extends TableNames> = DocumentByName<DataModel, TableName>
 
 /**
  * An identifier for a document in Convex.
@@ -81,5 +71,4 @@ export type Doc<TableName extends TableNames> = DocumentByName<
  *
  * @typeParam TableName - A string literal type of the table name (like "users").
  */
-export type Id<TableName extends TableNames | SystemTableNames> =
-  GenericId<TableName>;
+export type Id<TableName extends TableNames | SystemTableNames> = GenericId<TableName>

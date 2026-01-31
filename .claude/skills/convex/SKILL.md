@@ -1,62 +1,68 @@
 ---
 name: convex
-displayName: Convex Development
-description: Umbrella skill for all Convex development patterns. Routes to specific skills like convex-functions, convex-realtime, convex-agents, etc.
-version: 1.0.0
-author: Convex
-tags: [convex, backend, database, realtime]
+description: Comprehensive Convex development patterns including Better Convex (cRPC)
+metadata:
+  author: Convex
+  version: "2026.1.31"
 ---
 
-# Convex Development Skills
+Convex is a fullstack TypeScript development platform with real-time database, file storage, and serverless functions. This project uses [Better Convex](https://github.com/udecode/better-convex) for type-safe cRPC procedures with TanStack Query integration.
 
-This is an index skill for Convex development. Use specific skills for detailed guidance:
+**This project uses Better Convex** for type-safe cRPC procedures with TanStack Query.
+See [patterns-better-convex](references/patterns-better-convex.md) for the key patterns used in this codebase.
 
-## Core Development
+**Key Features:**
 
-| Skill | Command | Use When |
-|-------|---------|----------|
-| Functions | `/convex-functions` | Writing queries, mutations, actions |
-| Schema | `/convex-schema-validator` | Defining database schemas and validators |
-| Realtime | `/convex-realtime` | Building reactive subscriptions |
-| HTTP Actions | `/convex-http-actions` | Webhooks and HTTP endpoints |
+- Real-time database with automatic subscriptions
+- Type-safe queries, mutations, and actions
+- Built-in file storage and authentication
+- cRPC procedures with middleware (via Better Convex)
+- TanStack Query integration for React
 
-## Data & Storage
+## Core
 
-| Skill | Command | Use When |
-|-------|---------|----------|
-| File Storage | `/convex-file-storage` | File uploads, serving, storage |
-| Migrations | `/convex-migrations` | Schema evolution, data backfills |
+| Topic     | Description                           | Reference                                      |
+| --------- | ------------------------------------- | ---------------------------------------------- |
+| Functions | Queries, mutations, actions with cRPC | [core-functions](references/core-functions.md) |
+| Schema    | Database schema and validators        | [core-schema](references/core-schema.md)       |
+| Realtime  | Subscriptions and optimistic updates  | [core-realtime](references/core-realtime.md)   |
 
-## Advanced Patterns
+## Patterns
 
-| Skill | Command | Use When |
-|-------|---------|----------|
-| Agents | `/convex-agents` | Building AI agents with tools |
-| Cron Jobs | `/convex-cron-jobs` | Scheduled background tasks |
-| Components | `/convex-component-authoring` | Reusable Convex packages |
+| Topic          | Description                                       | Reference                                                        |
+| -------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| Better Convex  | **cRPC, folder structure, zid(), type inference** | [patterns-better-convex](references/patterns-better-convex.md)   |
+| Best Practices | General Convex patterns and guidelines            | [patterns-best-practices](references/patterns-best-practices.md) |
+
+## Advanced
+
+| Topic        | Description                      | Reference                                                    |
+| ------------ | -------------------------------- | ------------------------------------------------------------ |
+| Agents       | AI agents with tools and RAG     | [advanced-agents](references/advanced-agents.md)             |
+| HTTP Actions | Webhooks and HTTP endpoints      | [advanced-http-actions](references/advanced-http-actions.md) |
+| File Storage | File uploads, serving, storage   | [advanced-file-storage](references/advanced-file-storage.md) |
+| Cron Jobs    | Scheduled background tasks       | [advanced-cron-jobs](references/advanced-cron-jobs.md)       |
+| Migrations   | Schema evolution, data backfills | [advanced-migrations](references/advanced-migrations.md)     |
+| Components   | Reusable Convex packages         | [advanced-components](references/advanced-components.md)     |
 
 ## Security
 
-| Skill | Command | Use When |
-|-------|---------|----------|
-| Security Check | `/convex-security-check` | Quick security audit checklist |
-| Security Audit | `/convex-security-audit` | Deep security review |
-
-## Guidelines
-
-| Skill | Command | Use When |
-|-------|---------|----------|
-| Best Practices | `/convex-best-practices` | General patterns and guidelines |
+| Topic          | Description                    | Reference                                      |
+| -------------- | ------------------------------ | ---------------------------------------------- |
+| Security Check | Quick security audit checklist | [security-check](references/security-check.md) |
+| Security Audit | Deep security review patterns  | [security-audit](references/security-audit.md) |
 
 ## Quick Start
 
-For most tasks:
-1. Start with `/convex-best-practices` for general patterns
-2. Use `/convex-functions` for writing backend logic
-3. Use `/convex-schema-validator` for data modeling
-4. Use specific skills as needed for your use case
+For most tasks in this project:
+
+1. **Start with Better Convex patterns** - See [patterns-better-convex](references/patterns-better-convex.md)
+2. **Use cRPC procedures** - Not standard Convex functions
+3. **Add validators** - In `packages/validators/` using Zod
+4. **Use `.output()` with `zid()`** - For proper type inference
 
 ## Documentation
 
 - Primary: https://docs.convex.dev
 - LLM-optimized: https://docs.convex.dev/llms.txt
+- Better Convex: https://www.better-convex.com
