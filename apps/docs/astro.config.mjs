@@ -72,6 +72,10 @@ export default defineConfig({
 							label: "Better Convex Folder Structure",
 							slug: "guides/16-better-convex-folder-structure",
 						},
+						{
+							label: "Things Description & Image",
+							slug: "guides/17-things-description-image",
+						},
 					],
 				},
 				{
