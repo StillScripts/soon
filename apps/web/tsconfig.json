@@ -10,7 +10,7 @@
 		"paths": {
 			"@/*": ["./*"],
 			"@convex/*": [
-				"../../packages/backend/convex/_generated/*",
+				"../../packages/backend/convex/functions/_generated/*",
 				"../../packages/backend/convex/shared/*"
 			]
 		}

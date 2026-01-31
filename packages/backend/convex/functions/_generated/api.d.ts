@@ -9,12 +9,8 @@
  */
 
 import type * as auth from "../auth.js";
-import type * as crpc from "../crpc.js";
 import type * as http from "../http.js";
-import type * as shared_meta from "../shared/meta.js";
-import type * as shared_types from "../shared/types.js";
 import type * as things from "../things.js";
-import type * as types from "../types.js";
 
 import type {
   ApiFromModules,
@@ -24,12 +20,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  crpc: typeof crpc;
   http: typeof http;
-  "shared/meta": typeof shared_meta;
-  "shared/types": typeof shared_types;
   things: typeof things;
-  types: typeof types;
 }>;
 
 /**

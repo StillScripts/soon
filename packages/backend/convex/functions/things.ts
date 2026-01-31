@@ -7,7 +7,8 @@ import {
 } from "@repo/validators/things"
 
 import type { Id } from "./_generated/dataModel"
-import { authMutation, authQuery } from "./crpc"
+
+import { authMutation, authQuery } from "../lib/crpc"
 
 // Generate upload URL for images (requires auth)
 export const generateUploadUrl = authMutation.mutation(async ({ ctx }) => {
@@ -22,10 +23,11 @@ export const list = authQuery.input(listThingsSchema).query(async ({ ctx, input 
 
 	// Add image URLs
 	return Promise.all(
-		things.map(async (thing) => ({
-			...thing,
-			imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
-		}))
+		things.map(async (thing) =>
+			Object.assign({}, thing, {
+				imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+			})
+		)
 	)
 })
 

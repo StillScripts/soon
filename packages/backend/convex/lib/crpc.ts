@@ -1,8 +1,8 @@
 import { CRPCError, initCRPC } from "better-convex/server"
 
-import type { DataModel } from "./_generated/dataModel"
-import { action, mutation, query } from "./_generated/server"
-import { authComponent } from "./auth"
+import type { DataModel } from "../functions/_generated/dataModel"
+import { action, mutation, query } from "../functions/_generated/server"
+import { authComponent } from "../functions/auth"
 
 // cRPC initialization
 
