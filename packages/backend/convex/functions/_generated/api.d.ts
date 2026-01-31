@@ -82,52 +82,7 @@ export declare const api: {
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: {
-  thingsInternal: {
-    createInternal: FunctionReference<
-      "mutation",
-      "internal",
-      { description?: string; imageId?: string; title: string; userId: string },
-      any
-    >;
-    generateUploadUrlInternal: FunctionReference<
-      "mutation",
-      "internal",
-      {},
-      any
-    >;
-    getInternal: FunctionReference<
-      "query",
-      "internal",
-      { id: string; userId: string },
-      any
-    >;
-    listInternal: FunctionReference<
-      "query",
-      "internal",
-      { limit?: number; userId: string },
-      any
-    >;
-    removeInternal: FunctionReference<
-      "mutation",
-      "internal",
-      { id: string; userId: string },
-      any
-    >;
-    updateInternal: FunctionReference<
-      "mutation",
-      "internal",
-      {
-        description?: string | null;
-        id: string;
-        imageId?: string | null;
-        title?: string;
-        userId: string;
-      },
-      any
-    >;
-  };
-};
+export declare const internal: {};
 
 export declare const components: {
   betterAuth: {
