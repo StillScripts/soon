@@ -220,38 +220,38 @@ function ThingItem({
 					<img
 						src={thing.imageUrl}
 						alt={thing.title}
-						className="h-20 w-20 flex-shrink-0 rounded-lg object-cover"
+						className="h-16 w-16 shrink-0 rounded-lg object-cover"
 					/>
 				)}
-				<div className="flex flex-1 flex-col gap-1">
-					<div className="flex items-start justify-between">
-						<span className="font-medium">{thing.title}</span>
-						<div className="flex items-center gap-2">
-							<span className="text-muted-foreground text-xs">
-								{new Date(thing._creationTime).toLocaleDateString()}
-							</span>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => setIsEditing(true)}
-								disabled={isDeleting}
-							>
-								Edit
-							</Button>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={onDelete}
-								disabled={isDeleting}
-								className="text-destructive hover:text-destructive"
-							>
-								Delete
-							</Button>
-						</div>
+				<div className="flex min-w-0 flex-1 items-start justify-between gap-4">
+					<div className="min-w-0 flex-1">
+						<p className="font-medium">{thing.title}</p>
+						{thing.description && (
+							<p className="text-muted-foreground mt-1 text-sm">{thing.description}</p>
+						)}
 					</div>
-					{thing.description && (
-						<p className="text-muted-foreground text-sm">{thing.description}</p>
-					)}
+					<div className="flex shrink-0 items-center gap-2">
+						<span className="text-muted-foreground text-xs">
+							{new Date(thing._creationTime).toLocaleDateString()}
+						</span>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => setIsEditing(true)}
+							disabled={isDeleting}
+						>
+							Edit
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={onDelete}
+							disabled={isDeleting}
+							className="text-destructive hover:text-destructive"
+						>
+							Delete
+						</Button>
+					</div>
 				</div>
 			</div>
 		</li>
@@ -536,7 +536,7 @@ export default function Home() {
 				<UserHeader />
 			</header>
 
-			<main className="mx-auto flex w-full flex-col items-center gap-8">
+			<main className="mx-auto flex w-full max-w-4xl flex-col gap-8">
 				<ThingsManager />
 			</main>
 
