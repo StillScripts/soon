@@ -84,6 +84,10 @@ export default defineConfig({
 							label: "Testing Better Convex",
 							slug: "guides/19-convex-test-with-better-convex",
 						},
+						{
+							label: "React Testing Library",
+							slug: "guides/20-react-testing-library",
+						},
 					],
 				},
 				{
