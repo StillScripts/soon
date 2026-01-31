@@ -4,10 +4,15 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts"
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
 	},
 	"scripts": {
-		"check-types": "tsc --noEmit"
+		"build": "tsc",
+		"check-types": "tsc --noEmit",
+		"transit": "tsc"
 	},
 	"devDependencies": {
 		"@repo/typescript-config": "*",

@@ -39,10 +39,11 @@ export const list = authQuery
 
 		// Add image URLs
 		return Promise.all(
-			things.map(async (thing) => ({
-				...thing,
-				imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
-			}))
+			things.map(async (thing) =>
+				Object.assign({}, thing, {
+					imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+				})
+			)
 		)
 	})
 
