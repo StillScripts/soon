@@ -9,7 +9,7 @@ Follow these conventions when creating commits.
 
 ## Prerequisites
 
-Before committing, ensure you're working on a feature branch, not the main branch.
+Before committing, ensure you're working on a proper branch, not the main branch. Use the `/checkout` skill if you need to checkout a new branch.
 
 ```bash
 # Check current branch

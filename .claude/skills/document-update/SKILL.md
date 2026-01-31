@@ -77,21 +77,40 @@ description: Brief description of what this update covers.
 - Note any important gotchas or considerations
 - Keep future developers and AI assistants in mind as the audience
 
-### Step 5: Update Sidebar Navigation
+### Step 5: Update Navigation (Two Files)
 
-Update `apps/docs/astro.config.mjs` to include the new guide:
+**IMPORTANT:** Both files must be updated for the guide to appear properly.
+
+#### 5a. Update Overview Timeline
+
+Add the new guide to `apps/docs/src/content/docs/guides/00-overview.md`:
+
+```markdown
+## Development Timeline
+
+1. [Initial Turborepo Setup](./01-initial-turborepo-setup) - Creating the TurboRepo foundation
+...
+NN. [New Guide Title](./NN-guide-name) - Brief description of what was done
+```
+
+#### 5b. Update Astro Sidebar
+
+Add the new guide to `apps/docs/astro.config.mjs` in the sidebar items:
 
 ```javascript
 {
   label: 'Development Journey',
   items: [
     // ... existing items
-    { label: 'New Guide Title', slug: 'guides/NN-guide-name' },
+    {
+      label: 'New Guide Title',
+      slug: 'guides/NN-guide-name',
+    },
   ],
 },
 ```
 
-Maintain chronological order.
+Maintain chronological order in both files.
 
 ### Step 6: Verify
 
@@ -165,7 +184,7 @@ Always refer to `apps/docs/src/content/docs/guides/_template.md` for the canonic
 
 1. **Don't skip the "why"** - This is the most valuable part
 2. **Don't just list what changed** - Explain the reasoning and context
-3. **Don't forget to update sidebar** - The guide won't appear otherwise
+3. **Don't forget to update BOTH navigation files** - Update `00-overview.md` AND `astro.config.mjs`
 4. **Don't use generic titles** - Be specific about what this guide covers
 5. **Don't forget code examples** - Show how things work in practice
 
@@ -174,8 +193,9 @@ Always refer to `apps/docs/src/content/docs/guides/_template.md` for the canonic
 After creating the guide:
 
 1. Confirm the file was created at the correct path
-2. Confirm the sidebar was updated
-3. Provide a brief summary of what was documented
-4. Note the guide number for reference
+2. Confirm `00-overview.md` was updated with the new guide in the timeline
+3. Confirm `astro.config.mjs` was updated with the new guide in the sidebar
+4. Provide a brief summary of what was documented
+5. Note the guide number for reference
 
 This ensures the development journey remains comprehensive and valuable for future developers and AI assistants.

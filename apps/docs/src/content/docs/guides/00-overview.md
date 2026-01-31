@@ -30,6 +30,9 @@ These guides serve multiple purposes:
 12. [Better Convex Migration](./12-better-convex-migration) - Migrating to better-convex patterns
 13. [Shared Validators Package](./13-shared-validators) - Creating shared validation utilities
 14. [oxlint + Prettier Migration](./14-oxlint-prettier-migration) - Replacing Biome with oxlint and Prettier
+15. [Auto-Generated Skills Docs](./15-skills-documentation) - Documenting Claude Code skills
+16. [Better Convex Folder Structure](./16-better-convex-folder-structure) - Fixing folder structure and type inference
+17. [Things Description & Image](./17-things-description-image) - Adding file uploads and descriptions
 
 ## Documentation Pattern
 

@@ -5,6 +5,15 @@ description: How we migrated from standard Convex to Better Convex with cRPC pro
 
 # Better Convex Migration
 
+:::caution[Important Update]
+This guide documents the initial migration to Better Convex. Several issues were discovered and fixed in a subsequent update. See [Guide 16: Better Convex Folder Structure](/guides/16-better-convex-folder-structure/) for:
+
+- **Folder structure**: Files should be organized into `functions/`, `lib/`, and `shared/` directories
+- **Missing `.output()` declarations**: All procedures must have `.output()` for static API type generation
+- **`zid()` usage**: Use `zid("tableName")` from `convex-helpers/server/zod4` for Convex ID types
+- **Bun symlink fix**: Re-export `better-convex/react` through the backend package to resolve unique symbol errors
+  :::
+
 This guide documents how we migrated the project from standard Convex (`convex/react` hooks) to [Better Convex](https://github.com/udecode/better-convex) — a framework that adds tRPC-style procedures, TanStack Query integration, and middleware-based auth to Convex.
 
 ## Why We Migrated
@@ -215,6 +224,24 @@ This requires the `@convex/*` path alias added to `tsconfig.json`:
 }
 ```
 
+:::note[Updated Paths]
+After the folder structure migration in [Guide 16](/guides/16-better-convex-folder-structure/), the paths changed to:
+
+```json
+{
+	"paths": {
+		"@/*": ["./*"],
+		"@convex/*": [
+			"../../packages/backend/convex/functions/_generated/*",
+			"../../packages/backend/convex/shared/*"
+		],
+		"backend/react": ["../../packages/backend/convex/shared/react.ts"]
+	}
+}
+```
+
+:::
+
 ### Providers (`apps/web/app/providers.tsx`)
 
 The provider stack changed significantly:
@@ -346,6 +373,22 @@ The backend package now exports additional entry points:
 }
 ```
 
+:::note[Updated Exports]
+After the folder structure migration in [Guide 16](/guides/16-better-convex-folder-structure/), the exports changed to:
+
+```json
+{
+	"exports": {
+		"./convex": "./convex/functions/_generated/api.js",
+		"./meta": "./convex/shared/meta.ts",
+		"./types": "./convex/shared/types.ts",
+		"./react": "./convex/shared/react.ts"
+	}
+}
+```
+
+:::
+
 The web app's `tsconfig.json` uses path aliases instead of the package exports for the generated/shared files, since the TypeScript paths resolve directly to the source files in the monorepo.
 
 ---
@@ -360,3 +403,87 @@ The migration touched 10 files (excluding config/lockfile changes) across 5 comm
 4. **State:** Direct Convex reactivity → Convex WebSocket → TanStack Query cache
 
 The old `convex/react` hooks are no longer used anywhere in the codebase. The migration was done all-at-once rather than incrementally, since the app currently only has one entity (`things`) with four functions.
+
+---
+
+## Errata: Issues Fixed in Guide 16
+
+This initial migration had several gaps that were addressed in [Guide 16](/guides/16-better-convex-folder-structure/):
+
+### 1. Flat Folder Structure
+
+The original migration kept all files in `convex/`. Better Convex recommends:
+
+```
+convex/
+├── functions/    # Deployed to Convex runtime
+├── lib/          # Server helpers (NOT deployed)
+└── shared/       # Exported to web app
+```
+
+### 2. Missing `.output()` Declarations
+
+The original procedures lacked `.output()` schemas:
+
+```typescript
+// Original (broken type inference)
+export const list = authQuery
+	.input(listThingsSchema)
+	.query(async ({ ctx }) => { ... })
+
+// Fixed (full type inference)
+export const list = authQuery
+	.input(listThingsSchema)
+	.output(z.array(thingOutputSchema))
+	.query(async ({ ctx }) => { ... })
+```
+
+Without `.output()`, the `staticApi: true` codegen setting cannot generate proper return types.
+
+### 3. Missing `zid()` for Convex IDs
+
+Convex document IDs require `zid()` from `convex-helpers/server/zod4`:
+
+```typescript
+import { zid } from "convex-helpers/server/zod4"
+
+const thingOutputSchema = z.object({
+	_id: zid("things"), // NOT z.string()
+	imageId: zid("_storage").optional(),
+	// ...
+})
+```
+
+### 4. Bun Symlink Resolution
+
+In Bun monorepos, importing `better-convex/react` directly in the web app causes TypeScript errors:
+
+```
+The inferred type of 'useCRPC' references an inaccessible 'unique symbol' type
+```
+
+**Fix:** Re-export through the backend package:
+
+```typescript
+// apps/web/lib/convex/crpc.tsx
+import { createCRPCContext } from "backend/react"
+
+// packages/backend/convex/shared/react.ts
+export { createCRPCContext } from "better-convex/react"
+```
+
+### 5. Missing `convex.json`
+
+The `convex.json` configuration file is required for the folder structure:
+
+```json
+{
+	"functions": "convex/functions",
+	"codegen": {
+		"staticApi": true,
+		"staticDataModel": true
+	}
+}
+```
+
+See [Guide 16](/guides/16-better-convex-folder-structure/) for the complete corrected implementation.
