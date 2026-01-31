@@ -11,10 +11,17 @@
 	},
 	"scripts": {
 		"dev": "convex dev",
-		"start": "convex start"
+		"start": "convex start",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@edge-runtime/vm": "^5.0.0",
+		"@types/bun": "latest",
+		"@vitest/coverage-v8": "^4.0.18",
+		"convex-test": "^0.0.41",
+		"vitest": "^4.0.18"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
