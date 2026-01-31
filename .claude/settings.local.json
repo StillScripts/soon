@@ -84,7 +84,8 @@
 			"Skill(vercel-react-best-practices)",
 			"Skill(vitest)",
 			"Skill(web-design-guidelines)",
-			"Bash(git add:*)"
+			"Bash(git add:*)",
+			"Bash(bunx npm info:*)"
 		]
 	}
 }
