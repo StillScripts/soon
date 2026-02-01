@@ -3,13 +3,10 @@
 
 import { useRef, useState } from "react"
 
+import { ThingForm, type ThingFormData } from "@repo/forms/thing"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/ui/field"
-import { Input } from "@repo/ui/components/ui/input"
-import { Textarea } from "@repo/ui/components/ui/textarea"
-import { thingInputSchema } from "@repo/validators/things"
-import { useForm } from "@tanstack/react-form"
+import { Field, FieldLabel } from "@repo/ui/components/ui/field"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { AuthForm } from "@/components/auth-form"
@@ -31,11 +28,13 @@ function ImageUpload({
 	onUpload,
 	onRemove,
 	disabled,
+	label,
 }: {
 	imageUrl: string | null
 	onUpload: (file: File) => Promise<void>
 	onRemove: () => void
 	disabled?: boolean
+	label?: string
 }) {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isUploading, setIsUploading] = useState(false)
@@ -56,7 +55,8 @@ function ImageUpload({
 	}
 
 	return (
-		<div className="space-y-2">
+		<Field>
+			{label && <FieldLabel>{label}</FieldLabel>}
 			{imageUrl ? (
 				<div className="relative">
 					<img src={imageUrl} alt="Thing" className="h-32 w-full rounded-lg object-cover" />
@@ -89,7 +89,7 @@ function ImageUpload({
 				disabled={disabled || isUploading}
 				className="hidden"
 			/>
-		</div>
+		</Field>
 	)
 }
 
@@ -123,92 +123,37 @@ function ThingItem({
 		setEditImageUrl(URL.createObjectURL(file))
 	}
 
-	const form = useForm({
-		defaultValues: {
-			title: thing.title,
-			description: thing.description ?? "",
-		},
-		onSubmit: async ({ value }) => {
-			onUpdate({
-				title: value.title.trim(),
-				description: value.description.trim() || null,
-				imageId: editImageId ?? null,
-			})
-			setIsEditing(false)
-		},
-	})
+	const handleSubmit = async (data: ThingFormData) => {
+		onUpdate({
+			title: data.title,
+			description: data.description || null,
+			imageId: editImageId ?? null,
+		})
+		setIsEditing(false)
+	}
 
 	if (isEditing) {
 		return (
 			<li className="bg-secondary rounded-lg p-4">
-				<form
-					onSubmit={(e) => {
-						e.preventDefault()
-						e.stopPropagation()
-						form.handleSubmit()
+				<ThingForm
+					onSubmit={handleSubmit}
+					defaultValues={{
+						title: thing.title,
+						description: thing.description ?? "",
 					}}
-					className="space-y-4"
-				>
-					<ImageUpload
-						imageUrl={editImageUrl}
-						onUpload={handleImageUpload}
-						onRemove={() => {
-							setEditImageId(undefined)
-							setEditImageUrl(null)
-						}}
-					/>
-
-					<form.Field
-						name="title"
-						validators={{
-							onChange: ({ value }) => {
-								const result = thingInputSchema.shape.title.safeParse(value)
-								return result.success ? undefined : result.error.issues[0]?.message
-							},
-						}}
-					>
-						{(field) => (
-							<Field>
-								<FieldLabel htmlFor={`edit-title-${thing._id}`}>Title</FieldLabel>
-								<Input
-									id={`edit-title-${thing._id}`}
-									type="text"
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
-									onBlur={field.handleBlur}
-								/>
-								{field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-									<FieldError>{field.state.meta.errors.join(", ")}</FieldError>
-								)}
-							</Field>
-						)}
-					</form.Field>
-
-					<form.Field name="description">
-						{(field) => (
-							<Field>
-								<FieldLabel htmlFor={`edit-description-${thing._id}`}>Description</FieldLabel>
-								<Textarea
-									id={`edit-description-${thing._id}`}
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
-									onBlur={field.handleBlur}
-									rows={3}
-									placeholder="Add a description..."
-								/>
-							</Field>
-						)}
-					</form.Field>
-
-					<div className="flex justify-end gap-2">
-						<Button type="button" variant="outline" size="sm" onClick={() => setIsEditing(false)}>
-							Cancel
-						</Button>
-						<Button type="submit" size="sm">
-							Save
-						</Button>
-					</div>
-				</form>
+					idPrefix={`edit-${thing._id}`}
+					onCancel={() => setIsEditing(false)}
+					imageSlot={
+						<ImageUpload
+							imageUrl={editImageUrl}
+							onUpload={handleImageUpload}
+							onRemove={() => {
+								setEditImageId(undefined)
+								setEditImageUrl(null)
+							}}
+						/>
+					}
+				/>
 			</li>
 		)
 	}
@@ -289,12 +234,9 @@ function ThingsManager() {
 		})
 	)
 
-	const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0]
-		if (file) {
-			setImageFile(file)
-			setImagePreview(URL.createObjectURL(file))
-		}
+	const handleImageUpload = async (file: File) => {
+		setImageFile(file)
+		setImagePreview(URL.createObjectURL(file))
 	}
 
 	const clearImage = () => {
@@ -305,40 +247,28 @@ function ThingsManager() {
 		}
 	}
 
-	const form = useForm({
-		defaultValues: {
-			title: "",
-			description: "",
-		},
-		onSubmit: async ({ value }) => {
-			try {
-				let imageId: string | undefined
-
-				if (imageFile) {
-					const uploadUrl = await generateUploadUrl.mutateAsync()
-					const result = await fetch(uploadUrl, {
-						method: "POST",
-						headers: { "Content-Type": imageFile.type },
-						body: imageFile,
-					})
-					const json = await result.json()
-					imageId = json.storageId
-				}
-
-				await createThing.mutateAsync({
-					title: value.title.trim(),
-					description: value.description.trim() || undefined,
-					imageId,
-				})
-				form.reset()
-				clearImage()
-			} catch (_err) {
-				// Error is handled by the mutation
-			}
-		},
-	})
-
 	const isSubmitting = createThing.isPending || generateUploadUrl.isPending
+
+	const handleSubmit = async (data: ThingFormData) => {
+		let imageId: string | undefined
+
+		if (imageFile) {
+			const uploadUrl = await generateUploadUrl.mutateAsync()
+			const result = await fetch(uploadUrl, {
+				method: "POST",
+				headers: { "Content-Type": imageFile.type },
+				body: imageFile,
+			})
+			const json = await result.json()
+			imageId = json.storageId
+		}
+
+		await createThing.mutateAsync({
+			title: data.title,
+			description: data.description || undefined,
+			imageId,
+		})
+	}
 
 	return (
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -347,119 +277,22 @@ function ThingsManager() {
 					<CardTitle>Create a Thing</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault()
-							e.stopPropagation()
-							form.handleSubmit()
-						}}
-						className="space-y-4"
-					>
-						<Field>
-							<FieldLabel>Image (optional)</FieldLabel>
-							{imagePreview ? (
-								<div className="relative">
-									<img
-										src={imagePreview}
-										alt="Preview"
-										className="h-32 w-full rounded-lg object-cover"
-									/>
-									<Button
-										type="button"
-										variant="destructive"
-										size="sm"
-										className="absolute top-2 right-2"
-										onClick={clearImage}
-										disabled={isSubmitting}
-									>
-										Remove
-									</Button>
-								</div>
-							) : (
-								<div
-									className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed"
-									onClick={() => fileInputRef.current?.click()}
-								>
-									<span className="text-muted-foreground text-sm">Click to upload image</span>
-								</div>
-							)}
-							<input
-								ref={fileInputRef}
-								type="file"
-								accept="image/*"
-								onChange={handleImageSelect}
+					<ThingForm
+						onSubmit={handleSubmit}
+						isSubmitting={isSubmitting}
+						submitLabel="Create Thing"
+						submittingLabel="Creating..."
+						onReset={clearImage}
+						imageSlot={
+							<ImageUpload
+								imageUrl={imagePreview}
+								onUpload={handleImageUpload}
+								onRemove={clearImage}
 								disabled={isSubmitting}
-								className="hidden"
+								label="Image (optional)"
 							/>
-						</Field>
-
-						<FieldGroup>
-							<form.Field
-								name="title"
-								validators={{
-									onChange: ({ value }) => {
-										const result = thingInputSchema.shape.title.safeParse(value)
-										return result.success ? undefined : result.error.issues[0]?.message
-									},
-								}}
-							>
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor="title">Title</FieldLabel>
-										<Input
-											id="title"
-											type="text"
-											placeholder="Enter thing title..."
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											onBlur={field.handleBlur}
-											disabled={isSubmitting}
-										/>
-										{field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-											<FieldError>{field.state.meta.errors.join(", ")}</FieldError>
-										)}
-									</Field>
-								)}
-							</form.Field>
-
-							<form.Field
-								name="description"
-								validators={{
-									onChange: ({ value }) => {
-										if (!value) return undefined
-										const result = thingInputSchema.shape.description.safeParse(value)
-										return result.success ? undefined : result.error.issues[0]?.message
-									},
-								}}
-							>
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor="description">Description (optional)</FieldLabel>
-										<Textarea
-											id="description"
-											placeholder="Add a description..."
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											onBlur={field.handleBlur}
-											disabled={isSubmitting}
-											rows={3}
-										/>
-										{field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-											<FieldError>{field.state.meta.errors.join(", ")}</FieldError>
-										)}
-									</Field>
-								)}
-							</form.Field>
-						</FieldGroup>
-
-						<form.Subscribe selector={(state) => state.values.title}>
-							{(title) => (
-								<Button type="submit" disabled={isSubmitting || !title.trim()} className="w-full">
-									{isSubmitting ? "Creating..." : "Create Thing"}
-								</Button>
-							)}
-						</form.Subscribe>
-					</form>
+						}
+					/>
 				</CardContent>
 			</Card>
 
