@@ -64,7 +64,7 @@ const create = useMutation(api.functions.things.create)
 ### Validators
 
 ```tsx
-import { createThingSchema } from "@repo/validators/things"
+import { thingInputSchema } from "@repo/validators/things"
 ```
 
 ### Styles

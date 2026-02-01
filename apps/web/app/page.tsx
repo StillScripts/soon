@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui
 import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/ui/field"
 import { Input } from "@repo/ui/components/ui/input"
 import { Textarea } from "@repo/ui/components/ui/textarea"
-import { createThingSchema, updateThingSchema } from "@repo/validators/things"
+import { thingInputSchema } from "@repo/validators/things"
 import { useForm } from "@tanstack/react-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
@@ -162,7 +162,7 @@ function ThingItem({
 						name="title"
 						validators={{
 							onChange: ({ value }) => {
-								const result = updateThingSchema.shape.title.safeParse(value)
+								const result = thingInputSchema.shape.title.safeParse(value)
 								return result.success ? undefined : result.error.issues[0]?.message
 							},
 						}}
@@ -398,7 +398,7 @@ function ThingsManager() {
 								name="title"
 								validators={{
 									onChange: ({ value }) => {
-										const result = createThingSchema.shape.title.safeParse(value)
+										const result = thingInputSchema.shape.title.safeParse(value)
 										return result.success ? undefined : result.error.issues[0]?.message
 									},
 								}}
@@ -427,7 +427,7 @@ function ThingsManager() {
 								validators={{
 									onChange: ({ value }) => {
 										if (!value) return undefined
-										const result = createThingSchema.shape.description.safeParse(value)
+										const result = thingInputSchema.shape.description.safeParse(value)
 										return result.success ? undefined : result.error.issues[0]?.message
 									},
 								}}

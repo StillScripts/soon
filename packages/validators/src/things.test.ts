@@ -1,272 +1,159 @@
 import { describe, expect, it } from "vitest"
 
-import {
-	createThingSchema,
-	getThingSchema,
-	listThingsSchema,
-	removeThingSchema,
-	updateThingSchema,
-} from "./things.js"
+import { thingInputSchema } from "./things.js"
 
-describe("createThingSchema", () => {
-	it("should validate a valid title", () => {
-		const result = createThingSchema.safeParse({ title: "My Thing" })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.title).toBe("My Thing")
-		}
-	})
-
-	it("should accept a title with exactly 1 character", () => {
-		const result = createThingSchema.safeParse({ title: "A" })
-		expect(result.success).toBe(true)
-	})
-
-	it("should accept a title with exactly 200 characters", () => {
-		const title = "A".repeat(200)
-		const result = createThingSchema.safeParse({ title })
-		expect(result.success).toBe(true)
-	})
-
-	it("should reject an empty title", () => {
-		const result = createThingSchema.safeParse({ title: "" })
-		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe("Title is required")
-		}
-	})
-
-	it("should reject a title longer than 200 characters", () => {
-		const title = "A".repeat(201)
-		const result = createThingSchema.safeParse({ title })
-		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe("Title must be 200 characters or less")
-		}
-	})
-
-	it("should reject missing title field", () => {
-		const result = createThingSchema.safeParse({})
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject non-string title", () => {
-		const result = createThingSchema.safeParse({ title: 123 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject null title", () => {
-		const result = createThingSchema.safeParse({ title: null })
-		expect(result.success).toBe(false)
-	})
-})
-
-describe("getThingSchema", () => {
-	it("should validate a valid id", () => {
-		const result = getThingSchema.safeParse({ id: "123abc" })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.id).toBe("123abc")
-		}
-	})
-
-	it("should accept any string as id", () => {
-		const result = getThingSchema.safeParse({ id: "" })
-		expect(result.success).toBe(true)
-	})
-
-	it("should reject missing id field", () => {
-		const result = getThingSchema.safeParse({})
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject non-string id", () => {
-		const result = getThingSchema.safeParse({ id: 123 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject null id", () => {
-		const result = getThingSchema.safeParse({ id: null })
-		expect(result.success).toBe(false)
-	})
-})
-
-describe("removeThingSchema", () => {
-	it("should validate a valid id", () => {
-		const result = removeThingSchema.safeParse({ id: "456def" })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.id).toBe("456def")
-		}
-	})
-
-	it("should accept any string as id", () => {
-		const result = removeThingSchema.safeParse({ id: "" })
-		expect(result.success).toBe(true)
-	})
-
-	it("should reject missing id field", () => {
-		const result = removeThingSchema.safeParse({})
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject non-string id", () => {
-		const result = removeThingSchema.safeParse({ id: 123 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject null id", () => {
-		const result = removeThingSchema.safeParse({ id: null })
-		expect(result.success).toBe(false)
-	})
-})
-
-describe("listThingsSchema", () => {
-	it("should validate when limit is not provided", () => {
-		const result = listThingsSchema.safeParse({})
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.limit).toBeUndefined()
-		}
-	})
-
-	it("should validate a valid limit", () => {
-		const result = listThingsSchema.safeParse({ limit: 50 })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.limit).toBe(50)
-		}
-	})
-
-	it("should accept limit of 1", () => {
-		const result = listThingsSchema.safeParse({ limit: 1 })
-		expect(result.success).toBe(true)
-	})
-
-	it("should accept limit of 100", () => {
-		const result = listThingsSchema.safeParse({ limit: 100 })
-		expect(result.success).toBe(true)
-	})
-
-	it("should reject limit of 0", () => {
-		const result = listThingsSchema.safeParse({ limit: 0 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject limit less than 1", () => {
-		const result = listThingsSchema.safeParse({ limit: -5 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject limit greater than 100", () => {
-		const result = listThingsSchema.safeParse({ limit: 101 })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject non-number limit", () => {
-		const result = listThingsSchema.safeParse({ limit: "50" })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject null limit", () => {
-		const result = listThingsSchema.safeParse({ limit: null })
-		expect(result.success).toBe(false)
-	})
-
-	it("should reject decimal limit", () => {
-		const result = listThingsSchema.safeParse({ limit: 50.5 })
-		expect(result.success).toBe(false)
-	})
-})
-
-describe("updateThingSchema", () => {
-	it("should validate with only id", () => {
-		const result = updateThingSchema.safeParse({ id: "123abc" })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.id).toBe("123abc")
-		}
-	})
-
-	it("should validate with id and title", () => {
-		const result = updateThingSchema.safeParse({ id: "123", title: "Updated Title" })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.title).toBe("Updated Title")
-		}
-	})
-
-	it("should validate with all optional fields", () => {
-		const result = updateThingSchema.safeParse({
-			id: "123",
-			title: "New Title",
-			description: "New description",
-			imageId: "img_456",
+describe("thingInputSchema", () => {
+	describe("title field", () => {
+		it("should validate a valid title", () => {
+			const result = thingInputSchema.safeParse({ title: "My Thing" })
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data.title).toBe("My Thing")
+			}
 		})
-		expect(result.success).toBe(true)
+
+		it("should accept a title with exactly 1 character", () => {
+			const result = thingInputSchema.safeParse({ title: "A" })
+			expect(result.success).toBe(true)
+		})
+
+		it("should accept a title with exactly 200 characters", () => {
+			const title = "A".repeat(200)
+			const result = thingInputSchema.safeParse({ title })
+			expect(result.success).toBe(true)
+		})
+
+		it("should reject an empty title", () => {
+			const result = thingInputSchema.safeParse({ title: "" })
+			expect(result.success).toBe(false)
+			if (!result.success) {
+				expect(result.error.issues[0]?.message).toBe("Title is required")
+			}
+		})
+
+		it("should reject a title longer than 200 characters", () => {
+			const title = "A".repeat(201)
+			const result = thingInputSchema.safeParse({ title })
+			expect(result.success).toBe(false)
+			if (!result.success) {
+				expect(result.error.issues[0]?.message).toBe("Title must be 200 characters or less")
+			}
+		})
+
+		it("should reject missing title field", () => {
+			const result = thingInputSchema.safeParse({})
+			expect(result.success).toBe(false)
+		})
+
+		it("should reject non-string title", () => {
+			const result = thingInputSchema.safeParse({ title: 123 })
+			expect(result.success).toBe(false)
+		})
+
+		it("should reject null title", () => {
+			const result = thingInputSchema.safeParse({ title: null })
+			expect(result.success).toBe(false)
+		})
 	})
 
-	it("should accept null for description (clear value)", () => {
-		const result = updateThingSchema.safeParse({ id: "123", description: null })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.description).toBeNull()
-		}
+	describe("description field", () => {
+		it("should accept valid description", () => {
+			const result = thingInputSchema.safeParse({
+				title: "Test",
+				description: "A description",
+			})
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data.description).toBe("A description")
+			}
+		})
+
+		it("should accept missing description (optional)", () => {
+			const result = thingInputSchema.safeParse({ title: "Test" })
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data.description).toBeUndefined()
+			}
+		})
+
+		it("should accept description with exactly 2000 characters", () => {
+			const description = "A".repeat(2000)
+			const result = thingInputSchema.safeParse({ title: "Test", description })
+			expect(result.success).toBe(true)
+		})
+
+		it("should reject description longer than 2000 characters", () => {
+			const description = "A".repeat(2001)
+			const result = thingInputSchema.safeParse({ title: "Test", description })
+			expect(result.success).toBe(false)
+			if (!result.success) {
+				expect(result.error.issues[0]?.message).toBe("Description must be 2000 characters or less")
+			}
+		})
+
+		it("should reject non-string description", () => {
+			const result = thingInputSchema.safeParse({ title: "Test", description: 123 })
+			expect(result.success).toBe(false)
+		})
 	})
 
-	it("should accept null for imageId (clear value)", () => {
-		const result = updateThingSchema.safeParse({ id: "123", imageId: null })
-		expect(result.success).toBe(true)
-		if (result.success) {
-			expect(result.data.imageId).toBeNull()
-		}
+	describe("imageId field", () => {
+		it("should accept valid imageId", () => {
+			const result = thingInputSchema.safeParse({
+				title: "Test",
+				imageId: "img_123",
+			})
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data.imageId).toBe("img_123")
+			}
+		})
+
+		it("should accept missing imageId (optional)", () => {
+			const result = thingInputSchema.safeParse({ title: "Test" })
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data.imageId).toBeUndefined()
+			}
+		})
+
+		it("should reject non-string imageId", () => {
+			const result = thingInputSchema.safeParse({ title: "Test", imageId: 123 })
+			expect(result.success).toBe(false)
+		})
 	})
 
-	it("should reject missing id field", () => {
-		const result = updateThingSchema.safeParse({ title: "Test" })
-		expect(result.success).toBe(false)
-	})
+	describe("complete object", () => {
+		it("should accept all fields together", () => {
+			const result = thingInputSchema.safeParse({
+				title: "My Thing",
+				description: "A description",
+				imageId: "img_123",
+			})
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data).toEqual({
+					title: "My Thing",
+					description: "A description",
+					imageId: "img_123",
+				})
+			}
+		})
 
-	it("should reject non-string id", () => {
-		const result = updateThingSchema.safeParse({ id: 123 })
-		expect(result.success).toBe(false)
-	})
+		it("should accept title only (minimal valid input)", () => {
+			const result = thingInputSchema.safeParse({ title: "Just a title" })
+			expect(result.success).toBe(true)
+		})
 
-	it("should reject empty title when provided", () => {
-		const result = updateThingSchema.safeParse({ id: "123", title: "" })
-		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe("Title is required")
-		}
-	})
-
-	it("should reject title longer than 200 characters", () => {
-		const title = "A".repeat(201)
-		const result = updateThingSchema.safeParse({ id: "123", title })
-		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe("Title must be 200 characters or less")
-		}
-	})
-
-	it("should accept title with exactly 200 characters", () => {
-		const title = "A".repeat(200)
-		const result = updateThingSchema.safeParse({ id: "123", title })
-		expect(result.success).toBe(true)
-	})
-
-	it("should reject description longer than 2000 characters", () => {
-		const description = "A".repeat(2001)
-		const result = updateThingSchema.safeParse({ id: "123", description })
-		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error.issues[0]?.message).toBe("Description must be 2000 characters or less")
-		}
-	})
-
-	it("should accept description with exactly 2000 characters", () => {
-		const description = "A".repeat(2000)
-		const result = updateThingSchema.safeParse({ id: "123", description })
-		expect(result.success).toBe(true)
+		it("should strip unknown fields", () => {
+			const result = thingInputSchema.safeParse({
+				title: "Test",
+				unknownField: "should be stripped",
+			})
+			expect(result.success).toBe(true)
+			if (result.success) {
+				expect(result.data).not.toHaveProperty("unknownField")
+			}
+		})
 	})
 })

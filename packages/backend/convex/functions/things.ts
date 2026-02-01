@@ -1,10 +1,4 @@
-import {
-	createThingSchema,
-	getThingSchema,
-	listThingsSchema,
-	removeThingSchema,
-	updateThingSchema,
-} from "@repo/validators/things"
+import { thingInputSchema } from "@repo/validators/things"
 import { zid } from "convex-helpers/server/zod4"
 import { z } from "zod"
 
@@ -12,6 +6,38 @@ import type { Id } from "./_generated/dataModel"
 
 import { authMutation, authQuery } from "../lib/crpc"
 
+/**
+ * Backend-specific schemas
+ *
+ * These schemas are for Convex function inputs, not for form validation.
+ * Form validation uses thingInputSchema from @repo/validators/things.
+ */
+
+/** Schema for operations that require an entity ID */
+const idSchema = z.object({
+	id: z.string(),
+})
+
+/** Schema for listing with optional pagination */
+const listSchema = z.object({
+	limit: z.number().int().min(1).max(100).optional(),
+})
+
+/**
+ * Schema for updating - input fields are partial and merged with id.
+ * Supports null values for clearing fields.
+ */
+const updateSchema = idSchema.extend({
+	title: thingInputSchema.shape.title.optional(),
+	description: z
+		.string()
+		.max(2000, "Description must be 2000 characters or less")
+		.nullable()
+		.optional(),
+	imageId: z.string().nullable().optional(),
+})
+
+/** Output schema for Thing entity with resolved image URL */
 const thingOutputSchema = z.object({
 	_id: zid("things"),
 	_creationTime: z.number(),
@@ -27,7 +53,7 @@ export const generateUploadUrl = authMutation.output(z.string()).mutation(async 
 })
 
 export const list = authQuery
-	.input(listThingsSchema)
+	.input(listSchema)
 	.output(z.array(thingOutputSchema))
 	.query(async ({ ctx, input }) => {
 		const query = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", ctx.userId))
@@ -44,7 +70,7 @@ export const list = authQuery
 	})
 
 export const get = authQuery
-	.input(getThingSchema)
+	.input(idSchema)
 	.output(thingOutputSchema.nullable())
 	.query(async ({ ctx, input }) => {
 		const thing = await ctx.db.get(input.id as Id<"things">)
@@ -58,7 +84,7 @@ export const get = authQuery
 	})
 
 export const create = authMutation
-	.input(createThingSchema)
+	.input(thingInputSchema)
 	.output(zid("things"))
 	.mutation(async ({ ctx, input }) => {
 		return ctx.db.insert("things", {
@@ -69,7 +95,7 @@ export const create = authMutation
 		})
 	})
 
-export const update = authMutation.input(updateThingSchema).mutation(async ({ ctx, input }) => {
+export const update = authMutation.input(updateSchema).mutation(async ({ ctx, input }) => {
 	const thing = await ctx.db.get(input.id as Id<"things">)
 	if (!thing || thing.userId !== ctx.userId) {
 		throw new Error("Not found or not authorized")
@@ -97,7 +123,7 @@ export const update = authMutation.input(updateThingSchema).mutation(async ({ ct
 	await ctx.db.patch(input.id as Id<"things">, updates)
 })
 
-export const remove = authMutation.input(removeThingSchema).mutation(async ({ ctx, input }) => {
+export const remove = authMutation.input(idSchema).mutation(async ({ ctx, input }) => {
 	const thing = await ctx.db.get(input.id as Id<"things">)
 	if (!thing || thing.userId !== ctx.userId) {
 		throw new Error("Not found or not authorized")
