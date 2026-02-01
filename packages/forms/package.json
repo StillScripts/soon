@@ -7,6 +7,10 @@
 		"./auth": {
 			"types": "./src/auth/index.ts",
 			"default": "./src/auth/index.ts"
+		},
+		"./thing": {
+			"types": "./src/thing/index.ts",
+			"default": "./src/thing/index.ts"
 		}
 	},
 	"scripts": {
