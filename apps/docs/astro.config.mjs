@@ -88,6 +88,10 @@ export default defineConfig({
 							label: "React Testing Library",
 							slug: "guides/20-react-testing-library",
 						},
+						{
+							label: "Input-Only Validators",
+							slug: "guides/21-input-only-validators",
+						},
 					],
 				},
 				{

@@ -4,6 +4,10 @@
 	"private": true,
 	"type": "module",
 	"exports": {
+		"./auth": {
+			"types": "./src/auth.ts",
+			"default": "./src/auth.ts"
+		},
 		"./things": {
 			"types": "./src/things.ts",
 			"default": "./src/things.ts"

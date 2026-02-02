@@ -128,31 +128,40 @@ export default defineSchema({
 
 ## Shared Validators
 
-Input validation lives in `@repo/validators` (shared with frontend):
+Input validation schemas live in `@repo/validators` (shared with frontend forms).
+Backend-specific schemas (ID operations, pagination) are defined in the backend.
 
 ```typescript
 // packages/validators/src/things.ts
 import { z } from "zod"
 
-export const createThingSchema = z.object({
-	title: z.string().min(1).max(100),
-	description: z.string().max(500).optional(),
-})
-
-// Use z.string() for IDs (not zid - that's server-only)
-export const getThingSchema = z.object({
-	id: z.string(),
+// Core input schema for user data
+export const thingInputSchema = z.object({
+	title: z.string().min(1).max(200),
+	description: z.string().max(2000).optional(),
+	imageId: z.string().optional(),
 })
 ```
 
 Use in Convex functions:
 
 ```typescript
-import { createThingSchema } from "@repo/validators/things"
+import { thingInputSchema } from "@repo/validators/things"
 
-export const create = authMutation.input(createThingSchema).mutation(async ({ ctx, input }) => {
+// Backend defines its own operation schemas
+const idSchema = z.object({ id: z.string() })
+const updateSchema = idSchema.extend({
+	title: thingInputSchema.shape.title.optional(),
+	description: z.string().max(2000).nullable().optional(),
+})
+
+// Create uses the shared input schema
+export const create = authMutation.input(thingInputSchema).mutation(async ({ ctx, input }) => {
 	// input is typed from the schema
 })
+
+// Get uses backend-local schema
+export const get = authQuery.input(idSchema).query(...)
 ```
 
 ## Database Operations
