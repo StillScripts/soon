@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/ui/field"
 import { Input } from "@repo/ui/components/ui/input"
 import { Textarea } from "@repo/ui/components/ui/textarea"
-import { createThingSchema } from "@repo/validators/things"
+import { thingInputSchema } from "@repo/validators/things"
 import { useForm } from "@tanstack/react-form"
 
 export interface ThingFormData {
@@ -89,7 +89,7 @@ export function ThingForm({
 					name="title"
 					validators={{
 						onChange: ({ value }) => {
-							const result = createThingSchema.shape.title.safeParse(value)
+							const result = thingInputSchema.shape.title.safeParse(value)
 							return result.success ? undefined : result.error.issues[0]?.message
 						},
 					}}
@@ -118,7 +118,7 @@ export function ThingForm({
 					validators={{
 						onChange: ({ value }) => {
 							if (!value) return undefined
-							const result = createThingSchema.shape.description.safeParse(value)
+							const result = thingInputSchema.shape.description.safeParse(value)
 							return result.success ? undefined : result.error.issues[0]?.message
 						},
 					}}
