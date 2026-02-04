@@ -1,0 +1,17 @@
+{
+	"extends": "@repo/typescript-config/react-library.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"types": ["vitest/globals"],
+		"baseUrl": ".",
+		"paths": {
+			"@convex/*": ["../backend/convex/functions/_generated/*", "../backend/convex/shared/*"],
+			"backend/react": ["../backend/convex/shared/react.ts"]
+		}
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "dist"]
+}

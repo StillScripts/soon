@@ -2,9 +2,9 @@
 
 import { api } from "@convex/api"
 import { meta } from "@convex/meta"
-import { createCRPCContext } from "backend/react"
+import { type Api, createCRPCContext } from "@repo/api/context"
 
-const crpcContext = createCRPCContext<typeof api>({
+const crpcContext = createCRPCContext<Api>({
 	api,
 	meta,
 	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,

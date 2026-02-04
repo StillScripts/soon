@@ -1,0 +1,42 @@
+{
+	"name": "@repo/api",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./things": {
+			"types": "./src/things/index.ts",
+			"default": "./src/things/index.ts"
+		},
+		"./context": {
+			"types": "./src/context/index.ts",
+			"default": "./src/context/index.ts"
+		},
+		"./types": {
+			"types": "./src/types.ts",
+			"default": "./src/types.ts"
+		}
+	},
+	"scripts": {
+		"lint": "oxlint .",
+		"check-types": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest --watch"
+	},
+	"dependencies": {
+		"@tanstack/react-query": "^5.90.20",
+		"backend": "workspace:*",
+		"better-convex": "^0.5.7",
+		"react": "^19.2.0"
+	},
+	"devDependencies": {
+		"@repo/oxlint-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"@repo/vitest-config": "workspace:*",
+		"@testing-library/react": "^16.0.0",
+		"@types/react": "19.2.2",
+		"jsdom": "^26.0.0",
+		"typescript": "^5.9.2",
+		"vitest": "^4.0.18"
+	}
+}
