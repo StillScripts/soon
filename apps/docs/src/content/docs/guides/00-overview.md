@@ -36,6 +36,8 @@ These guides serve multiple purposes:
 18. [Setting Up CI](./18-setting-up-ci) - GitHub Actions CI/CD with Turborepo caching
 19. [Testing Better Convex](./19-convex-test-with-better-convex) - Using convex-test with Better Convex functions
 20. [React Testing Library](./20-react-testing-library) - Frontend component testing with RTL and Vitest
+21. [Input-Only Validators](./21-input-only-validators) - Refactoring validators for form-focused validation
+22. [Shared API Package](./22-api-package) - Centralizing TanStack Query hooks in @repo/api
 
 ## Documentation Pattern
 

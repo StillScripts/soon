@@ -92,6 +92,10 @@ export default defineConfig({
 							label: "Input-Only Validators",
 							slug: "guides/21-input-only-validators",
 						},
+						{
+							label: "Shared API Package",
+							slug: "guides/22-api-package",
+						},
 					],
 				},
 				{
