@@ -47,8 +47,8 @@ packages/api/
 The package provides three main exports:
 
 ```typescript
-// Context factory for app initialization
-import { createApiContext } from "@repo/api/context"
+// Context factory and types for app initialization
+import { type Api, createCRPCContext } from "@repo/api/context"
 // Type-safe hooks for Things CRUD
 import { useThings, useThingsCreate, useThingsList } from "@repo/api/things"
 // Re-exported types from backend
@@ -57,20 +57,28 @@ import type { ApiInputs, ApiOutputs, Thing } from "@repo/api/types"
 
 ### Context Setup
 
-Apps create their CRPC context using the factory:
+Apps create their CRPC context by importing the factory and Convex API:
 
 ```typescript
 // apps/web/lib/convex/crpc.tsx
 "use client"
 
-import { createApiContext } from "@repo/api/context"
+import { api } from "@convex/api"
+import { meta } from "@convex/meta"
+import { type Api, createCRPCContext } from "@repo/api/context"
 
-const crpcContext = createApiContext(process.env.NEXT_PUBLIC_CONVEX_SITE_URL!)
+const crpcContext = createCRPCContext<Api>({
+	api,
+	meta,
+	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
+})
 
 export const useCRPC = crpcContext.useCRPC
 export const useCRPCClient = crpcContext.useCRPCClient
 export const CRPCProvider = crpcContext.CRPCProvider
 ```
+
+Note: The app must import `api` and `meta` directly since they require path aliases that are app-specific. The `@repo/api` package provides the factory and types.
 
 ### Available Hooks
 

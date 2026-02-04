@@ -1,24 +1,13 @@
 "use client"
 
-import { api } from "@convex/api"
-import { meta } from "@convex/meta"
-import { createCRPCContext } from "backend/react"
+import type { api as ApiType } from "@convex/api"
+import { type ConvexQueryClient, createCRPCContext } from "backend/react"
+
+export { createCRPCContext }
+export type { ConvexQueryClient }
 
 /**
- * Creates the CRPC context for Convex API access with TanStack Query integration.
- *
- * This provides type-safe query and mutation hooks with automatic type inference
- * from the backend API definition.
- *
- * @param convexSiteUrl - The Convex site URL (typically from NEXT_PUBLIC_CONVEX_SITE_URL)
+ * Type of the Convex API.
+ * Use this with createCRPCContext for proper type inference.
  */
-export function createApiContext(convexSiteUrl: string) {
-	return createCRPCContext<typeof api>({
-		api,
-		meta,
-		convexSiteUrl,
-	})
-}
-
-/** Type of the API for use in generics */
-export type Api = typeof api
+export type Api = typeof ApiType

@@ -1,18 +1,22 @@
 import { describe, expect, it } from "vitest"
 
-/**
- * Note: The createApiContext function cannot be unit tested in isolation
- * because it depends on the Convex API types which are generated at runtime.
- *
- * Integration tests should be used to verify the context works correctly
- * within the full application stack.
- *
- * This file serves as a placeholder to document the expected behavior.
- */
+import { type Api, type ConvexQueryClient, createCRPCContext } from "./index"
+
 describe("@repo/api/context", () => {
-	it("exports are documented", () => {
-		// createApiContext: Creates the CRPC context for Convex API access
-		// Api: Type of the API for use in generics
-		expect(true).toBe(true)
+	it("exports createCRPCContext function", () => {
+		expect(createCRPCContext).toBeDefined()
+		expect(typeof createCRPCContext).toBe("function")
+	})
+
+	it("exports Api type", () => {
+		// Type-level test - if this compiles, the type is exported correctly
+		const apiTypeCheck: Api | null = null
+		expect(apiTypeCheck).toBeNull()
+	})
+
+	it("exports ConvexQueryClient type", () => {
+		// Type-level test
+		const clientTypeCheck: ConvexQueryClient | null = null
+		expect(clientTypeCheck).toBeNull()
 	})
 })
