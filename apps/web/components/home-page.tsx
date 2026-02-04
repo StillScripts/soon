@@ -3,18 +3,15 @@
 
 import { useRef, useState } from "react"
 
+import { type Thing, useThings, useThingsGenerateUploadUrl } from "@repo/api/things"
 import { ThingForm, type ThingFormData } from "@repo/forms/thing"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import { Field, FieldLabel } from "@repo/ui/components/ui/field"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { ApiOutputs } from "backend/types"
 
 import { AuthForm } from "@/components/auth-form"
 import { authClient } from "@/lib/auth-client"
 import { useCRPC } from "@/lib/convex/crpc"
-
-type Thing = ApiOutputs["things"]["list"][number]
 
 function ImageUpload({
 	imageUrl,
@@ -102,7 +99,7 @@ function ThingItem({
 	const [editImageUrl, setEditImageUrl] = useState<string | null>(thing.imageUrl)
 	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId)
 
-	const generateUploadUrl = useMutation(crpc.things.generateUploadUrl.mutationOptions({}))
+	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
 
 	const handleImageUpload = async (file: File) => {
 		const uploadUrl = await generateUploadUrl.mutateAsync()
@@ -198,34 +195,19 @@ function ThingItem({
 
 function ThingsManager() {
 	const crpc = useCRPC()
-	const queryClient = useQueryClient()
 	const [imageFile, setImageFile] = useState<File | null>(null)
 	const [imagePreview, setImagePreview] = useState<string | null>(null)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
-	const { data: things, isPending: isLoading, error } = useQuery(crpc.things.list.queryOptions({}))
-
-	const invalidateThings = () => queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
-
-	const generateUploadUrl = useMutation(crpc.things.generateUploadUrl.mutationOptions({}))
-
-	const createThing = useMutation(
-		crpc.things.create.mutationOptions({
-			onSuccess: invalidateThings,
-		})
-	)
-
-	const deleteThing = useMutation(
-		crpc.things.remove.mutationOptions({
-			onSuccess: invalidateThings,
-		})
-	)
-
-	const updateThing = useMutation(
-		crpc.things.update.mutationOptions({
-			onSuccess: invalidateThings,
-		})
-	)
+	const {
+		things,
+		isLoading,
+		error,
+		create: createThing,
+		update: updateThing,
+		remove: deleteThing,
+		generateUploadUrl,
+	} = useThings(crpc)
 
 	const handleImageUpload = async (file: File) => {
 		setImageFile(file)

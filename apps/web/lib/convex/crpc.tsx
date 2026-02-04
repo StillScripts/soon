@@ -1,14 +1,8 @@
 "use client"
 
-import { api } from "@convex/api"
-import { meta } from "@convex/meta"
-import { createCRPCContext } from "backend/react"
+import { createApiContext } from "@repo/api/context"
 
-const crpcContext = createCRPCContext<typeof api>({
-	api,
-	meta,
-	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
-})
+const crpcContext = createApiContext(process.env.NEXT_PUBLIC_CONVEX_SITE_URL!)
 
 export const useCRPC = crpcContext.useCRPC
 export const useCRPCClient = crpcContext.useCRPCClient
