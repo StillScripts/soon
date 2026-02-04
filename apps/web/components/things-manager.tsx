@@ -211,7 +211,10 @@ function ThingsList({
 	isLoading: boolean
 	error: Error | null
 	onDelete: (id: string) => void
-	onUpdate: (id: string, data: { title?: string; description?: string | null; imageId?: string | null }) => void
+	onUpdate: (
+		id: string,
+		data: { title?: string; description?: string | null; imageId?: string | null }
+	) => void
 	isDeleting: boolean
 }) {
 	if (isLoading) {

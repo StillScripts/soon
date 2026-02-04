@@ -96,6 +96,10 @@ export default defineConfig({
 							label: "Shared API Package",
 							slug: "guides/22-api-package",
 						},
+						{
+							label: "Better Convex RSC",
+							slug: "guides/23-better-convex-rsc",
+						},
 					],
 				},
 				{

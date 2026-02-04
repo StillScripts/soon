@@ -38,6 +38,7 @@ These guides serve multiple purposes:
 20. [React Testing Library](./20-react-testing-library) - Frontend component testing with RTL and Vitest
 21. [Input-Only Validators](./21-input-only-validators) - Refactoring validators for form-focused validation
 22. [Shared API Package](./22-api-package) - Centralizing TanStack Query hooks in @repo/api
+23. [Better Convex RSC](./23-better-convex-rsc) - Server-side prefetching with React Server Components
 
 ## Documentation Pattern
 
