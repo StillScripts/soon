@@ -197,7 +197,6 @@ function ThingsManager() {
 	const crpc = useCRPC()
 	const [imageFile, setImageFile] = useState<File | null>(null)
 	const [imagePreview, setImagePreview] = useState<string | null>(null)
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const {
 		things,
@@ -217,9 +216,6 @@ function ThingsManager() {
 	const clearImage = () => {
 		setImageFile(null)
 		setImagePreview(null)
-		if (fileInputRef.current) {
-			fileInputRef.current.value = ""
-		}
 	}
 
 	const isSubmitting = createThing.isPending || generateUploadUrl.isPending

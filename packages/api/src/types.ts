@@ -12,7 +12,7 @@ export type { Api, ApiInputs, ApiOutputs } from "backend/types"
 export type Thing = ApiOutputs["things"]["list"][number]
 
 /** Input for creating a new Thing */
-export type CreateThingInput = ApiOutputs["things"]["create"] extends infer T ? T : never
+export type CreateThingInput = ApiInputs["things"]["create"]
 
 /** Input for updating an existing Thing */
 export type UpdateThingInput = ApiInputs["things"]["update"]
