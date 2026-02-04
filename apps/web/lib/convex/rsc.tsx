@@ -5,9 +5,7 @@ import { headers } from "next/headers"
 import { api } from "@convex/api"
 import { meta } from "@convex/meta"
 import type { Api } from "@repo/api/context"
-import { QueryClient, dehydrate } from "@tanstack/react-query"
-// Client component for hydration boundary
-import { HydrationBoundary } from "@tanstack/react-query"
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
 import { convexBetterAuth } from "better-convex/auth-nextjs"
 import { createServerCRPCProxy, getServerQueryClientOptions } from "better-convex/rsc"
 
@@ -138,15 +136,5 @@ export async function HydrateClient({ children }: { children: React.ReactNode })
 	const queryClient = getQueryClient()
 	const dehydratedState = dehydrate(queryClient)
 
-	return <HydrateClientInner dehydratedState={dehydratedState}>{children}</HydrateClientInner>
-}
-
-function HydrateClientInner({
-	children,
-	dehydratedState,
-}: {
-	children: React.ReactNode
-	dehydratedState: ReturnType<typeof dehydrate>
-}) {
 	return <HydrationBoundary state={dehydratedState}>{children}</HydrationBoundary>
 }

@@ -11,6 +11,20 @@ import { Field, FieldLabel } from "@repo/ui/components/ui/field"
 
 import { useCRPC } from "@/lib/convex/crpc"
 
+/**
+ * Upload a file to Convex storage and return the storage ID.
+ */
+async function uploadFileToStorage(file: File, getUploadUrl: () => Promise<string>) {
+	const uploadUrl = await getUploadUrl()
+	const result = await fetch(uploadUrl, {
+		method: "POST",
+		headers: { "Content-Type": file.type },
+		body: file,
+	})
+	const { storageId } = await result.json()
+	return storageId as string
+}
+
 function ImageUpload({
 	imageUrl,
 	onUpload,
@@ -100,13 +114,7 @@ function ThingItem({
 	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
 
 	const handleImageUpload = async (file: File) => {
-		const uploadUrl = await generateUploadUrl.mutateAsync()
-		const result = await fetch(uploadUrl, {
-			method: "POST",
-			headers: { "Content-Type": file.type },
-			body: file,
-		})
-		const { storageId } = await result.json()
+		const storageId = await uploadFileToStorage(file, () => generateUploadUrl.mutateAsync())
 		setEditImageId(storageId)
 		setEditImageUrl(URL.createObjectURL(file))
 	}
@@ -191,6 +199,48 @@ function ThingItem({
 	)
 }
 
+function ThingsList({
+	things,
+	isLoading,
+	error,
+	onDelete,
+	onUpdate,
+	isDeleting,
+}: {
+	things: Thing[] | undefined
+	isLoading: boolean
+	error: Error | null
+	onDelete: (id: string) => void
+	onUpdate: (id: string, data: { title?: string; description?: string | null; imageId?: string | null }) => void
+	isDeleting: boolean
+}) {
+	if (isLoading) {
+		return <p className="text-muted-foreground">Loading...</p>
+	}
+
+	if (error) {
+		return <p className="text-destructive">Error loading things</p>
+	}
+
+	if (!things || things.length === 0) {
+		return <p className="text-muted-foreground">No things yet. Create one above!</p>
+	}
+
+	return (
+		<ul className="space-y-3">
+			{things.map((thing) => (
+				<ThingItem
+					key={thing._id}
+					thing={thing}
+					onDelete={() => onDelete(thing._id)}
+					onUpdate={(data) => onUpdate(thing._id, data)}
+					isDeleting={isDeleting}
+				/>
+			))}
+		</ul>
+	)
+}
+
 /**
  * Client component for managing Things with CRUD operations.
  * Data is prefetched on the server and hydrated for instant display.
@@ -223,18 +273,9 @@ export function ThingsManager() {
 	const isSubmitting = createThing.isPending || generateUploadUrl.isPending
 
 	const handleSubmit = async (data: ThingFormData) => {
-		let imageId: string | undefined
-
-		if (imageFile) {
-			const uploadUrl = await generateUploadUrl.mutateAsync()
-			const result = await fetch(uploadUrl, {
-				method: "POST",
-				headers: { "Content-Type": imageFile.type },
-				body: imageFile,
-			})
-			const json = await result.json()
-			imageId = json.storageId
-		}
+		const imageId = imageFile
+			? await uploadFileToStorage(imageFile, () => generateUploadUrl.mutateAsync())
+			: undefined
 
 		await createThing.mutateAsync({
 			title: data.title,
@@ -274,25 +315,14 @@ export function ThingsManager() {
 					<CardTitle>Your Things</CardTitle>
 				</CardHeader>
 				<CardContent>
-					{isLoading ? (
-						<p className="text-muted-foreground">Loading...</p>
-					) : error ? (
-						<p className="text-destructive">Error loading things</p>
-					) : things?.length === 0 ? (
-						<p className="text-muted-foreground">No things yet. Create one above!</p>
-					) : (
-						<ul className="space-y-3">
-							{things?.map((thing) => (
-								<ThingItem
-									key={thing._id}
-									thing={thing}
-									onDelete={() => deleteThing.mutate({ id: thing._id })}
-									onUpdate={(data) => updateThing.mutate({ id: thing._id, ...data })}
-									isDeleting={deleteThing.isPending}
-								/>
-							))}
-						</ul>
-					)}
+					<ThingsList
+						things={things}
+						isLoading={isLoading}
+						error={error}
+						onDelete={(id) => deleteThing.mutate({ id })}
+						onUpdate={(id, data) => updateThing.mutate({ id, ...data })}
+						isDeleting={deleteThing.isPending}
+					/>
 				</CardContent>
 			</Card>
 		</div>

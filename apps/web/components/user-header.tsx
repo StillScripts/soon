@@ -10,14 +10,10 @@ import { authClient } from "@/lib/auth-client"
 export function UserHeader() {
 	const { data: session } = authClient.useSession()
 
-	const handleSignOut = async () => {
-		await authClient.signOut()
-	}
-
 	return (
 		<div className="flex items-center gap-4">
 			<span className="text-muted-foreground text-sm">{session?.user?.email}</span>
-			<Button variant="outline" size="sm" onClick={handleSignOut}>
+			<Button variant="outline" size="sm" onClick={() => authClient.signOut()}>
 				Sign out
 			</Button>
 		</div>
