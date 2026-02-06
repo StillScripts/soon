@@ -16,6 +16,7 @@ Skills and agents for Claude Code integration.
     ├── create-pr/      # PR creation
     ├── code-review/    # Code review
     ├── find-bugs/      # Security auditing
+    ├── handle-new-task/ # Complete feature workflow
     └── ...
 ```
 
@@ -23,15 +24,16 @@ Skills and agents for Claude Code integration.
 
 Invoke skills with `/skill-name`:
 
-| Skill          | Purpose                           |
-| -------------- | --------------------------------- |
-| `/commit`      | Create well-formatted commits     |
-| `/create-pr`   | Create professional pull requests |
-| `/code-review` | Thorough code reviews             |
-| `/find-bugs`   | Security and bug auditing         |
-| `/convex`      | Convex development patterns       |
-| `/vitest`      | Testing with Vitest               |
-| `/turborepo`   | Monorepo build guidance           |
+| Skill              | Purpose                              |
+| ------------------ | ------------------------------------ |
+| `/commit`          | Create well-formatted commits        |
+| `/create-pr`       | Create professional pull requests    |
+| `/code-review`     | Thorough code reviews                |
+| `/find-bugs`       | Security and bug auditing            |
+| `/convex`          | Convex development patterns          |
+| `/vitest`          | Testing with Vitest                  |
+| `/turborepo`       | Monorepo build guidance              |
+| `/handle-new-task` | Complete feature workflow (10 steps) |
 
 ## Agents
 
