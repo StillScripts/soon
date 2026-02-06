@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function Home() {
 	// Prefetch things list for authenticated users
 	// Uses skipUnauth to safely handle unauthenticated users without errors
-	prefetch(crpc.things.list.staticQueryOptions({}, { skipUnauth: true }))
+	prefetch(crpc.things.list.queryOptions({}, { skipUnauth: true }))
 
 	return (
 		<HydrateClient>
