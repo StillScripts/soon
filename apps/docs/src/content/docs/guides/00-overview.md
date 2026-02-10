@@ -39,6 +39,7 @@ These guides serve multiple purposes:
 21. [Input-Only Validators](./21-input-only-validators) - Refactoring validators for form-focused validation
 22. [Shared API Package](./22-api-package) - Centralizing TanStack Query hooks in @repo/api
 23. [Better Convex RSC](./23-better-convex-rsc) - Server-side prefetching with React Server Components
+24. [Dark Mode Toggle](./24-dark-mode-toggle) - Adding theme switching with next-themes
 
 ## Documentation Pattern
 

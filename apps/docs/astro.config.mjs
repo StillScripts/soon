@@ -100,6 +100,10 @@ export default defineConfig({
 							label: "Better Convex RSC",
 							slug: "guides/23-better-convex-rsc",
 						},
+						{
+							label: "Dark Mode Toggle",
+							slug: "guides/24-dark-mode-toggle",
+						},
 					],
 				},
 				{
