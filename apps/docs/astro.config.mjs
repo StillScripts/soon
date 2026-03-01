@@ -1,6 +1,7 @@
 import starlight from "@astrojs/starlight"
 // @ts-check
 import { defineConfig } from "astro/config"
+import starlightChangelogs, { makeChangelogsSidebarLinks } from "starlight-changelogs"
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,6 +9,7 @@ export default defineConfig({
 		starlight({
 			title: "SOON Docs",
 			description: "Make something out of nothing",
+			plugins: [starlightChangelogs()],
 			social: [
 				{
 					icon: "github",
@@ -121,6 +123,13 @@ export default defineConfig({
 						{ label: "oxlint + Prettier", slug: "reference/oxlint-prettier" },
 						{ label: "UI Components", slug: "reference/ui-components" },
 					],
+				},
+				{
+					label: "Version History",
+					items: makeChangelogsSidebarLinks([
+						{ type: "all", base: "changelog", label: "All Versions" },
+						{ type: "latest", base: "changelog", label: "Latest Version" },
+					]),
 				},
 			],
 		}),
