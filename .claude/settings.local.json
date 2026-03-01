@@ -85,7 +85,8 @@
 			"Skill(vitest)",
 			"Skill(web-design-guidelines)",
 			"Bash(git add:*)",
-			"Bash(bunx npm info:*)"
+			"Bash(bunx npm info:*)",
+			"Bash(git push:*)"
 		]
 	}
 }
