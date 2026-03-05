@@ -14,11 +14,11 @@
 	"devDependencies": {
 		"@repo/vitest-config": "*",
 		"@trivago/prettier-plugin-sort-imports": "^6.0.2",
-		"oxlint": "^1.0.0",
+		"oxlint": "^1.51.0",
 		"prettier": "^3.8.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
-		"turbo": "^2.7.6",
-		"typescript": "5.9.2",
+		"turbo": "^2.8.13",
+		"typescript": "5.9.3",
 		"vite": "^7.3.1",
 		"vitest": "^4.0.18"
 	},
