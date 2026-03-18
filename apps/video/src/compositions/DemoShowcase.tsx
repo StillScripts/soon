@@ -1,21 +1,21 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
 
-export const DemoShowcase: React.FC = () => {
+const CLAMP_RIGHT = { extrapolateRight: "clamp" } as const
+
+export const DemoShowcase = () => {
 	const frame = useCurrentFrame()
 	const { fps } = useVideoConfig()
 
-	const titleOpacity = interpolate(frame, [0, 30], [0, 1], {
-		extrapolateRight: "clamp",
-	})
+	const titleOpacity = interpolate(frame, [0, 30], [0, 1], CLAMP_RIGHT)
+	const subtitleOpacity = interpolate(frame, [20, 50], [0, 1], CLAMP_RIGHT)
+	const cardOpacity = interpolate(frame, [40, 60], [0, 1], CLAMP_RIGHT)
+	const badgeOpacity = interpolate(frame, [100, 120], [0, 1], CLAMP_RIGHT)
+	const ctaOpacity = interpolate(frame, [140, 170], [0, 1], CLAMP_RIGHT)
 
 	const titleY = spring({
 		frame,
 		fps,
 		config: { damping: 20, stiffness: 100 },
-	})
-
-	const subtitleOpacity = interpolate(frame, [20, 50], [0, 1], {
-		extrapolateRight: "clamp",
 	})
 
 	const cardScale = spring({
@@ -24,22 +24,10 @@ export const DemoShowcase: React.FC = () => {
 		config: { damping: 15, stiffness: 80 },
 	})
 
-	const cardOpacity = interpolate(frame, [40, 60], [0, 1], {
-		extrapolateRight: "clamp",
-	})
-
 	const buttonScale = spring({
 		frame: frame - 80,
 		fps,
 		config: { damping: 12, stiffness: 100 },
-	})
-
-	const badgeOpacity = interpolate(frame, [100, 120], [0, 1], {
-		extrapolateRight: "clamp",
-	})
-
-	const ctaOpacity = interpolate(frame, [140, 170], [0, 1], {
-		extrapolateRight: "clamp",
 	})
 
 	const ctaY = spring({
@@ -51,7 +39,6 @@ export const DemoShowcase: React.FC = () => {
 	return (
 		<AbsoluteFill className="bg-background flex items-center justify-center">
 			<div className="flex flex-col items-center gap-8">
-				{/* Title */}
 				<div
 					style={{
 						opacity: titleOpacity,
@@ -61,14 +48,12 @@ export const DemoShowcase: React.FC = () => {
 					<h1 className="text-foreground text-7xl font-bold tracking-tight">Soon Starter</h1>
 				</div>
 
-				{/* Subtitle */}
 				<div style={{ opacity: subtitleOpacity }}>
 					<p className="text-muted-foreground text-2xl">
 						Production-ready monorepo with React 19, Next.js & Convex
 					</p>
 				</div>
 
-				{/* Card showcase */}
 				<div
 					style={{
 						opacity: cardOpacity,
