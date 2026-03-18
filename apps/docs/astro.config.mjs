@@ -106,6 +106,10 @@ export default defineConfig({
 							label: "Dark Mode Toggle",
 							slug: "guides/24-dark-mode-toggle",
 						},
+						{
+							label: "Remotion Video App",
+							slug: "guides/25-remotion-video-app",
+						},
 					],
 				},
 				{
