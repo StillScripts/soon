@@ -17,6 +17,7 @@ Skills and agents for Claude Code integration.
     ├── code-review/    # Code review
     ├── find-bugs/      # Security auditing
     ├── handle-new-task/ # Complete feature workflow
+    ├── remotion/       # Remotion video creation (with rules/)
     └── ...
 ```
 
@@ -24,16 +25,17 @@ Skills and agents for Claude Code integration.
 
 Invoke skills with `/skill-name`:
 
-| Skill              | Purpose                              |
-| ------------------ | ------------------------------------ |
-| `/commit`          | Create well-formatted commits        |
-| `/create-pr`       | Create professional pull requests    |
-| `/code-review`     | Thorough code reviews                |
-| `/find-bugs`       | Security and bug auditing            |
-| `/convex`          | Convex development patterns          |
-| `/vitest`          | Testing with Vitest                  |
-| `/turborepo`       | Monorepo build guidance              |
-| `/handle-new-task` | Complete feature workflow (10 steps) |
+| Skill              | Purpose                                |
+| ------------------ | -------------------------------------- |
+| `/commit`          | Create well-formatted commits          |
+| `/create-pr`       | Create professional pull requests      |
+| `/code-review`     | Thorough code reviews                  |
+| `/find-bugs`       | Security and bug auditing              |
+| `/convex`          | Convex development patterns            |
+| `/vitest`          | Testing with Vitest                    |
+| `/turborepo`       | Monorepo build guidance                |
+| `/handle-new-task` | Complete feature workflow (10 steps)   |
+| `/remotion`        | Remotion video creation best practices |
 
 ## Agents
 
@@ -48,3 +50,4 @@ Skills adapted from:
 - [Sentry Skills](https://github.com/getsentry/skills) - Professional development workflows
 - [Vercel Skills](https://github.com/vercel-labs/agent-skills) - React/Next.js best practices
 - [Anthony Fu's Skills](https://github.com/antfu/skills) - Vitest documentation
+- [Remotion Skills](https://github.com/remotion-dev/skills) - Video creation best practices
