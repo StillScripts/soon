@@ -40,6 +40,7 @@ These guides serve multiple purposes:
 22. [Shared API Package](./22-api-package) - Centralizing TanStack Query hooks in @repo/api
 23. [Better Convex RSC](./23-better-convex-rsc) - Server-side prefetching with React Server Components
 24. [Dark Mode Toggle](./24-dark-mode-toggle) - Adding theme switching with next-themes
+25. [Remotion Video App](./25-remotion-video-app) - Programmatic video creation with Remotion
 
 ## Documentation Pattern
 

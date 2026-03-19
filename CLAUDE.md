@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a Turborepo monorepo using Bun as the package manager. The repository contains two applications and three shared packages.
+This is a Turborepo monorepo using Bun as the package manager. The repository contains three applications and three shared packages.
 
 **Documentation:** The `docs` app contains comprehensive development history and tutorials in `src/content/docs/guides/`. These guides document how the project was built, serving as both tutorial and context for future developers and AI assistants.
 
 **Apps:**
 
 - `web`: Next.js 16.1.0 application (React 19)
+- `video`: Remotion video creation app (React 19, Tailwind v4)
 - `docs`: Astro documentation site using Starlight
 
 **Packages:**
@@ -143,6 +144,7 @@ bun dev
 
 # Run specific app (recommended for focused development)
 turbo dev --filter=web    # Next.js app on port 3000
+turbo dev --filter=video  # Remotion Studio
 turbo dev --filter=docs   # Astro docs on port 4321
 
 # Build all apps
@@ -223,6 +225,18 @@ bunx shadcn@latest add <component>
 - Type generation via `next typegen` before type checking
 - Linting via oxlint (`oxlint .`)
 
+### Remotion Video App (video)
+
+- Uses Remotion 4.0 for programmatic video creation with React
+- Compositions defined in `src/compositions/`
+- Entry point: `src/index.ts` registers `RemotionRoot`
+- Tailwind CSS v4 via `@remotion/tailwind-v4`
+- Config in `remotion.config.ts`
+- Dev: `turbo dev --filter=video` opens Remotion Studio
+- Render: `cd apps/video && bunx remotion render <CompositionId>`
+- Can import `@repo/ui` components for consistent design
+- Use the `/remotion` skill for Remotion-specific best practices (animations, transitions, audio, etc.)
+
 ### Astro Docs App
 
 - Uses Starlight documentation theme
@@ -273,6 +287,7 @@ This repository includes professional skills and agents from [Sentry](https://gi
 - `/vercel-react-best-practices` - React/Next.js performance optimization (57 rules)
 - `/vitest` - Vitest testing framework guidance (configuration, APIs, mocking, coverage)
 - `/web-design-guidelines` - UI/UX best practices audit (100+ rules)
+- `/remotion` - Remotion video creation best practices (animations, audio, transitions, 37 rule files)
 
 **Available Agents:**
 

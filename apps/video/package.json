@@ -1,0 +1,33 @@
+{
+	"name": "video",
+	"version": "0.1.0",
+	"type": "module",
+	"private": true,
+	"description": "Remotion video demos for the Soon starter app",
+	"scripts": {
+		"dev": "remotion studio",
+		"build": "remotion bundle",
+		"render": "remotion render",
+		"upgrade": "remotion upgrade",
+		"lint": "oxlint .",
+		"check-types": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@remotion/cli": "4.0.436",
+		"@remotion/tailwind-v4": "4.0.436",
+		"@remotion/transitions": "4.0.436",
+		"@repo/ui": "*",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
+		"remotion": "4.0.436",
+		"tailwindcss": "^4.1.0"
+	},
+	"devDependencies": {
+		"@repo/oxlint-config": "*",
+		"@repo/typescript-config": "*",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
+		"@types/web": "0.0.166",
+		"typescript": "5.9.2"
+	}
+}
