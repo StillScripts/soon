@@ -14,9 +14,13 @@ async function getAuthUserId(ctx: {
 	}
 
 	// Production: use better-auth
-	const user = await authComponent.getAuthUser(ctx as any)
-	if (user) {
-		return user._id
+	try {
+		const user = await authComponent.getAuthUser(ctx as any)
+		if (user) {
+			return user._id
+		}
+	} catch {
+		// getAuthUser throws when unauthenticated
 	}
 
 	return null
@@ -37,7 +41,7 @@ export const list = query({
 	},
 	handler: async (ctx, args) => {
 		const userId = await getAuthUserId(ctx)
-		if (!userId) throw new Error("Not authenticated")
+		if (!userId) return []
 
 		const q = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", userId))
 
