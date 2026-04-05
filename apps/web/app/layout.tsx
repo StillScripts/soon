@@ -15,7 +15,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
 	title: "Things Manager",
-	description: "Manage things with Convex, Better Auth, and TanStack Query",
+	description: "Manage things with Convex and Better Auth",
 }
 
 export default function RootLayout({

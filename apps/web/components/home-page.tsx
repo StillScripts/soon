@@ -48,7 +48,7 @@ export function HomePage() {
 			</main>
 
 			<footer className="text-muted-foreground text-center text-sm">
-				Powered by Convex + Better Auth + TanStack Query
+				Powered by Convex + Better Auth
 			</footer>
 		</div>
 	)

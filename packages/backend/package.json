@@ -4,13 +4,10 @@
 	"type": "module",
 	"private": true,
 	"exports": {
-		"./convex": "./convex/functions/_generated/api.js",
-		"./meta": "./convex/shared/meta.ts",
-		"./types": "./convex/shared/types.ts",
-		"./react": "./convex/shared/react.ts"
+		"./convex": "./convex/functions/_generated/api.js"
 	},
 	"scripts": {
-		"dev": "better-convex dev",
+		"dev": "convex dev",
 		"start": "convex start",
 		"test": "vitest run",
 		"test:watch": "vitest",
@@ -31,7 +28,6 @@
 		"@convex-dev/better-auth": "0.11.4",
 		"@repo/validators": "workspace:*",
 		"better-auth": "1.5.6",
-		"better-convex": "0.11.0",
 		"convex": "1.34.1",
 		"convex-helpers": "0.1.114",
 		"zod": "4.3.6"

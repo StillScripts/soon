@@ -30,7 +30,7 @@ export type DataModel = {
   things: {
     document: {
       description?: string;
-      imageId?: Id<"_storage">;
+      imageId?: Id<"_storage"> | null;
       title: string;
       userId: string;
       _id: Id<"things">;

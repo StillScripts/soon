@@ -12,11 +12,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*"],
-			"@convex/*": [
-				"../../packages/backend/convex/shared/*",
-				"../../packages/backend/convex/functions/_generated/*"
-			],
-			"backend/react": ["../../packages/backend/convex/shared/react.ts"]
+			"@convex/*": ["../../packages/backend/convex/functions/_generated/*"]
 		}
 	},
 	"include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", "next.config.js", ".next/types/**/*.ts"],

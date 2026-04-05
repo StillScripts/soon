@@ -1,38 +1,34 @@
 ---
 name: convex
-description: Comprehensive Convex development patterns including Better Convex (cRPC)
+description: Comprehensive Convex development patterns with Better Auth
 metadata:
   author: Convex
-  version: "2026.1.31"
+  version: "2026.4.5"
 ---
 
-Convex is a fullstack TypeScript development platform with real-time database, file storage, and serverless functions. This project uses [Better Convex](https://github.com/udecode/better-convex) for type-safe cRPC procedures with TanStack Query integration.
-
-**This project uses Better Convex** for type-safe cRPC procedures with TanStack Query.
-See [patterns-better-convex](references/patterns-better-convex.md) for the key patterns used in this codebase.
+Convex is a fullstack TypeScript development platform with real-time database, file storage, and serverless functions. This project uses standard Convex `query`/`mutation` functions with `@convex-dev/better-auth` for authentication.
 
 **Key Features:**
 
 - Real-time database with automatic subscriptions
 - Type-safe queries, mutations, and actions
-- Built-in file storage and authentication
-- cRPC procedures with middleware (via Better Convex)
-- TanStack Query integration for React
+- Built-in file storage
+- Authentication via Better Auth (`@convex-dev/better-auth` component)
+- Standard `useQuery`/`useMutation` hooks from `convex/react`
 
 ## Core
 
-| Topic     | Description                           | Reference                                      |
-| --------- | ------------------------------------- | ---------------------------------------------- |
-| Functions | Queries, mutations, actions with cRPC | [core-functions](references/core-functions.md) |
-| Schema    | Database schema and validators        | [core-schema](references/core-schema.md)       |
-| Realtime  | Subscriptions and optimistic updates  | [core-realtime](references/core-realtime.md)   |
+| Topic     | Description                          | Reference                                      |
+| --------- | ------------------------------------ | ---------------------------------------------- |
+| Functions | Queries, mutations, actions          | [core-functions](references/core-functions.md) |
+| Schema    | Database schema and validators       | [core-schema](references/core-schema.md)       |
+| Realtime  | Subscriptions and optimistic updates | [core-realtime](references/core-realtime.md)   |
 
 ## Patterns
 
-| Topic          | Description                                       | Reference                                                        |
-| -------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| Better Convex  | **cRPC, folder structure, zid(), type inference** | [patterns-better-convex](references/patterns-better-convex.md)   |
-| Best Practices | General Convex patterns and guidelines            | [patterns-best-practices](references/patterns-best-practices.md) |
+| Topic          | Description                            | Reference                                                        |
+| -------------- | -------------------------------------- | ---------------------------------------------------------------- |
+| Best Practices | General Convex patterns and guidelines | [patterns-best-practices](references/patterns-best-practices.md) |
 
 ## Advanced
 
@@ -56,13 +52,12 @@ See [patterns-better-convex](references/patterns-better-convex.md) for the key p
 
 For most tasks in this project:
 
-1. **Start with Better Convex patterns** - See [patterns-better-convex](references/patterns-better-convex.md)
-2. **Use cRPC procedures** - Not standard Convex functions
+1. **Use standard Convex functions** - `query`, `mutation` from `_generated/server`
+2. **Authenticate with `authComponent.getAuthUser(ctx)`** - From `@convex-dev/better-auth`
 3. **Add validators** - In `packages/validators/` using Zod
-4. **Use `.output()` with `zid()`** - For proper type inference
+4. **Use `useQuery`/`useMutation`** from `convex/react` on the client
 
 ## Documentation
 
 - Primary: https://docs.convex.dev
 - LLM-optimized: https://docs.convex.dev/llms.txt
-- Better Convex: https://www.better-convex.com

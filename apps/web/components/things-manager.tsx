@@ -3,17 +3,23 @@
 
 import { useRef, useState } from "react"
 
-import { type Thing, useThings, useThingsGenerateUploadUrl } from "@repo/api/things"
+import { api } from "@convex/api"
 import { ThingForm, type ThingFormData } from "@repo/forms/thing"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import { Field, FieldLabel } from "@repo/ui/components/ui/field"
+import { useMutation, useQuery } from "convex/react"
 
-import { useCRPC } from "@/lib/convex/crpc"
+type Thing = {
+	_id: string
+	_creationTime: number
+	title: string
+	description?: string
+	imageId?: string
+	userId: string
+	imageUrl: string | null
+}
 
-/**
- * Upload a file to Convex storage and return the storage ID.
- */
 async function uploadFileToStorage(file: File, getUploadUrl: () => Promise<string>) {
 	const uploadUrl = await getUploadUrl()
 	const result = await fetch(uploadUrl, {
@@ -106,15 +112,13 @@ function ThingItem({
 	onUpdate: (data: { title?: string; description?: string | null; imageId?: string | null }) => void
 	isDeleting: boolean
 }) {
-	const crpc = useCRPC()
+	const generateUploadUrl = useMutation(api.things.generateUploadUrl)
 	const [isEditing, setIsEditing] = useState(false)
 	const [editImageUrl, setEditImageUrl] = useState<string | null>(thing.imageUrl)
 	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId)
 
-	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
-
 	const handleImageUpload = async (file: File) => {
-		const storageId = await uploadFileToStorage(file, () => generateUploadUrl.mutateAsync({}))
+		const storageId = await uploadFileToStorage(file, () => generateUploadUrl())
 		setEditImageId(storageId)
 		setEditImageUrl(URL.createObjectURL(file))
 	}
@@ -201,15 +205,11 @@ function ThingItem({
 
 function ThingsList({
 	things,
-	isLoading,
-	error,
 	onDelete,
 	onUpdate,
 	isDeleting,
 }: {
 	things: Thing[] | undefined
-	isLoading: boolean
-	error: Error | null
 	onDelete: (id: string) => void
 	onUpdate: (
 		id: string,
@@ -217,15 +217,11 @@ function ThingsList({
 	) => void
 	isDeleting: boolean
 }) {
-	if (isLoading) {
+	if (things === undefined) {
 		return <p className="text-muted-foreground">Loading...</p>
 	}
 
-	if (error) {
-		return <p className="text-destructive">Error loading things</p>
-	}
-
-	if (!things || things.length === 0) {
+	if (things.length === 0) {
 		return <p className="text-muted-foreground">No things yet. Create one above!</p>
 	}
 
@@ -244,24 +240,17 @@ function ThingsList({
 	)
 }
 
-/**
- * Client component for managing Things with CRUD operations.
- * Data is prefetched on the server and hydrated for instant display.
- */
 export function ThingsManager() {
-	const crpc = useCRPC()
+	const things = useQuery(api.things.list, {})
+	const createThing = useMutation(api.things.create)
+	const updateThing = useMutation(api.things.update)
+	const deleteThing = useMutation(api.things.remove)
+	const generateUploadUrl = useMutation(api.things.generateUploadUrl)
+
 	const [imageFile, setImageFile] = useState<File | null>(null)
 	const [imagePreview, setImagePreview] = useState<string | null>(null)
-
-	const {
-		things,
-		isLoading,
-		error,
-		create: createThing,
-		update: updateThing,
-		remove: deleteThing,
-		generateUploadUrl,
-	} = useThings(crpc)
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isDeletingId, setIsDeletingId] = useState<string | null>(null)
 
 	const handleImageUpload = async (file: File) => {
 		setImageFile(file)
@@ -273,18 +262,38 @@ export function ThingsManager() {
 		setImagePreview(null)
 	}
 
-	const isSubmitting = createThing.isPending || generateUploadUrl.isPending
-
 	const handleSubmit = async (data: ThingFormData) => {
-		const imageId = imageFile
-			? await uploadFileToStorage(imageFile, () => generateUploadUrl.mutateAsync({}))
-			: undefined
+		setIsSubmitting(true)
+		try {
+			const imageId = imageFile
+				? await uploadFileToStorage(imageFile, () => generateUploadUrl())
+				: undefined
 
-		await createThing.mutateAsync({
-			title: data.title,
-			description: data.description || undefined,
-			imageId,
-		})
+			await createThing({
+				title: data.title,
+				description: data.description || undefined,
+				imageId,
+			})
+			clearImage()
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
+
+	const handleDelete = async (id: string) => {
+		setIsDeletingId(id)
+		try {
+			await deleteThing({ id })
+		} finally {
+			setIsDeletingId(null)
+		}
+	}
+
+	const handleUpdate = async (
+		id: string,
+		data: { title?: string; description?: string | null; imageId?: string | null }
+	) => {
+		await updateThing({ id, ...data })
 	}
 
 	return (
@@ -319,12 +328,10 @@ export function ThingsManager() {
 				</CardHeader>
 				<CardContent>
 					<ThingsList
-						things={things}
-						isLoading={isLoading}
-						error={error}
-						onDelete={(id) => deleteThing.mutate({ id })}
-						onUpdate={(id, data) => updateThing.mutate({ id, ...data })}
-						isDeleting={deleteThing.isPending}
+						things={things as Thing[] | undefined}
+						onDelete={handleDelete}
+						onUpdate={handleUpdate}
+						isDeleting={isDeletingId !== null}
 					/>
 				</CardContent>
 			</Card>
