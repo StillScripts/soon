@@ -3,9 +3,11 @@
 // Do not edit manually. Run `better-convex codegen` to regenerate.
 
 export function createThingsTestCaller(_ctx: unknown) {
-  throw new Error('[better-convex] Runtime caller is not generated yet. Run better-convex codegen.');
+	throw new Error("[better-convex] Runtime caller is not generated yet. Run better-convex codegen.")
 }
 
 export function createThingsTestHandler(_ctx: unknown) {
-  throw new Error('[better-convex] Runtime handler is not generated yet. Run better-convex codegen.');
+	throw new Error(
+		"[better-convex] Runtime handler is not generated yet. Run better-convex codegen."
+	)
 }

@@ -75,13 +75,7 @@ export function ThingForm({
 
 	const submitButton = onCancel ? (
 		<div className="flex justify-end gap-2">
-			<Button
-				type="button"
-				variant="outline"
-				size="sm"
-				onClick={onCancel}
-				disabled={isSubmitting}
-			>
+			<Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={isSubmitting}>
 				Cancel
 			</Button>
 			<form.Subscribe selector={(state) => state.values.title}>
