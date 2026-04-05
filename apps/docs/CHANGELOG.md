@@ -5,6 +5,22 @@ All notable changes to the SOON starter kit are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-04-05
+
+### Changed
+
+- Migrated from `better-convex` to `kitcn` framework (the rebranded Better Convex)
+- Updated all import paths from `better-convex/*` to `kitcn/*` across the monorepo
+- Migrated schema from `convex/server` validators to kitcn ORM style (`convexTable`, `text()`, `id()`)
+- Simplified cRPC builder to use generated `initCRPC` instead of manual function passing
+- Consolidated RSC auth setup with `convexBetterAuth` from `kitcn/auth/nextjs`
+- Updated CLI from `better-convex dev` to `kitcn dev`
+
+### Removed
+
+- `@convex-dev/react-query` dependency (integrated into kitcn)
+- Direct `better-convex` dependency (replaced by kitcn)
+
 ## [1.1.0] - 2026-04-05
 
 ### Changed

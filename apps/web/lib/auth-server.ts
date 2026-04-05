@@ -1,6 +1,8 @@
-import { convexBetterAuthNextJs } from "@convex-dev/better-auth/nextjs"
+import { api } from "@convex/api"
+import type { Api } from "@repo/api/context"
+import { convexBetterAuth } from "kitcn/auth/nextjs"
 
-export const { handler, isAuthenticated, getToken } = convexBetterAuthNextJs({
-	convexUrl: process.env.NEXT_PUBLIC_CONVEX_URL!,
+export const { createContext, createCaller, handler } = convexBetterAuth<Api>({
+	api,
 	convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_SITE_URL!,
 })

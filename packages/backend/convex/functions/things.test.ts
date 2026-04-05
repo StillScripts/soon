@@ -11,8 +11,8 @@ type ThingResult = {
 	_id: Id<"things">
 	_creationTime: number
 	title: string
-	description?: string
-	imageId?: Id<"_storage">
+	description?: string | null
+	imageId?: string | null
 	userId: string
 	imageUrl: string | null
 }
@@ -22,7 +22,7 @@ type ThingResult = {
  *
  * These tests use convex-test's withIdentity() to mock authentication,
  * which works with our auth middleware that checks ctx.auth.getUserIdentity()
- * before falling back to better-auth.
+ * before falling back to kitcn auth.
  *
  * This approach tests the actual production code (things.ts) rather than
  * internal duplicates, ensuring test coverage matches real behavior.
@@ -143,7 +143,7 @@ describe("things.get", () => {
 		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageUrl).toBeNull()
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 	})
 })
 
@@ -268,7 +268,7 @@ describe("things.update", () => {
 
 		const thing = await t.query(api.things.get, { id })
 
-		expect(thing?.description).toBeUndefined()
+		expect(thing?.description).toBeNull()
 	})
 
 	it("should not modify fields that are not provided", async () => {
@@ -562,7 +562,7 @@ describe("storage integration", () => {
 
 		// Verify no image initially
 		let thing = await t.query(api.things.get, { id })
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 		expect(thing?.imageUrl).toBeNull()
 
 		// Add an image
@@ -594,7 +594,7 @@ describe("storage integration", () => {
 
 		const thing = await t.query(api.things.get, { id })
 
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 		expect(thing?.imageUrl).toBeNull()
 	})
 

@@ -114,6 +114,10 @@ export default defineConfig({
 							label: "Pin and Update Dependencies",
 							slug: "guides/26-pin-and-update-dependencies",
 						},
+						{
+							label: "kitcn Migration",
+							slug: "guides/27-kitcn-migration",
+						},
 					],
 				},
 				{

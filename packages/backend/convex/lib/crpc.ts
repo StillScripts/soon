@@ -1,68 +1,50 @@
-import { CRPCError, initCRPC } from "better-convex/server"
+import { getAuthUserId } from "kitcn/auth"
+import { CRPCError } from "kitcn/server"
 
-import type { DataModel } from "../functions/_generated/dataModel"
-import {
-	action,
-	internalAction,
-	internalMutation,
-	internalQuery,
-	mutation,
-	query,
-} from "../functions/_generated/server"
-import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/_generated/server"
-import { authComponent } from "../functions/auth"
+import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/generated/server"
+import { initCRPC } from "../functions/generated/server"
 
 export type GenericCtx = QueryCtx | MutationCtx | ActionCtx
 
-const c = initCRPC.dataModel<DataModel>().create({
-	query,
-	internalQuery,
-	mutation,
-	internalMutation,
-	action,
-	internalAction,
-})
+const c = initCRPC.create()
 
 export const publicQuery = c.query
 export const publicMutation = c.mutation
 export const publicAction = c.action
 
+export const privateQuery = c.query.internal()
+export const privateMutation = c.mutation.internal()
+export const privateAction = c.action.internal()
+
 /**
  * Get authenticated user from context.
- * Supports both convex-test (via ctx.auth.getUserIdentity) and production (via better-auth).
- * This allows testing Better Convex functions directly with convex-test's withIdentity().
+ * Supports both convex-test (via ctx.auth.getUserIdentity) and production (via kitcn auth).
  */
-async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
+async function getAuthenticatedUserId(ctx: QueryCtx | MutationCtx): Promise<string | null> {
 	// Check for convex-test mock identity first (enables testing with t.withIdentity())
-	const testIdentity = await ctx.auth.getUserIdentity()
-	if (testIdentity) {
-		// In tests, use the identity's subject as userId
-		return { _id: testIdentity.subject, isTestUser: true as const }
+	const convexIdentity = await ctx.auth.getUserIdentity()
+	if (convexIdentity) {
+		return convexIdentity.subject
 	}
 
-	// Production: use better-auth
-	const user = await authComponent.getAuthUser(ctx)
-	if (user) {
-		return { ...user, isTestUser: false as const }
-	}
-
-	return null
+	// Production: use kitcn auth
+	return await getAuthUserId(ctx)
 }
 
-// Auth query - supports both convex-test and better-auth
+// Auth query - supports both convex-test and kitcn auth
 export const authQuery = c.query.meta({ auth: "required" }).use(async ({ ctx, next }) => {
-	const user = await getAuthenticatedUser(ctx)
-	if (!user) {
+	const userId = await getAuthenticatedUserId(ctx)
+	if (!userId) {
 		throw new CRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" })
 	}
-	return next({ ctx: { ...ctx, user, userId: user._id } })
+	return next({ ctx: { ...ctx, userId } })
 })
 
-// Auth mutation - supports both convex-test and better-auth
+// Auth mutation - supports both convex-test and kitcn auth
 export const authMutation = c.mutation.meta({ auth: "required" }).use(async ({ ctx, next }) => {
-	const user = await getAuthenticatedUser(ctx)
-	if (!user) {
+	const userId = await getAuthenticatedUserId(ctx)
+	if (!userId) {
 		throw new CRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" })
 	}
-	return next({ ctx: { ...ctx, user, userId: user._id } })
+	return next({ ctx: { ...ctx, userId } })
 })

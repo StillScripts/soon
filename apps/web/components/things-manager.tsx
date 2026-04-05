@@ -109,7 +109,7 @@ function ThingItem({
 	const crpc = useCRPC()
 	const [isEditing, setIsEditing] = useState(false)
 	const [editImageUrl, setEditImageUrl] = useState<string | null>(thing.imageUrl)
-	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId)
+	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId ?? undefined)
 
 	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
 

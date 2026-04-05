@@ -6,13 +6,13 @@ import { ThemeProvider } from "next-themes"
 import { useRouter } from "next/navigation"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ConvexAuthProvider } from "better-convex/auth/client"
+import { ConvexAuthProvider } from "kitcn/auth/client"
 import {
 	ConvexReactClient,
 	getConvexQueryClientSingleton,
 	getQueryClientSingleton,
 	useAuthStore,
-} from "better-convex/react"
+} from "kitcn/react"
 
 import { CRPCProvider } from "@/lib/convex/crpc"
 
@@ -29,6 +29,9 @@ function createQueryClient() {
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
 				refetchOnReconnect: false,
+				// Retry once on auth errors (race between query and auth handshake)
+				retry: 1,
+				retryDelay: 500,
 			},
 		},
 	})
@@ -62,7 +65,7 @@ export function Providers({
 	const router = useRouter()
 	const [convex] = useState(() => new ConvexReactClient(convexUrl))
 	const handleUnauthorized = useCallback(() => {
-		router.push("/login")
+		router.push("/")
 	}, [router])
 
 	return (

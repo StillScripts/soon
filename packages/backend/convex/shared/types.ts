@@ -1,4 +1,4 @@
-import type { inferApiInputs, inferApiOutputs } from "better-convex/server"
+import type { inferApiInputs, inferApiOutputs } from "kitcn/server"
 
 import type { api } from "../functions/_generated/api"
 

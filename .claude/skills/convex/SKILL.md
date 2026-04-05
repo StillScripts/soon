@@ -1,14 +1,14 @@
 ---
 name: convex
-description: Comprehensive Convex development patterns including Better Convex (cRPC)
+description: Comprehensive Convex development patterns including kitcn (cRPC, ORM, auth)
 metadata:
   author: Convex
-  version: "2026.1.31"
+  version: "2026.4.5"
 ---
 
-Convex is a fullstack TypeScript development platform with real-time database, file storage, and serverless functions. This project uses [Better Convex](https://github.com/udecode/better-convex) for type-safe cRPC procedures with TanStack Query integration.
+Convex is a fullstack TypeScript development platform with real-time database, file storage, and serverless functions. This project uses [kitcn](https://www.better-convex.com) (formerly Better Convex) for type-safe cRPC procedures with TanStack Query integration.
 
-**This project uses Better Convex** for type-safe cRPC procedures with TanStack Query.
+**This project uses kitcn** for type-safe cRPC procedures with TanStack Query.
 See [patterns-better-convex](references/patterns-better-convex.md) for the key patterns used in this codebase.
 
 **Key Features:**
@@ -16,8 +16,9 @@ See [patterns-better-convex](references/patterns-better-convex.md) for the key p
 - Real-time database with automatic subscriptions
 - Type-safe queries, mutations, and actions
 - Built-in file storage and authentication
-- cRPC procedures with middleware (via Better Convex)
+- cRPC procedures with middleware (via kitcn)
 - TanStack Query integration for React
+- Drizzle-style ORM for schema definitions
 
 ## Core
 
@@ -31,7 +32,7 @@ See [patterns-better-convex](references/patterns-better-convex.md) for the key p
 
 | Topic          | Description                                       | Reference                                                        |
 | -------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| Better Convex  | **cRPC, folder structure, zid(), type inference** | [patterns-better-convex](references/patterns-better-convex.md)   |
+| kitcn (cRPC)   | **cRPC, folder structure, zid(), type inference** | [patterns-better-convex](references/patterns-better-convex.md)   |
 | Best Practices | General Convex patterns and guidelines            | [patterns-best-practices](references/patterns-best-practices.md) |
 
 ## Advanced
@@ -56,7 +57,7 @@ See [patterns-better-convex](references/patterns-better-convex.md) for the key p
 
 For most tasks in this project:
 
-1. **Start with Better Convex patterns** - See [patterns-better-convex](references/patterns-better-convex.md)
+1. **Start with kitcn patterns** - See [patterns-better-convex](references/patterns-better-convex.md)
 2. **Use cRPC procedures** - Not standard Convex functions
 3. **Add validators** - In `packages/validators/` using Zod
 4. **Use `.output()` with `zid()`** - For proper type inference
@@ -65,4 +66,4 @@ For most tasks in this project:
 
 - Primary: https://docs.convex.dev
 - LLM-optimized: https://docs.convex.dev/llms.txt
-- Better Convex: https://www.better-convex.com
+- kitcn: https://www.better-convex.com

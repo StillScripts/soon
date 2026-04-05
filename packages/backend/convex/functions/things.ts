@@ -42,8 +42,8 @@ const thingOutputSchema = z.object({
 	_id: zid("things"),
 	_creationTime: z.number(),
 	title: z.string(),
-	description: z.string().optional(),
-	imageId: zid("_storage").optional(),
+	description: z.string().nullable().optional(),
+	imageId: z.string().nullable().optional(),
 	userId: z.string(),
 	imageUrl: z.string().nullable(),
 })
@@ -63,7 +63,9 @@ export const list = authQuery
 		return Promise.all(
 			things.map(async (thing) =>
 				Object.assign({}, thing, {
-					imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+					imageUrl: thing.imageId
+						? await ctx.storage.getUrl(thing.imageId as Id<"_storage">)
+						: null,
 				})
 			)
 		)
@@ -79,7 +81,7 @@ export const get = authQuery
 		}
 		return {
 			...thing,
-			imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+			imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId as Id<"_storage">) : null,
 		}
 	})
 
@@ -89,8 +91,8 @@ export const create = authMutation
 	.mutation(async ({ ctx, input }) => {
 		return ctx.db.insert("things", {
 			title: input.title,
-			description: input.description,
-			imageId: input.imageId as Id<"_storage"> | undefined,
+			description: input.description ?? null,
+			imageId: input.imageId ?? null,
 			userId: ctx.userId,
 		})
 	})
@@ -103,21 +105,21 @@ export const update = authMutation.input(updateSchema).mutation(async ({ ctx, in
 
 	const updates: Partial<{
 		title: string
-		description: string | undefined
-		imageId: Id<"_storage"> | undefined
+		description: string | null
+		imageId: string | null
 	}> = {}
 
 	if (input.title !== undefined) {
 		updates.title = input.title
 	}
 	if (input.description !== undefined) {
-		updates.description = input.description === null ? undefined : input.description
+		updates.description = input.description ?? null
 	}
 	if (input.imageId !== undefined) {
 		if (thing.imageId && input.imageId !== thing.imageId) {
-			await ctx.storage.delete(thing.imageId)
+			await ctx.storage.delete(thing.imageId as Id<"_storage">)
 		}
-		updates.imageId = input.imageId === null ? undefined : (input.imageId as Id<"_storage">)
+		updates.imageId = input.imageId ?? null
 	}
 
 	await ctx.db.patch(input.id as Id<"things">, updates)
@@ -129,7 +131,7 @@ export const remove = authMutation.input(idSchema).mutation(async ({ ctx, input 
 		throw new Error("Not found or not authorized")
 	}
 	if (thing.imageId) {
-		await ctx.storage.delete(thing.imageId)
+		await ctx.storage.delete(thing.imageId as Id<"_storage">)
 	}
 	await ctx.db.delete(input.id as Id<"things">)
 })
