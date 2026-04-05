@@ -12,6 +12,7 @@ export default defineAuth(() => ({
 	plugins: [
 		convex({
 			authConfig,
+			jwks: process.env.JWKS,
 		}),
 	],
 	session: {
