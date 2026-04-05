@@ -42,8 +42,8 @@ const thingOutputSchema = z.object({
 	_id: zid("things"),
 	_creationTime: z.number(),
 	title: z.string(),
-	description: z.string().optional(),
-	imageId: zid("_storage").optional(),
+	description: z.string().nullable().optional(),
+	imageId: z.string().nullable().optional(),
 	userId: z.string(),
 	imageUrl: z.string().nullable(),
 })

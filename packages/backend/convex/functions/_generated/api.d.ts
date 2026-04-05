@@ -38,8 +38,8 @@ export declare const api: {
       {
         _creationTime: number;
         _id: any;
-        description?: string;
-        imageId?: any;
+        description?: string | null;
+        imageId?: string | null;
         imageUrl: string | null;
         title: string;
         userId: string;
@@ -52,8 +52,8 @@ export declare const api: {
       Array<{
         _creationTime: number;
         _id: any;
-        description?: string;
-        imageId?: any;
+        description?: string | null;
+        imageId?: string | null;
         imageUrl: string | null;
         title: string;
         userId: string;
@@ -82,7 +82,43 @@ export declare const api: {
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: {};
+export declare const internal: {
+  generated: {
+    server: {
+      aggregateBackfill: FunctionReference<"mutation", "internal", any, any>;
+      aggregateBackfillChunk: FunctionReference<
+        "mutation",
+        "internal",
+        any,
+        any
+      >;
+      aggregateBackfillStatus: FunctionReference<
+        "mutation",
+        "internal",
+        any,
+        any
+      >;
+      migrationCancel: FunctionReference<"mutation", "internal", any, any>;
+      migrationRun: FunctionReference<"mutation", "internal", any, any>;
+      migrationRunChunk: FunctionReference<"mutation", "internal", any, any>;
+      migrationStatus: FunctionReference<"mutation", "internal", any, any>;
+      reset: FunctionReference<"action", "internal", any, any>;
+      resetChunk: FunctionReference<
+        "mutation",
+        "internal",
+        { cursor: string | null; tableName: string },
+        any
+      >;
+      scheduledDelete: FunctionReference<"mutation", "internal", any, any>;
+      scheduledMutationBatch: FunctionReference<
+        "mutation",
+        "internal",
+        any,
+        any
+      >;
+    };
+  };
+};
 
 export declare const components: {
   betterAuth: {

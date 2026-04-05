@@ -11,8 +11,8 @@ type ThingResult = {
 	_id: Id<"things">
 	_creationTime: number
 	title: string
-	description?: string
-	imageId?: Id<"_storage">
+	description?: string | null
+	imageId?: string | null
 	userId: string
 	imageUrl: string | null
 }
