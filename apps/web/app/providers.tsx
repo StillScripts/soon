@@ -29,6 +29,9 @@ function createQueryClient() {
 				refetchOnWindowFocus: false,
 				refetchOnMount: false,
 				refetchOnReconnect: false,
+				// Retry once on auth errors (race between query and auth handshake)
+				retry: 1,
+				retryDelay: 500,
 			},
 		},
 	})

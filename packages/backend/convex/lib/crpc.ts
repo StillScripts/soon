@@ -22,15 +22,13 @@ export const privateAction = c.action.internal()
  */
 async function getAuthenticatedUserId(ctx: QueryCtx | MutationCtx): Promise<string | null> {
 	// Check for convex-test mock identity first (enables testing with t.withIdentity())
-	const testIdentity = await ctx.auth.getUserIdentity()
-	if (testIdentity) {
-		return testIdentity.subject
+	const convexIdentity = await ctx.auth.getUserIdentity()
+	if (convexIdentity) {
+		return convexIdentity.subject
 	}
 
 	// Production: use kitcn auth
 	return await getAuthUserId(ctx)
-
-	return null
 }
 
 // Auth query - supports both convex-test and kitcn auth

@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 
 import "@/app/globals.css"
 import { Providers } from "@/app/providers"
+import { caller } from "@/lib/convex/rsc"
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -18,15 +19,17 @@ export const metadata: Metadata = {
 	description: "Manage things with Convex, Better Auth, and TanStack Query",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const token = await caller.getToken()
+
 	return (
 		<html suppressHydrationWarning lang="en">
 			<body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
-				<Providers>{children}</Providers>
+				<Providers initialToken={token}>{children}</Providers>
 			</body>
 		</html>
 	)

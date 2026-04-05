@@ -148,7 +148,7 @@ export function useThings(crpc: ReturnType<CRPC>) {
 
 	const invalidateThings = () => queryClient.invalidateQueries(crpc.things.list.queryFilter({}))
 
-	const listQuery = useQuery(crpc.things.list.queryOptions({}))
+	const listQuery = useQuery(crpc.things.list.queryOptions({}, { skipUnauth: true }))
 
 	const createMutation = useMutation(
 		crpc.things.create.mutationOptions({
