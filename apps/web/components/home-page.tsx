@@ -1,5 +1,7 @@
 "use client"
 
+import { useAuth } from "kitcn/react"
+
 import { AuthForm } from "@/components/auth-form"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ThingsManager } from "@/components/things-manager"
@@ -12,9 +14,10 @@ import { authClient } from "@/lib/auth-client"
  * Data is prefetched on the server via RSC and hydrated for instant display.
  */
 export function HomePage() {
-	const { data: session, isPending } = authClient.useSession()
+	const { data: session, isPending: sessionPending } = authClient.useSession()
+	const { isAuthenticated, isLoading: authLoading } = useAuth()
 
-	if (isPending) {
+	if (sessionPending || authLoading) {
 		return (
 			<div className="grid min-h-screen place-items-center">
 				<p className="text-muted-foreground">Loading...</p>
@@ -22,7 +25,7 @@ export function HomePage() {
 		)
 	}
 
-	if (!session) {
+	if (!session || !isAuthenticated) {
 		return (
 			<div className="flex min-h-screen items-center justify-center p-4">
 				<div className="absolute top-4 right-4">
