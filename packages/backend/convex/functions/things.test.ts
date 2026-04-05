@@ -22,7 +22,7 @@ type ThingResult = {
  *
  * These tests use convex-test's withIdentity() to mock authentication,
  * which works with our auth middleware that checks ctx.auth.getUserIdentity()
- * before falling back to better-auth.
+ * before falling back to kitcn auth.
  *
  * This approach tests the actual production code (things.ts) rather than
  * internal duplicates, ensuring test coverage matches real behavior.

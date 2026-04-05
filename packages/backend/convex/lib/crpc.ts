@@ -18,8 +18,8 @@ export const privateAction = c.action.internal()
 
 /**
  * Get authenticated user from context.
- * Supports both convex-test (via ctx.auth.getUserIdentity) and production (via better-auth).
- * This allows testing Better Convex functions directly with convex-test's withIdentity().
+ * Supports both convex-test (via ctx.auth.getUserIdentity) and production (via kitcn auth).
+ * This allows testing cRPC functions directly with convex-test's withIdentity().
  */
 async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
 	// Check for convex-test mock identity first (enables testing with t.withIdentity())
@@ -29,7 +29,7 @@ async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
 		return { _id: testIdentity.subject, isTestUser: true as const }
 	}
 
-	// Production: use better-auth
+	// Production: use kitcn auth
 	const user = await authComponent.getAuthUser(ctx)
 	if (user) {
 		return { ...user, isTestUser: false as const }
@@ -38,7 +38,7 @@ async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
 	return null
 }
 
-// Auth query - supports both convex-test and better-auth
+// Auth query - supports both convex-test and kitcn auth
 export const authQuery = c.query.meta({ auth: "required" }).use(async ({ ctx, next }) => {
 	const user = await getAuthenticatedUser(ctx)
 	if (!user) {
@@ -47,7 +47,7 @@ export const authQuery = c.query.meta({ auth: "required" }).use(async ({ ctx, ne
 	return next({ ctx: { ...ctx, user, userId: user._id } })
 })
 
-// Auth mutation - supports both convex-test and better-auth
+// Auth mutation - supports both convex-test and kitcn auth
 export const authMutation = c.mutation.meta({ auth: "required" }).use(async ({ ctx, next }) => {
 	const user = await getAuthenticatedUser(ctx)
 	if (!user) {
