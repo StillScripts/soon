@@ -62,7 +62,7 @@ export function Providers({
 	const router = useRouter()
 	const [convex] = useState(() => new ConvexReactClient(convexUrl))
 	const handleUnauthorized = useCallback(() => {
-		router.push("/login")
+		router.push("/")
 	}, [router])
 
 	return (
