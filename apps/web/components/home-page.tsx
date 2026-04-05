@@ -23,7 +23,9 @@ export function HomePage() {
 				<div className="absolute top-4 right-4">
 					<ThemeToggle />
 				</div>
-				<AuthForm />
+				<div className="w-full max-w-sm">
+					<AuthForm />
+				</div>
 			</div>
 		)
 	}
