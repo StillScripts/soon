@@ -8,7 +8,7 @@
 		"types": ["vitest/globals"],
 		"baseUrl": ".",
 		"paths": {
-			"@convex/*": ["../backend/convex/shared/*", "../backend/convex/functions/_generated/*"],
+			"@convex/*": ["../backend/convex/functions/_generated/*", "../backend/convex/shared/*"],
 			"backend/react": ["../backend/convex/shared/react.ts"]
 		}
 	},
