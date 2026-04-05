@@ -24,11 +24,13 @@ export function HomePage() {
 
 	if (!session) {
 		return (
-			<div className="grid min-h-screen place-items-center p-4">
+			<div className="flex min-h-screen items-center justify-center p-4">
 				<div className="absolute top-4 right-4">
 					<ThemeToggle />
 				</div>
-				<AuthForm />
+				<div className="w-full max-w-md">
+					<AuthForm />
+				</div>
 			</div>
 		)
 	}
