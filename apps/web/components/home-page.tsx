@@ -6,11 +6,6 @@ import { ThingsManager } from "@/components/things-manager"
 import { UserHeader } from "@/components/user-header"
 import { authClient } from "@/lib/auth-client"
 
-/**
- * Client component for the home page.
- * Handles authentication state and renders either login or the Things manager.
- * Data is prefetched on the server via RSC and hydrated for instant display.
- */
 export function HomePage() {
 	const { data: session, isPending } = authClient.useSession()
 

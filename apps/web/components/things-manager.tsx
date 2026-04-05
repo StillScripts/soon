@@ -207,7 +207,7 @@ function ThingsList({
 	things,
 	onDelete,
 	onUpdate,
-	isDeleting,
+	deletingId,
 }: {
 	things: Thing[] | undefined
 	onDelete: (id: string) => void
@@ -215,7 +215,7 @@ function ThingsList({
 		id: string,
 		data: { title?: string; description?: string | null; imageId?: string | null }
 	) => void
-	isDeleting: boolean
+	deletingId: string | null
 }) {
 	if (things === undefined) {
 		return <p className="text-muted-foreground">Loading...</p>
@@ -233,7 +233,7 @@ function ThingsList({
 					thing={thing}
 					onDelete={() => onDelete(thing._id)}
 					onUpdate={(data) => onUpdate(thing._id, data)}
-					isDeleting={isDeleting}
+					isDeleting={deletingId === thing._id}
 				/>
 			))}
 		</ul>
@@ -331,7 +331,7 @@ export function ThingsManager() {
 						things={things as Thing[] | undefined}
 						onDelete={handleDelete}
 						onUpdate={handleUpdate}
-						isDeleting={isDeletingId !== null}
+						deletingId={isDeletingId}
 					/>
 				</CardContent>
 			</Card>

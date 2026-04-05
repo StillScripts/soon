@@ -44,11 +44,10 @@ export const list = query({
 		const things = args.limit ? await q.take(args.limit) : await q.collect()
 
 		return Promise.all(
-			things.map(async (thing) =>
-				Object.assign({}, thing, {
-					imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
-				})
-			)
+			things.map(async (thing) => ({
+				...thing,
+				imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+			}))
 		)
 	},
 })
