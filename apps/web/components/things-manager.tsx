@@ -114,7 +114,7 @@ function ThingItem({
 	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
 
 	const handleImageUpload = async (file: File) => {
-		const storageId = await uploadFileToStorage(file, () => generateUploadUrl.mutateAsync())
+		const storageId = await uploadFileToStorage(file, () => generateUploadUrl.mutateAsync({}))
 		setEditImageId(storageId)
 		setEditImageUrl(URL.createObjectURL(file))
 	}
@@ -277,7 +277,7 @@ export function ThingsManager() {
 
 	const handleSubmit = async (data: ThingFormData) => {
 		const imageId = imageFile
-			? await uploadFileToStorage(imageFile, () => generateUploadUrl.mutateAsync())
+			? await uploadFileToStorage(imageFile, () => generateUploadUrl.mutateAsync({}))
 			: undefined
 
 		await createThing.mutateAsync({
