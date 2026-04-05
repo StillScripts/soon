@@ -1,31 +1,20 @@
-import { CRPCError, initCRPC } from "better-convex/server"
+import { CRPCError } from "kitcn/server"
 
-import type { DataModel } from "../functions/_generated/dataModel"
-import {
-	action,
-	internalAction,
-	internalMutation,
-	internalQuery,
-	mutation,
-	query,
-} from "../functions/_generated/server"
-import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/_generated/server"
 import { authComponent } from "../functions/auth"
+import type { ActionCtx, MutationCtx, QueryCtx } from "../functions/generated/server"
+import { initCRPC } from "../functions/generated/server"
 
 export type GenericCtx = QueryCtx | MutationCtx | ActionCtx
 
-const c = initCRPC.dataModel<DataModel>().create({
-	query,
-	internalQuery,
-	mutation,
-	internalMutation,
-	action,
-	internalAction,
-})
+const c = initCRPC.create()
 
 export const publicQuery = c.query
 export const publicMutation = c.mutation
 export const publicAction = c.action
+
+export const privateQuery = c.query.internal()
+export const privateMutation = c.mutation.internal()
+export const privateAction = c.action.internal()
 
 /**
  * Get authenticated user from context.

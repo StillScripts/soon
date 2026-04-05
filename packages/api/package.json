@@ -26,7 +26,7 @@
 	"dependencies": {
 		"@tanstack/react-query": "5.96.2",
 		"backend": "workspace:*",
-		"better-convex": "0.11.0",
+		"kitcn": "0.12.8",
 		"react": "19.2.4"
 	},
 	"devDependencies": {

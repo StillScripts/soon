@@ -1,6 +1,6 @@
 "use client"
-import { convexClient } from "@convex-dev/better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
+import { convexClient } from "kitcn/auth/client"
 
 export const authClient = createAuthClient({
 	plugins: [convexClient()],

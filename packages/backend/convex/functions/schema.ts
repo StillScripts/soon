@@ -1,11 +1,18 @@
-import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { convexTable, defineSchema, id, index, text } from "kitcn/orm"
 
-export default defineSchema({
-	things: defineTable({
-		title: v.string(),
-		description: v.optional(v.string()),
-		imageId: v.optional(v.id("_storage")),
-		userId: v.string(),
-	}).index("by_user", ["userId"]),
-})
+export const thingsTable = convexTable(
+	"things",
+	{
+		title: text().notNull(),
+		description: text(),
+		imageId: id("_storage"),
+		userId: text().notNull(),
+	},
+	(t) => [index("by_user").on(t.userId)]
+)
+
+export const tables = {
+	things: thingsTable,
+}
+
+export default defineSchema(tables, { strict: false })

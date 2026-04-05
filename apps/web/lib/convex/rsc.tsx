@@ -5,19 +5,11 @@ import { headers } from "next/headers"
 import { api } from "@convex/api"
 import type { Api } from "@repo/api/context"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
-import { convexBetterAuth } from "better-convex/auth/nextjs"
-import { createServerCRPCProxy, getServerQueryClientOptions } from "better-convex/rsc"
+import { createServerCRPCProxy, getServerQueryClientOptions } from "kitcn/rsc"
+
+import { createCaller, createContext } from "../auth-server"
 
 const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL!
-
-/**
- * Server-side Better Auth integration for Convex.
- * Provides authenticated server calls via the caller pattern.
- */
-const { createContext, createCaller } = convexBetterAuth<Api>({
-	api,
-	convexSiteUrl,
-})
 
 /**
  * Create RSC context with headers from the request.

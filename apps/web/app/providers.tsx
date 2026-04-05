@@ -6,13 +6,13 @@ import { ThemeProvider } from "next-themes"
 import { useRouter } from "next/navigation"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ConvexAuthProvider } from "better-convex/auth/client"
+import { ConvexAuthProvider } from "kitcn/auth/client"
 import {
 	ConvexReactClient,
 	getConvexQueryClientSingleton,
 	getQueryClientSingleton,
 	useAuthStore,
-} from "better-convex/react"
+} from "kitcn/react"
 
 import { CRPCProvider } from "@/lib/convex/crpc"
 
