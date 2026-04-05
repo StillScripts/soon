@@ -19,22 +19,22 @@ Pinning to exact versions means every install resolves identically, and upgrades
 
 ## Key Upgrades
 
-| Package | Before | After | Notes |
-|---------|--------|-------|-------|
-| `better-auth` | 1.4.9 | 1.5.6 | Security/features |
-| `better-convex` | 0.5.x | 0.11.0 | Breaking: removed meta, new auth paths |
-| `@convex-dev/better-auth` | 0.10.10 | 0.11.4 | Aligned with better-convex |
-| `convex` | 1.31.6 | 1.34.1 | Required by better-convex 0.11 |
-| `next` | 16.1.0 | 16.2.2 | Patch update |
-| `react` / `react-dom` | 19.2.0 | 19.2.4 | Patch update |
-| `astro` | 5.6.1 | 6.1.3 | Major (required by starlight 0.38) |
-| `vite` | 7.3.1 | 8.0.3 | Major (vitest 4.1 supports it) |
-| `vitest` | mixed | 4.1.2 | Unified across monorepo |
-| `turbo` | 2.7.6 | 2.9.3 | Minor update |
-| `tailwind-merge` | 2.3.0 | 3.5.0 | Major |
-| `@base-ui/react` | 1.1.0 | 1.3.0 | Minor |
-| `lucide-react` | 0.468.0 | 1.7.0 | Major (1.0 release) |
-| `typescript` | 5.9.2 | 5.9.3 | Stayed on 5.x (TS 6 too new) |
+| Package                   | Before  | After  | Notes                                  |
+| ------------------------- | ------- | ------ | -------------------------------------- |
+| `better-auth`             | 1.4.9   | 1.5.6  | Security/features                      |
+| `better-convex`           | 0.5.x   | 0.11.0 | Breaking: removed meta, new auth paths |
+| `@convex-dev/better-auth` | 0.10.10 | 0.11.4 | Aligned with better-convex             |
+| `convex`                  | 1.31.6  | 1.34.1 | Required by better-convex 0.11         |
+| `next`                    | 16.1.0  | 16.2.2 | Patch update                           |
+| `react` / `react-dom`     | 19.2.0  | 19.2.4 | Patch update                           |
+| `astro`                   | 5.6.1   | 6.1.3  | Major (required by starlight 0.38)     |
+| `vite`                    | 7.3.1   | 8.0.3  | Major (vitest 4.1 supports it)         |
+| `vitest`                  | mixed   | 4.1.2  | Unified across monorepo                |
+| `turbo`                   | 2.7.6   | 2.9.3  | Minor update                           |
+| `tailwind-merge`          | 2.3.0   | 3.5.0  | Major                                  |
+| `@base-ui/react`          | 1.1.0   | 1.3.0  | Minor                                  |
+| `lucide-react`            | 0.468.0 | 1.7.0  | Major (1.0 release)                    |
+| `typescript`              | 5.9.2   | 5.9.3  | Stayed on 5.x (TS 6 too new)           |
 
 ## Breaking Changes Resolved
 
