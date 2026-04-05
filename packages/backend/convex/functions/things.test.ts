@@ -143,7 +143,7 @@ describe("things.get", () => {
 		const thing = await t.query(api.things.get, { id })
 
 		expect(thing?.imageUrl).toBeNull()
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 	})
 })
 
@@ -268,7 +268,7 @@ describe("things.update", () => {
 
 		const thing = await t.query(api.things.get, { id })
 
-		expect(thing?.description).toBeUndefined()
+		expect(thing?.description).toBeNull()
 	})
 
 	it("should not modify fields that are not provided", async () => {
@@ -562,7 +562,7 @@ describe("storage integration", () => {
 
 		// Verify no image initially
 		let thing = await t.query(api.things.get, { id })
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 		expect(thing?.imageUrl).toBeNull()
 
 		// Add an image
@@ -594,7 +594,7 @@ describe("storage integration", () => {
 
 		const thing = await t.query(api.things.get, { id })
 
-		expect(thing?.imageId).toBeUndefined()
+		expect(thing?.imageId).toBeNull()
 		expect(thing?.imageUrl).toBeNull()
 	})
 

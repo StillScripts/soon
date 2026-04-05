@@ -1,9 +1,14 @@
 import { httpRouter } from "convex/server"
+import { registerRoutes } from "kitcn/auth/http"
 
-import { authComponent, createAuth } from "./auth"
+import { getAuth } from "./generated/auth"
 
 const http = httpRouter()
 
-authComponent.registerRoutes(http, createAuth)
+registerRoutes(http, getAuth, {
+	cors: {
+		allowedOrigins: [process.env.SITE_URL!],
+	},
+})
 
 export default http

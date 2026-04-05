@@ -5,7 +5,7 @@
 	"private": true,
 	"description": "Remotion video demos for the Soon starter app",
 	"scripts": {
-		"dev": "remotion studio",
+		"dev": "remotion studio --port 4010",
 		"build": "remotion bundle",
 		"render": "remotion render",
 		"upgrade": "remotion upgrade",
