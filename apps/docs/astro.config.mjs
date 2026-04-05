@@ -114,6 +114,10 @@ export default defineConfig({
 							label: "Pin and Update Dependencies",
 							slug: "guides/26-pin-and-update-dependencies",
 						},
+						{
+							label: "Remove Better Convex",
+							slug: "guides/27-remove-better-convex",
+						},
 					],
 				},
 				{

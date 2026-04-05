@@ -5,6 +5,22 @@ All notable changes to the SOON starter kit are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-04-06
+
+### Removed
+
+- Better Convex (cRPC abstraction layer) - replaced with standard Convex functions
+- `@repo/api` package - cRPC hooks and context no longer needed
+- TanStack Query - Convex's built-in reactivity replaces it
+- RSC prefetching layer (`better-convex/rsc`)
+
+### Changed
+
+- Backend functions use standard Convex `query`/`mutation` with `authComponent.getAuthUser()` for auth
+- Frontend uses `useQuery`/`useMutation` from `convex/react` instead of cRPC hooks
+- Provider stack simplified from 5 layers to 2 (`ThemeProvider` + `ConvexBetterAuthProvider`)
+- Schema updated to accept `null` for optional `imageId` field
+
 ## [1.1.0] - 2026-04-05
 
 ### Changed

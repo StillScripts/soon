@@ -42,6 +42,7 @@ These guides serve multiple purposes:
 24. [Dark Mode Toggle](./24-dark-mode-toggle) - Adding theme switching with next-themes
 25. [Remotion Video App](./25-remotion-video-app) - Programmatic video creation with Remotion
 26. [Pin and Update Dependencies](./26-pin-and-update-dependencies) - Pinning all deps to exact versions for security
+27. [Remove Better Convex](./27-remove-better-convex) - Replacing Better Convex cRPC with standard Convex functions
 
 ## Documentation Pattern
 
