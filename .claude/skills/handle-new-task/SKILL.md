@@ -140,7 +140,23 @@ Document the <feature> implementation:
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ```
 
-### Step 10: Create Pull Request
+### Step 10: Update Changelog
+
+Update `apps/docs/CHANGELOG.md` with the changes from this PR:
+
+1. Add a new version entry at the top (following [Keep a Changelog](https://keepachangelog.com/) format)
+2. Bump the version number following semver (patch for fixes, minor for features, major for breaking changes)
+3. Categorize changes under `Added`, `Changed`, `Fixed`, or `Removed`
+
+```markdown
+## [X.Y.Z] - YYYY-MM-DD
+
+### Added/Changed/Fixed
+
+- Description of changes
+```
+
+### Step 11: Create Pull Request
 
 Use the `/create-pr` skill:
 
@@ -162,6 +178,7 @@ Use the `/create-pr` skill:
 | Initial commit  | `/commit`          | Professional commit message    |
 | Code review     | code-simplifier    | Simplify and clean up code     |
 | Documentation   | `/document-update` | Create development guide       |
+| Changelog       | Manual editing     | Bump changelog for the PR      |
 | PR creation     | `/create-pr`       | Open pull request              |
 | Skill docs      | `/document-skill`  | Document new skills if created |
 
@@ -187,6 +204,7 @@ Before creating PR, ensure:
 - [ ] Feature is complete and working
 - [ ] Code has been simplified
 - [ ] Documentation is updated
+- [ ] Changelog is updated (`apps/docs/CHANGELOG.md`)
 - [ ] All commits follow conventions
 
 ## Example: RSC Integration Feature
@@ -203,7 +221,8 @@ Here's how this workflow was applied for the Better Convex RSC integration:
 8. **Commit**: `ref(web): Simplify RSC integration code`
 9. **Document**: Created guide `23-better-convex-rsc.md`
 10. **Commit**: `docs: Add RSC integration guide for Better Convex`
-11. **PR**: Created PR #10
+11. **Changelog**: Added `[0.23.0]` entry to `apps/docs/CHANGELOG.md`
+12. **PR**: Created PR #10
 
 ## Tips for Success
 

@@ -13,21 +13,21 @@
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@remotion/cli": "4.0.436",
-		"@remotion/tailwind-v4": "4.0.436",
-		"@remotion/transitions": "4.0.436",
+		"@remotion/cli": "4.0.445",
+		"@remotion/tailwind-v4": "4.0.445",
+		"@remotion/transitions": "4.0.445",
 		"@repo/ui": "*",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0",
-		"remotion": "4.0.436",
-		"tailwindcss": "^4.1.0"
+		"react": "19.2.4",
+		"react-dom": "19.2.4",
+		"remotion": "4.0.445",
+		"tailwindcss": "4.2.2"
 	},
 	"devDependencies": {
 		"@repo/oxlint-config": "*",
 		"@repo/typescript-config": "*",
-		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.2",
-		"@types/web": "0.0.166",
-		"typescript": "5.9.2"
+		"@types/react": "19.2.14",
+		"@types/react-dom": "19.2.3",
+		"@types/web": "0.0.345",
+		"typescript": "5.9.3"
 	}
 }

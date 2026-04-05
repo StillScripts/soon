@@ -73,6 +73,29 @@ export function ThingForm({
 	const titleId = idPrefix ? `${idPrefix}-title` : "title"
 	const descriptionId = idPrefix ? `${idPrefix}-description` : "description"
 
+	const submitButton = onCancel ? (
+		<div className="flex justify-end gap-2">
+			<Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={isSubmitting}>
+				Cancel
+			</Button>
+			<form.Subscribe selector={(state) => state.values.title}>
+				{(title) => (
+					<Button type="submit" size="sm" disabled={isSubmitting || !title.trim()}>
+						{isSubmitting ? submittingLabel : submitLabel}
+					</Button>
+				)}
+			</form.Subscribe>
+		</div>
+	) : (
+		<form.Subscribe selector={(state) => state.values.title}>
+			{(title) => (
+				<Button type="submit" disabled={isSubmitting || !title.trim()} className="w-full">
+					{isSubmitting ? submittingLabel : submitLabel}
+				</Button>
+			)}
+		</form.Subscribe>
+	)
+
 	return (
 		<form
 			onSubmit={(e) => {
@@ -80,7 +103,7 @@ export function ThingForm({
 				e.stopPropagation()
 				form.handleSubmit()
 			}}
-			className="space-y-4"
+			className="flex flex-col gap-6"
 		>
 			{imageSlot}
 
@@ -145,34 +168,7 @@ export function ThingForm({
 				</form.Field>
 			</FieldGroup>
 
-			{onCancel ? (
-				<div className="flex justify-end gap-2">
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onClick={onCancel}
-						disabled={isSubmitting}
-					>
-						Cancel
-					</Button>
-					<form.Subscribe selector={(state) => state.values.title}>
-						{(title) => (
-							<Button type="submit" size="sm" disabled={isSubmitting || !title.trim()}>
-								{isSubmitting ? submittingLabel : submitLabel}
-							</Button>
-						)}
-					</form.Subscribe>
-				</div>
-			) : (
-				<form.Subscribe selector={(state) => state.values.title}>
-					{(title) => (
-						<Button type="submit" disabled={isSubmitting || !title.trim()} className="w-full">
-							{isSubmitting ? submittingLabel : submitLabel}
-						</Button>
-					)}
-				</form.Subscribe>
-			)}
+			{submitButton}
 		</form>
 	)
 }

@@ -13,8 +13,8 @@
 		"paths": {
 			"@/*": ["./*"],
 			"@convex/*": [
-				"../../packages/backend/convex/functions/_generated/*",
-				"../../packages/backend/convex/shared/*"
+				"../../packages/backend/convex/shared/*",
+				"../../packages/backend/convex/functions/_generated/*"
 			],
 			"backend/react": ["../../packages/backend/convex/shared/react.ts"]
 		}

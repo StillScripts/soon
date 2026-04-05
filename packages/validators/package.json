@@ -21,13 +21,13 @@
 		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
-		"zod": "^4.3.6"
+		"zod": "4.3.6"
 	},
 	"devDependencies": {
 		"@repo/oxlint-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@repo/vitest-config": "workspace:*",
-		"typescript": "^5.9.2",
-		"vitest": "^3.0.0"
+		"typescript": "5.9.3",
+		"vitest": "4.1.2"
 	}
 }

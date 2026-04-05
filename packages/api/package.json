@@ -24,19 +24,19 @@
 		"test:watch": "vitest --watch"
 	},
 	"dependencies": {
-		"@tanstack/react-query": "^5.90.20",
+		"@tanstack/react-query": "5.96.2",
 		"backend": "workspace:*",
-		"better-convex": "^0.5.7",
-		"react": "^19.2.0"
+		"better-convex": "0.11.0",
+		"react": "19.2.4"
 	},
 	"devDependencies": {
 		"@repo/oxlint-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@repo/vitest-config": "workspace:*",
-		"@testing-library/react": "^16.0.0",
-		"@types/react": "19.2.2",
-		"jsdom": "^26.0.0",
-		"typescript": "^5.9.2",
-		"vitest": "^4.0.18"
+		"@testing-library/react": "16.3.2",
+		"@types/react": "19.2.14",
+		"jsdom": "26.1.0",
+		"typescript": "5.9.3",
+		"vitest": "4.1.2"
 	}
 }

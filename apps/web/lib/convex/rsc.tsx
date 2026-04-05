@@ -3,10 +3,9 @@ import { cache } from "react"
 import { headers } from "next/headers"
 
 import { api } from "@convex/api"
-import { meta } from "@convex/meta"
 import type { Api } from "@repo/api/context"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
-import { convexBetterAuth } from "better-convex/auth-nextjs"
+import { convexBetterAuth } from "better-convex/auth/nextjs"
 import { createServerCRPCProxy, getServerQueryClientOptions } from "better-convex/rsc"
 
 const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL!
@@ -17,7 +16,6 @@ const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL!
  */
 const { createContext, createCaller } = convexBetterAuth<Api>({
 	api,
-	meta,
 	convexSiteUrl,
 })
 
@@ -52,7 +50,7 @@ export const caller = createCaller(createRSCContext)
  * prefetch(crpc.things.list.queryOptions({}));
  * ```
  */
-export const crpc = createServerCRPCProxy<Api>({ api, meta })
+export const crpc = createServerCRPCProxy<Api>({ api })
 
 /**
  * Create a QueryClient configured for RSC prefetching.

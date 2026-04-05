@@ -110,6 +110,10 @@ export default defineConfig({
 							label: "Remotion Video App",
 							slug: "guides/25-remotion-video-app",
 						},
+						{
+							label: "Pin and Update Dependencies",
+							slug: "guides/26-pin-and-update-dependencies",
+						},
 					],
 				},
 				{
