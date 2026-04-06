@@ -30,35 +30,9 @@ export declare const api: {
       { description?: string; imageId?: string; title: string },
       any
     >;
-    generateUploadUrl: FunctionReference<"mutation", "public", {}, string>;
-    get: FunctionReference<
-      "query",
-      "public",
-      { id: string },
-      {
-        _creationTime: number;
-        _id: any;
-        description?: string;
-        imageId?: any;
-        imageUrl: string | null;
-        title: string;
-        userId: string;
-      } | null
-    >;
-    list: FunctionReference<
-      "query",
-      "public",
-      { limit?: number },
-      Array<{
-        _creationTime: number;
-        _id: any;
-        description?: string;
-        imageId?: any;
-        imageUrl: string | null;
-        title: string;
-        userId: string;
-      }>
-    >;
+    generateUploadUrl: FunctionReference<"mutation", "public", {}, any>;
+    get: FunctionReference<"query", "public", { id: string }, any>;
+    list: FunctionReference<"query", "public", { limit?: number }, any>;
     remove: FunctionReference<"mutation", "public", { id: string }, any>;
     update: FunctionReference<
       "mutation",

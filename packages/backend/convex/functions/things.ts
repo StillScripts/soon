@@ -1,135 +1,159 @@
-import { thingInputSchema } from "@repo/validators/things"
-import { zid } from "convex-helpers/server/zod4"
-import { z } from "zod"
+import { v } from "convex/values"
 
 import type { Id } from "./_generated/dataModel"
+import { mutation, query } from "./_generated/server"
+import { authComponent } from "./auth"
 
-import { authMutation, authQuery } from "../lib/crpc"
+async function getAuthUserId(ctx: {
+	auth: { getUserIdentity: () => Promise<{ subject: string } | null> }
+}) {
+	// Check for convex-test mock identity first (enables testing with t.withIdentity())
+	const testIdentity = await ctx.auth.getUserIdentity()
+	if (testIdentity) {
+		return testIdentity.subject
+	}
 
-/**
- * Backend-specific schemas
- *
- * These schemas are for Convex function inputs, not for form validation.
- * Form validation uses thingInputSchema from @repo/validators/things.
- */
+	try {
+		// Cast needed because getAuthUser expects full QueryCtx but we only declare the auth subset
+		const user = await authComponent.getAuthUser(ctx as any)
+		if (user) {
+			return user._id
+		}
+	} catch (error) {
+		// oxlint-disable-next-line no-console
+		console.error("Error getting auth user:", error)
+		return null
+	}
 
-/** Schema for operations that require an entity ID */
-const idSchema = z.object({
-	id: z.string(),
+	return null
+}
+
+export const generateUploadUrl = mutation({
+	args: {},
+	handler: async (ctx) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
+		return await ctx.storage.generateUploadUrl()
+	},
 })
 
-/** Schema for listing with optional pagination */
-const listSchema = z.object({
-	limit: z.number().int().min(1).max(100).optional(),
-})
+export const list = query({
+	args: {
+		limit: v.optional(v.number()),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) return []
 
-/**
- * Schema for updating - input fields are partial and merged with id.
- * Supports null values for clearing fields.
- */
-const updateSchema = idSchema.extend({
-	title: thingInputSchema.shape.title.optional(),
-	description: z
-		.string()
-		.max(2000, "Description must be 2000 characters or less")
-		.nullable()
-		.optional(),
-	imageId: z.string().nullable().optional(),
-})
+		const q = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", userId))
 
-/** Output schema for Thing entity with resolved image URL */
-const thingOutputSchema = z.object({
-	_id: zid("things"),
-	_creationTime: z.number(),
-	title: z.string(),
-	description: z.string().optional(),
-	imageId: zid("_storage").optional(),
-	userId: z.string(),
-	imageUrl: z.string().nullable(),
-})
-
-export const generateUploadUrl = authMutation.output(z.string()).mutation(async ({ ctx }) => {
-	return await ctx.storage.generateUploadUrl()
-})
-
-export const list = authQuery
-	.input(listSchema)
-	.output(z.array(thingOutputSchema))
-	.query(async ({ ctx, input }) => {
-		const query = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-
-		const things = input.limit ? await query.take(input.limit) : await query.collect()
+		const things = args.limit ? await q.take(args.limit) : await q.collect()
 
 		return Promise.all(
-			things.map(async (thing) =>
-				Object.assign({}, thing, {
-					imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
-				})
-			)
+			things.map(async (thing) => ({
+				...thing,
+				imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
+			}))
 		)
-	})
+	},
+})
 
-export const get = authQuery
-	.input(idSchema)
-	.output(thingOutputSchema.nullable())
-	.query(async ({ ctx, input }) => {
-		const thing = await ctx.db.get(input.id as Id<"things">)
-		if (!thing || thing.userId !== ctx.userId) {
+export const get = query({
+	args: {
+		id: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) return null
+
+		const thing = await ctx.db.get(args.id as Id<"things">)
+		if (!thing || thing.userId !== userId) {
 			return null
 		}
 		return {
 			...thing,
 			imageUrl: thing.imageId ? await ctx.storage.getUrl(thing.imageId) : null,
 		}
-	})
-
-export const create = authMutation
-	.input(thingInputSchema)
-	.output(zid("things"))
-	.mutation(async ({ ctx, input }) => {
-		return ctx.db.insert("things", {
-			title: input.title,
-			description: input.description,
-			imageId: input.imageId as Id<"_storage"> | undefined,
-			userId: ctx.userId,
-		})
-	})
-
-export const update = authMutation.input(updateSchema).mutation(async ({ ctx, input }) => {
-	const thing = await ctx.db.get(input.id as Id<"things">)
-	if (!thing || thing.userId !== ctx.userId) {
-		throw new Error("Not found or not authorized")
-	}
-
-	const updates: Partial<{
-		title: string
-		description: string | undefined
-		imageId: Id<"_storage"> | undefined
-	}> = {}
-
-	if (input.title !== undefined) {
-		updates.title = input.title
-	}
-	if (input.description !== undefined) {
-		updates.description = input.description === null ? undefined : input.description
-	}
-	if (input.imageId !== undefined) {
-		if (thing.imageId && input.imageId !== thing.imageId) {
-			await ctx.storage.delete(thing.imageId)
-		}
-		updates.imageId = input.imageId === null ? undefined : (input.imageId as Id<"_storage">)
-	}
-
-	await ctx.db.patch(input.id as Id<"things">, updates)
+	},
 })
 
-export const remove = authMutation.input(idSchema).mutation(async ({ ctx, input }) => {
-	const thing = await ctx.db.get(input.id as Id<"things">)
-	if (!thing || thing.userId !== ctx.userId) {
-		throw new Error("Not found or not authorized")
-	}
-	if (thing.imageId) {
-		await ctx.storage.delete(thing.imageId)
-	}
-	await ctx.db.delete(input.id as Id<"things">)
+export const create = mutation({
+	args: {
+		title: v.string(),
+		description: v.optional(v.string()),
+		imageId: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
+
+		if (args.title.length === 0 || args.title.length > 200) {
+			throw new Error("Title must be between 1 and 200 characters")
+		}
+
+		return ctx.db.insert("things", {
+			title: args.title,
+			description: args.description,
+			imageId: args.imageId as Id<"_storage"> | undefined,
+			userId,
+		})
+	},
+})
+
+export const update = mutation({
+	args: {
+		id: v.string(),
+		title: v.optional(v.string()),
+		description: v.optional(v.union(v.string(), v.null())),
+		imageId: v.optional(v.union(v.string(), v.null())),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
+
+		const thing = await ctx.db.get(args.id as Id<"things">)
+		if (!thing || thing.userId !== userId) {
+			throw new Error("Not found or not authorized")
+		}
+
+		const updates: Partial<{
+			title: string
+			description: string | undefined
+			imageId: Id<"_storage"> | undefined
+		}> = {}
+
+		if (args.title !== undefined) {
+			updates.title = args.title
+		}
+		if (args.description !== undefined) {
+			updates.description = args.description === null ? undefined : args.description
+		}
+		if (args.imageId !== undefined) {
+			if (thing.imageId && args.imageId !== thing.imageId) {
+				await ctx.storage.delete(thing.imageId)
+			}
+			updates.imageId = args.imageId === null ? undefined : (args.imageId as Id<"_storage">)
+		}
+
+		await ctx.db.patch(args.id as Id<"things">, updates)
+	},
+})
+
+export const remove = mutation({
+	args: {
+		id: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
+
+		const thing = await ctx.db.get(args.id as Id<"things">)
+		if (!thing || thing.userId !== userId) {
+			throw new Error("Not found or not authorized")
+		}
+		if (thing.imageId) {
+			await ctx.storage.delete(thing.imageId)
+		}
+		await ctx.db.delete(args.id as Id<"things">)
+	},
 })

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 
 import {
-	useThings,
 	useThingsCreate,
 	useThingsGenerateUploadUrl,
 	useThingsGet,
@@ -29,8 +28,5 @@ describe("@repo/api/things", () => {
 
 		expect(useThingsGenerateUploadUrl).toBeDefined()
 		expect(typeof useThingsGenerateUploadUrl).toBe("function")
-
-		expect(useThings).toBeDefined()
-		expect(typeof useThings).toBe("function")
 	})
 })

@@ -16,6 +16,7 @@ This is a Turborepo monorepo using Bun as the package manager. The repository co
 
 **Packages:**
 
+- `@repo/api`: Convex API types, hooks, and re-exports (the single source of truth for Convex types)
 - `@repo/ui`: shadcn/ui component library (Base UI primitives, Tailwind CSS v4)
 - `@repo/oxlint-config`: Shared oxlint configurations for linting
 - `@repo/typescript-config`: Shared TypeScript configurations
@@ -182,6 +183,39 @@ bun generate:component
 
 ## Architecture Notes
 
+### Convex API Layer (`@repo/api`)
+
+**CRITICAL: App components should never import `useQuery`/`useMutation` from `convex/react` directly or hardcode Convex document types.** All Convex interaction in app code goes through `@repo/api` (the API package itself wraps `convex/react` internally).
+
+**Types** — Import from `@repo/api`:
+
+```ts
+import type { Doc, Id, Thing } from "@repo/api"
+```
+
+- Domain types (e.g. `Thing`) are defined in `packages/api/src/types.ts` using `Doc<"tableName">` extended with computed fields
+- Never use `FunctionReturnType` — the generated `api.d.ts` uses `any` for all return types
+- When adding a new table, define its domain type in `packages/api/src/types.ts` and re-export from `index.ts`
+
+**Hooks** — Import from `@repo/api/<domain>`:
+
+```ts
+import { useThingsCreate, useThingsList, useThingsRemove } from "@repo/api/things"
+```
+
+- Each domain (e.g. `things`) has its own file at `packages/api/src/<domain>/index.ts`
+- Query hooks cast the `any` return from Convex to the proper domain type (e.g. `Thing[]`)
+- When adding queries/mutations to a domain, add corresponding hooks in the api package
+- Components should never import `useQuery`/`useMutation` from `convex/react` directly
+
+**Adding a new domain:**
+
+1. Define the domain type in `packages/api/src/types.ts` using `Doc<"tableName">`
+2. Create `packages/api/src/<domain>/index.ts` with typed hooks
+3. Add the export to `packages/api/package.json`
+4. Re-export types from `packages/api/src/index.ts`
+5. Add tests in `packages/api/src/<domain>/<domain>.test.ts`
+
 ### Turborepo Task Dependencies
 
 The `turbo.json` configuration defines task pipelines:
@@ -191,6 +225,13 @@ The `turbo.json` configuration defines task pipelines:
 - `dev` tasks are not cached and run persistently
 
 ### Package Structure
+
+**@repo/api exports (Convex types and hooks):**
+
+- Types: `import type { Thing, ThingId, Doc, Id } from "@repo/api"`
+- API object: `import { api } from "@repo/api"`
+- Hooks: `import { useThingsList, useThingsCreate } from "@repo/api/things"`
+- Types are derived from `Doc<"tableName">` in `packages/backend/convex/functions/_generated/dataModel.d.ts`
 
 **@repo/ui exports (shadcn/ui with Base UI):**
 

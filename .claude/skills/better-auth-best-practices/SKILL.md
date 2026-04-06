@@ -162,6 +162,7 @@ For separate client/server projects: `createAuthClient<typeof auth>()`.
 4. **Cookie cache** - Custom session fields NOT cached, always re-fetched
 5. **Stateless mode** - No DB = session in cookie only, logout on cache expiry
 6. **Change email flow** - Sends to current email first, then new email
+7. **JWKS key rotation (Convex)** - If `BETTER_AUTH_SECRET` changes, JWKS keys must be rotated or the `/api/auth/convex/token` endpoint will 500 with "Failed to decrypt private key." Fix: create a temporary action calling `auth.api.rotateKeys()` and run it via `bunx convex dev --run`
 
 ---
 

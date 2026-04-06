@@ -1,6 +1,6 @@
 ---
 title: Convex API
-description: Better Convex patterns with cRPC, auth middleware, and type-safe queries.
+description: Standard Convex patterns with Better Auth authentication.
 ---
 
 ## Project Structure
@@ -9,98 +9,80 @@ description: Better Convex patterns with cRPC, auth middleware, and type-safe qu
 packages/backend/convex/
 ├── functions/            # API endpoints
 │   ├── auth.ts           # Better Auth integration
-│   └── things.ts         # Example CRUD operations
-├── lib/
-│   └── crpc.ts           # cRPC builder with auth middleware
-├── schema.ts             # Database schema
-├── auth.config.ts        # Better Auth config
-└── _generated/           # Auto-generated (don't edit)
+│   ├── auth.config.ts    # Better Auth config provider
+│   ├── convex.config.ts  # App config with betterAuth component
+│   ├── http.ts           # HTTP router with auth routes
+│   ├── schema.ts         # Database schema
+│   ├── things.ts         # Example CRUD operations
+│   └── _generated/       # Auto-generated (don't edit)
 ```
 
-## Better Convex (cRPC)
+## Authentication
 
-This project uses **Better Convex** for type-safe cRPC procedures.
+This project uses `@convex-dev/better-auth` for authentication with standard Convex functions.
 
-### cRPC Builder
+### Auth Helper
 
-Defined in `lib/crpc.ts`:
+Defined in `things.ts` (or extract to a shared helper):
 
 ```typescript
-import { CRPCError, initCRPC } from "better-convex/server"
+import { authComponent } from "./auth"
 
-const c = initCRPC.dataModel<DataModel>().create({
-	query,
-	mutation,
-	action,
-	internalQuery,
-	internalMutation,
-	internalAction,
-})
+async function getAuthUserId(ctx) {
+	// Check for convex-test mock identity first
+	const testIdentity = await ctx.auth.getUserIdentity()
+	if (testIdentity) return testIdentity.subject
 
-export const publicQuery = c.query
-export const publicMutation = c.mutation
-
-// Auth middleware - adds user and userId to context
-export const authQuery = c.query.meta({ auth: "required" }).use(async ({ ctx, next }) => {
+	// Production: use better-auth
 	const user = await authComponent.getAuthUser(ctx)
-	if (!user) {
-		throw new CRPCError({ code: "UNAUTHORIZED" })
-	}
-	return next({ ctx: { ...ctx, user, userId: user._id } })
-})
+	if (user) return user._id
 
-export const authMutation = c.mutation.meta({ auth: "required" }).use(async ({ ctx, next }) => {
-	const user = await authComponent.getAuthUser(ctx)
-	if (!user) {
-		throw new CRPCError({ code: "UNAUTHORIZED" })
-	}
-	return next({ ctx: { ...ctx, user, userId: user._id } })
-})
+	return null
+}
 ```
 
 ### Writing Functions
 
 ```typescript
-import { zid } from "convex-helpers/server/zod4"
-import { z } from "zod"
+import { v } from "convex/values"
 
-import { authMutation, authQuery } from "../lib/crpc"
+import { mutation, query } from "./_generated/server"
+import { authComponent } from "./auth"
 
-// Output schema with typed IDs
-const thingOutputSchema = z.object({
-	_id: zid("things"),
-	_creationTime: z.number(),
-	title: z.string(),
-	userId: z.string(),
+export const list = query({
+	args: { limit: v.optional(v.number()) },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
+
+		const q = ctx.db.query("things").withIndex("by_user", (q) => q.eq("userId", userId))
+
+		return args.limit ? await q.take(args.limit) : await q.collect()
+	},
 })
 
-// Query with input/output validation
-export const list = authQuery
-	.input(z.object({ limit: z.number().optional() }))
-	.output(z.array(thingOutputSchema))
-	.query(async ({ ctx, input }) => {
-		return ctx.db
-			.query("things")
-			.withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-			.take(input.limit ?? 100)
-	})
+export const create = mutation({
+	args: {
+		title: v.string(),
+		description: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx)
+		if (!userId) throw new Error("Not authenticated")
 
-// Mutation with input validation
-export const create = authMutation
-	.input(z.object({ title: z.string().min(1).max(100) }))
-	.output(zid("things"))
-	.mutation(async ({ ctx, input }) => {
 		return ctx.db.insert("things", {
-			title: input.title,
-			userId: ctx.userId,
+			title: args.title,
+			description: args.description,
+			userId,
 		})
-	})
+	},
+})
 ```
 
 ## Schema Definition
 
 ```typescript
-// convex/schema.ts
+// convex/functions/schema.ts
 import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
 
@@ -126,44 +108,6 @@ export default defineSchema({
 | `v.array(...)`    | Array of values       |
 | `v.object({...})` | Nested object         |
 
-## Shared Validators
-
-Input validation schemas live in `@repo/validators` (shared with frontend forms).
-Backend-specific schemas (ID operations, pagination) are defined in the backend.
-
-```typescript
-// packages/validators/src/things.ts
-import { z } from "zod"
-
-// Core input schema for user data
-export const thingInputSchema = z.object({
-	title: z.string().min(1).max(200),
-	description: z.string().max(2000).optional(),
-	imageId: z.string().optional(),
-})
-```
-
-Use in Convex functions:
-
-```typescript
-import { thingInputSchema } from "@repo/validators/things"
-
-// Backend defines its own operation schemas
-const idSchema = z.object({ id: z.string() })
-const updateSchema = idSchema.extend({
-	title: thingInputSchema.shape.title.optional(),
-	description: z.string().max(2000).nullable().optional(),
-})
-
-// Create uses the shared input schema
-export const create = authMutation.input(thingInputSchema).mutation(async ({ ctx, input }) => {
-	// input is typed from the schema
-})
-
-// Get uses backend-local schema
-export const get = authQuery.input(idSchema).query(...)
-```
-
 ## Database Operations
 
 | Operation | Method                      | Description         |
@@ -186,17 +130,15 @@ export const get = authQuery.input(idSchema).query(...)
 
 ```tsx
 "use client"
-import { api } from "@repo/backend/convex"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { useConvexQuery, useConvexMutation } from "@repo/backend/react"
+import { api } from "@convex/api"
+import { useMutation, useQuery } from "convex/react"
 
-// With TanStack Query (recommended)
-const { data: things } = useConvexQuery(api.functions.things.list, { limit: 10 })
-const createThing = useConvexMutation(api.functions.things.create)
+// Real-time query - automatically updates when data changes
+const things = useQuery(api.things.list, {})
 
-// Or with Convex hooks
-const things = useQuery(api.functions.things.list, { limit: 10 })
-const create = useMutation(api.functions.things.create)
+// Mutation
+const createThing = useMutation(api.things.create)
+await createThing({ title: "New Thing" })
 ```
 
 ## Development Commands

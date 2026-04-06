@@ -6,11 +6,6 @@ import { ThingsManager } from "@/components/things-manager"
 import { UserHeader } from "@/components/user-header"
 import { authClient } from "@/lib/auth-client"
 
-/**
- * Client component for the home page.
- * Handles authentication state and renders either login or the Things manager.
- * Data is prefetched on the server via RSC and hydrated for instant display.
- */
 export function HomePage() {
 	const { data: session, isPending } = authClient.useSession()
 
@@ -28,7 +23,9 @@ export function HomePage() {
 				<div className="absolute top-4 right-4">
 					<ThemeToggle />
 				</div>
-				<AuthForm />
+				<div className="w-full max-w-sm">
+					<AuthForm />
+				</div>
 			</div>
 		)
 	}
@@ -48,7 +45,7 @@ export function HomePage() {
 			</main>
 
 			<footer className="text-muted-foreground text-center text-sm">
-				Powered by Convex + Better Auth + TanStack Query
+				Powered by Convex + Better Auth
 			</footer>
 		</div>
 	)

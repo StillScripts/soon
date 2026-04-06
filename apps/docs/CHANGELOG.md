@@ -5,6 +5,34 @@ All notable changes to the SOON starter kit are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-04-06
+
+### Fixed
+
+- Resolved JWKS private key decryption error causing "Not authenticated" on all Convex mutations despite valid Better Auth session
+- Rotated stale JWKS keys that were encrypted with a mismatched `BETTER_AUTH_SECRET`
+- Removed temporary `admin.ts` file that had a TypeScript error blocking `convex dev`
+
+### Added
+
+- JWKS troubleshooting documentation in guides 08 (Better Auth) and 27 (Remove Better Convex)
+
+## [2.0.0] - 2026-04-06
+
+### Removed
+
+- Better Convex (cRPC abstraction layer) - replaced with standard Convex functions
+- `@repo/api` package - cRPC hooks and context no longer needed
+- TanStack Query - Convex's built-in reactivity replaces it
+- RSC prefetching layer (`better-convex/rsc`)
+
+### Changed
+
+- Backend functions use standard Convex `query`/`mutation` with `authComponent.getAuthUser()` for auth
+- Frontend uses `useQuery`/`useMutation` from `convex/react` instead of cRPC hooks
+- Provider stack simplified from 5 layers to 2 (`ThemeProvider` + `ConvexBetterAuthProvider`)
+- Schema updated to accept `null` for optional `imageId` field
+
 ## [1.1.0] - 2026-04-05
 
 ### Changed

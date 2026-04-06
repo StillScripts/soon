@@ -1,41 +1,32 @@
-import { describe, expect, it } from "vitest"
+import { describe, expectTypeOf, it } from "vitest"
 
-import type { ApiInputs, ApiOutputs, ListThingsInput, Thing, UpdateThingInput } from "./types"
+import type { Thing, ThingId } from "./types"
 
-describe("@repo/api/types", () => {
-	it("exports Thing type", () => {
-		const thing: Thing = {
-			_id: "test-id" as Thing["_id"],
-			_creationTime: Date.now(),
-			title: "Test Thing",
-			userId: "user-123",
-			imageUrl: null,
-		}
-		expect(thing.title).toBe("Test Thing")
+describe("Thing type", () => {
+	it("has schema fields", () => {
+		expectTypeOf<Thing>().toHaveProperty("_id")
+		expectTypeOf<Thing>().toHaveProperty("title")
+		expectTypeOf<Thing>().toHaveProperty("description")
+		expectTypeOf<Thing>().toHaveProperty("imageId")
+		expectTypeOf<Thing>().toHaveProperty("userId")
+		expectTypeOf<Thing>().toHaveProperty("_creationTime")
 	})
 
-	it("exports ApiInputs type", () => {
-		const inputs: ApiInputs = {} as ApiInputs
-		expect(inputs).toBeDefined()
+	it("has computed imageUrl field", () => {
+		expectTypeOf<Thing["imageUrl"]>().toEqualTypeOf<string | null>()
 	})
 
-	it("exports ApiOutputs type", () => {
-		const outputs: ApiOutputs = {} as ApiOutputs
-		expect(outputs).toBeDefined()
+	it("has string title", () => {
+		expectTypeOf<Thing["title"]>().toBeString()
 	})
 
-	it("exports UpdateThingInput type", () => {
-		const input: UpdateThingInput = {
-			id: "test-id",
-			title: "Updated Title",
-		}
-		expect(input.id).toBe("test-id")
+	it("has optional description", () => {
+		expectTypeOf<Thing["description"]>().toEqualTypeOf<string | undefined>()
 	})
+})
 
-	it("exports ListThingsInput type", () => {
-		const input: ListThingsInput = {
-			limit: 10,
-		}
-		expect(input.limit).toBe(10)
+describe("ThingId type", () => {
+	it("is assignable to string", () => {
+		expectTypeOf<ThingId>().toMatchTypeOf<string>()
 	})
 })

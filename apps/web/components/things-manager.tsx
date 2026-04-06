@@ -3,17 +3,19 @@
 
 import { useRef, useState } from "react"
 
-import { type Thing, useThings, useThingsGenerateUploadUrl } from "@repo/api/things"
+import type { Thing } from "@repo/api"
+import {
+	useThingsCreate,
+	useThingsGenerateUploadUrl,
+	useThingsList,
+	useThingsRemove,
+	useThingsUpdate,
+} from "@repo/api/things"
 import { ThingForm, type ThingFormData } from "@repo/forms/thing"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import { Field, FieldLabel } from "@repo/ui/components/ui/field"
 
-import { useCRPC } from "@/lib/convex/crpc"
-
-/**
- * Upload a file to Convex storage and return the storage ID.
- */
 async function uploadFileToStorage(file: File, getUploadUrl: () => Promise<string>) {
 	const uploadUrl = await getUploadUrl()
 	const result = await fetch(uploadUrl, {
@@ -74,14 +76,16 @@ function ImageUpload({
 					</Button>
 				</div>
 			) : (
-				<div
-					className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed"
+				<button
+					type="button"
+					className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-transparent"
 					onClick={() => fileInputRef.current?.click()}
+					disabled={disabled || isUploading}
 				>
 					<span className="text-muted-foreground text-sm">
 						{isUploading ? "Uploading..." : "Click to upload image"}
 					</span>
-				</div>
+				</button>
 			)}
 			<input
 				ref={fileInputRef}
@@ -106,15 +110,13 @@ function ThingItem({
 	onUpdate: (data: { title?: string; description?: string | null; imageId?: string | null }) => void
 	isDeleting: boolean
 }) {
-	const crpc = useCRPC()
+	const generateUploadUrl = useThingsGenerateUploadUrl()
 	const [isEditing, setIsEditing] = useState(false)
 	const [editImageUrl, setEditImageUrl] = useState<string | null>(thing.imageUrl)
-	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId)
-
-	const generateUploadUrl = useThingsGenerateUploadUrl(crpc)
+	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId ?? undefined)
 
 	const handleImageUpload = async (file: File) => {
-		const storageId = await uploadFileToStorage(file, () => generateUploadUrl.mutateAsync({}))
+		const storageId = await uploadFileToStorage(file, () => generateUploadUrl())
 		setEditImageId(storageId)
 		setEditImageUrl(URL.createObjectURL(file))
 	}
@@ -201,31 +203,23 @@ function ThingItem({
 
 function ThingsList({
 	things,
-	isLoading,
-	error,
 	onDelete,
 	onUpdate,
-	isDeleting,
+	deletingId,
 }: {
 	things: Thing[] | undefined
-	isLoading: boolean
-	error: Error | null
 	onDelete: (id: string) => void
 	onUpdate: (
 		id: string,
 		data: { title?: string; description?: string | null; imageId?: string | null }
 	) => void
-	isDeleting: boolean
+	deletingId: string | null
 }) {
-	if (isLoading) {
+	if (things === undefined) {
 		return <p className="text-muted-foreground">Loading...</p>
 	}
 
-	if (error) {
-		return <p className="text-destructive">Error loading things</p>
-	}
-
-	if (!things || things.length === 0) {
+	if (things.length === 0) {
 		return <p className="text-muted-foreground">No things yet. Create one above!</p>
 	}
 
@@ -237,31 +231,24 @@ function ThingsList({
 					thing={thing}
 					onDelete={() => onDelete(thing._id)}
 					onUpdate={(data) => onUpdate(thing._id, data)}
-					isDeleting={isDeleting}
+					isDeleting={deletingId === thing._id}
 				/>
 			))}
 		</ul>
 	)
 }
 
-/**
- * Client component for managing Things with CRUD operations.
- * Data is prefetched on the server and hydrated for instant display.
- */
 export function ThingsManager() {
-	const crpc = useCRPC()
+	const things = useThingsList()
+	const createThing = useThingsCreate()
+	const updateThing = useThingsUpdate()
+	const deleteThing = useThingsRemove()
+	const generateUploadUrl = useThingsGenerateUploadUrl()
+
 	const [imageFile, setImageFile] = useState<File | null>(null)
 	const [imagePreview, setImagePreview] = useState<string | null>(null)
-
-	const {
-		things,
-		isLoading,
-		error,
-		create: createThing,
-		update: updateThing,
-		remove: deleteThing,
-		generateUploadUrl,
-	} = useThings(crpc)
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isDeletingId, setIsDeletingId] = useState<string | null>(null)
 
 	const handleImageUpload = async (file: File) => {
 		setImageFile(file)
@@ -273,18 +260,38 @@ export function ThingsManager() {
 		setImagePreview(null)
 	}
 
-	const isSubmitting = createThing.isPending || generateUploadUrl.isPending
-
 	const handleSubmit = async (data: ThingFormData) => {
-		const imageId = imageFile
-			? await uploadFileToStorage(imageFile, () => generateUploadUrl.mutateAsync({}))
-			: undefined
+		setIsSubmitting(true)
+		try {
+			const imageId = imageFile
+				? await uploadFileToStorage(imageFile, () => generateUploadUrl())
+				: undefined
 
-		await createThing.mutateAsync({
-			title: data.title,
-			description: data.description || undefined,
-			imageId,
-		})
+			await createThing({
+				title: data.title,
+				description: data.description || undefined,
+				imageId,
+			})
+			clearImage()
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
+
+	const handleDelete = async (id: string) => {
+		setIsDeletingId(id)
+		try {
+			await deleteThing({ id })
+		} finally {
+			setIsDeletingId(null)
+		}
+	}
+
+	const handleUpdate = async (
+		id: string,
+		data: { title?: string; description?: string | null; imageId?: string | null }
+	) => {
+		await updateThing({ id, ...data })
 	}
 
 	return (
@@ -320,11 +327,9 @@ export function ThingsManager() {
 				<CardContent>
 					<ThingsList
 						things={things}
-						isLoading={isLoading}
-						error={error}
-						onDelete={(id) => deleteThing.mutate({ id })}
-						onUpdate={(id, data) => updateThing.mutate({ id, ...data })}
-						isDeleting={deleteThing.isPending}
+						onDelete={handleDelete}
+						onUpdate={handleUpdate}
+						deletingId={isDeletingId}
 					/>
 				</CardContent>
 			</Card>
