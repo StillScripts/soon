@@ -86,7 +86,10 @@
 			"Skill(web-design-guidelines)",
 			"Bash(git add:*)",
 			"Bash(bunx npm info:*)",
-			"Bash(git push:*)"
+			"Bash(git push:*)",
+			"WebFetch(domain:www.convex.dev)",
+			"WebFetch(domain:www.better-auth.com)",
+			"Bash(bunx convex:*)"
 		]
 	}
 }
