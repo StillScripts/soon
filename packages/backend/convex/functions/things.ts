@@ -13,14 +13,16 @@ async function getAuthUserId(ctx: {
 		return testIdentity.subject
 	}
 
-	// Production: use better-auth
 	try {
+		// Cast needed because getAuthUser expects full QueryCtx but we only declare the auth subset
 		const user = await authComponent.getAuthUser(ctx as any)
 		if (user) {
 			return user._id
 		}
-	} catch {
-		// getAuthUser throws when unauthenticated
+	} catch (error) {
+		// oxlint-disable-next-line no-console
+		console.error("Error getting auth user:", error)
+		return null
 	}
 
 	return null

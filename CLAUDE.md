@@ -185,7 +185,7 @@ bun generate:component
 
 ### Convex API Layer (`@repo/api`)
 
-**CRITICAL: Never hardcode Convex document types or use `useQuery`/`useMutation` from `convex/react` directly.** All Convex interaction goes through `@repo/api`.
+**CRITICAL: App components should never import `useQuery`/`useMutation` from `convex/react` directly or hardcode Convex document types.** All Convex interaction in app code goes through `@repo/api` (the API package itself wraps `convex/react` internally).
 
 **Types** — Import from `@repo/api`:
 
