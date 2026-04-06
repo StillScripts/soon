@@ -146,11 +146,57 @@ When working with Better Auth in this codebase:
 
 ### Common Errors
 
-| Error                                        | Cause                          | Fix                                |
-| -------------------------------------------- | ------------------------------ | ---------------------------------- |
-| `Type 'AdapterFactory' is not assignable...` | `better-auth` version mismatch | Pin to `1.4.9` exactly             |
-| `TS1484: 'DataModel' is a type...`           | Missing type-only import       | Use `import type { DataModel }`    |
-| `SITE_URL` undefined                         | Missing env var                | Run `bunx convex env set SITE_URL` |
+| Error                                        | Cause                          | Fix                                              |
+| -------------------------------------------- | ------------------------------ | ------------------------------------------------ |
+| `Type 'AdapterFactory' is not assignable...` | `better-auth` version mismatch | Pin to a compatible version                      |
+| `TS1484: 'DataModel' is a type...`           | Missing type-only import       | Use `import type { DataModel }`                  |
+| `SITE_URL` undefined                         | Missing env var                | Run `bunx convex env set SITE_URL`               |
+| `Failed to decrypt private key...`           | JWKS/secret mismatch           | Rotate JWKS keys (see below)                     |
+| Mutations fail with "Not authenticated"      | Token endpoint returning 500   | Check Convex logs, likely JWKS issue (see below) |
+
+### JWKS Private Key Decryption Error
+
+This is a common and hard-to-diagnose issue. The symptom is that the UI shows you as logged in (Better Auth session cookies work), but all Convex mutations fail with "Not authenticated."
+
+**What happens**: Better Auth stores encrypted JWKS (JSON Web Key Set) entries in Convex. These keys are encrypted with `BETTER_AUTH_SECRET`. When the secret changes, Better Auth can't decrypt the stored private keys, so the `/api/auth/convex/token` endpoint returns a 500 error. Without a valid JWT, `ctx.auth.getUserIdentity()` returns `null` in all Convex functions.
+
+**How to diagnose**: Check Convex logs for:
+
+```bash
+cd packages/backend
+bunx convex logs --history 20
+```
+
+Look for: `BetterAuthError: Failed to decrypt private key`
+
+**How to fix**: Rotate the JWKS keys:
+
+```typescript
+// packages/backend/convex/functions/admin.ts (temporary file)
+import { internalAction } from "./_generated/server"
+import { createAuth } from "./auth"
+
+export const rotateKeys = internalAction({
+	args: {},
+	handler: async (ctx) => {
+		const auth = createAuth(ctx as any)
+		return await auth.api.rotateKeys()
+	},
+})
+```
+
+```bash
+cd packages/backend
+bunx convex dev --run "admin:rotateKeys" --typecheck=disable
+```
+
+Delete the file after use. This clears stale keys and generates new ones with the current secret.
+
+**When this happens**:
+
+- After changing `BETTER_AUTH_SECRET`
+- After resetting or recreating a Convex deployment
+- When switching between Convex deployments that share the same database
 
 ## Outcomes
 

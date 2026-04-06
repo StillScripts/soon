@@ -139,7 +139,50 @@ imageId: v.optional(v.union(v.id("_storage"), v.null())),
 
 4. **Removed @repo/api entirely**: The `Thing` type and API hooks were only used in the web app. With standard Convex hooks, there's no need for a separate API package.
 
+## Troubleshooting: JWKS Private Key Decryption Error
+
+After the migration, you may encounter this error in the Convex logs when trying to create or interact with things:
+
+```
+[CONVEX H(GET /api/auth/convex/token)] [ERROR]
+BetterAuthError: Failed to decrypt private key.
+Make sure the secret currently in use is the same as the one used to encrypt the private key.
+```
+
+**Symptom**: The UI shows you as authenticated (session cookies work), but all Convex mutations fail with "Not authenticated." The `/api/auth/convex/token` endpoint returns a 500 error.
+
+**Cause**: The JWKS (JSON Web Key Set) entries stored in the Convex database were encrypted with a previous `BETTER_AUTH_SECRET`. When the secret changes (or if stale keys exist from prior setups), Better Auth cannot decrypt the private keys needed to sign JWTs. Without a valid JWT, `ctx.auth.getUserIdentity()` returns `null` in all Convex functions.
+
+**Fix**: Rotate the JWKS keys to regenerate them with the current secret:
+
+1. Create a temporary file `packages/backend/convex/functions/admin.ts`:
+
+```typescript
+import { internalAction } from "./_generated/server"
+import { createAuth } from "./auth"
+
+export const rotateKeys = internalAction({
+	args: {},
+	handler: async (ctx) => {
+		const auth = createAuth(ctx as any)
+		return await auth.api.rotateKeys()
+	},
+})
+```
+
+2. Push and run:
+
+```bash
+cd packages/backend
+bunx convex dev --run "admin:rotateKeys" --typecheck=disable
+```
+
+3. Delete `admin.ts` after confirming the token endpoint works.
+
+**Prevention**: If you ever change the `BETTER_AUTH_SECRET` environment variable, you must rotate JWKS keys immediately afterward. The secret and the stored keys must always match.
+
 ## Related Guides
 
+- [Guide 8: Better Auth Integration](./08-better-auth) - Original Better Auth setup and environment variables
 - [Guide 12: Better Convex Migration](./12-better-convex-migration) - Original migration to Better Convex (now reversed)
 - [Guide 23: Better Convex RSC](./23-better-convex-rsc) - RSC integration (now removed)
