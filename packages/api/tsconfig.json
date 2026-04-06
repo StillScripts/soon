@@ -1,0 +1,15 @@
+{
+	"extends": "@repo/typescript-config/base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"paths": {
+			"@convex/*": ["../backend/convex/functions/_generated/*"]
+		}
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
+}

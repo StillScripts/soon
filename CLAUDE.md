@@ -182,6 +182,20 @@ bun generate:component
 
 ## Architecture Notes
 
+### Convex Type Inference
+
+**CRITICAL: Never hardcode types for Convex documents.** All Convex types and the `api` object live in `@repo/api`:
+
+```ts
+import { api } from "@repo/api"
+import type { Doc, Id, Thing } from "@repo/api"
+```
+
+- Domain types (e.g. `Thing`) are defined in `packages/api/src/types.ts` using `Doc<"tableName">` extended with computed fields
+- The `api` object, `Doc`, and `Id` are re-exported from the generated backend types
+- Never use `FunctionReturnType` — the generated `api.d.ts` uses `any` for all return types
+- When adding a new table, define its domain type in `packages/api/src/types.ts` and re-export from `index.ts`
+
 ### Turborepo Task Dependencies
 
 The `turbo.json` configuration defines task pipelines:

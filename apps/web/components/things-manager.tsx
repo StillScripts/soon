@@ -3,22 +3,18 @@
 
 import { useRef, useState } from "react"
 
-import { api } from "@convex/api"
+import type { Thing } from "@repo/api"
+import {
+	useThingsCreate,
+	useThingsGenerateUploadUrl,
+	useThingsList,
+	useThingsRemove,
+	useThingsUpdate,
+} from "@repo/api/things"
 import { ThingForm, type ThingFormData } from "@repo/forms/thing"
 import { Button } from "@repo/ui/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import { Field, FieldLabel } from "@repo/ui/components/ui/field"
-import { useMutation, useQuery } from "convex/react"
-
-type Thing = {
-	_id: string
-	_creationTime: number
-	title: string
-	description?: string
-	imageId?: string
-	userId: string
-	imageUrl: string | null
-}
 
 async function uploadFileToStorage(file: File, getUploadUrl: () => Promise<string>) {
 	const uploadUrl = await getUploadUrl()
@@ -80,14 +76,16 @@ function ImageUpload({
 					</Button>
 				</div>
 			) : (
-				<div
-					className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed"
+				<button
+					type="button"
+					className="border-muted-foreground/25 hover:border-muted-foreground/50 flex h-32 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed bg-transparent"
 					onClick={() => fileInputRef.current?.click()}
+					disabled={disabled || isUploading}
 				>
 					<span className="text-muted-foreground text-sm">
 						{isUploading ? "Uploading..." : "Click to upload image"}
 					</span>
-				</div>
+				</button>
 			)}
 			<input
 				ref={fileInputRef}
@@ -112,10 +110,10 @@ function ThingItem({
 	onUpdate: (data: { title?: string; description?: string | null; imageId?: string | null }) => void
 	isDeleting: boolean
 }) {
-	const generateUploadUrl = useMutation(api.things.generateUploadUrl)
+	const generateUploadUrl = useThingsGenerateUploadUrl()
 	const [isEditing, setIsEditing] = useState(false)
 	const [editImageUrl, setEditImageUrl] = useState<string | null>(thing.imageUrl)
-	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId)
+	const [editImageId, setEditImageId] = useState<string | undefined>(thing.imageId ?? undefined)
 
 	const handleImageUpload = async (file: File) => {
 		const storageId = await uploadFileToStorage(file, () => generateUploadUrl())
@@ -241,11 +239,11 @@ function ThingsList({
 }
 
 export function ThingsManager() {
-	const things = useQuery(api.things.list, {})
-	const createThing = useMutation(api.things.create)
-	const updateThing = useMutation(api.things.update)
-	const deleteThing = useMutation(api.things.remove)
-	const generateUploadUrl = useMutation(api.things.generateUploadUrl)
+	const things = useThingsList()
+	const createThing = useThingsCreate()
+	const updateThing = useThingsUpdate()
+	const deleteThing = useThingsRemove()
+	const generateUploadUrl = useThingsGenerateUploadUrl()
 
 	const [imageFile, setImageFile] = useState<File | null>(null)
 	const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -328,7 +326,7 @@ export function ThingsManager() {
 				</CardHeader>
 				<CardContent>
 					<ThingsList
-						things={things as Thing[] | undefined}
+						things={things}
 						onDelete={handleDelete}
 						onUpdate={handleUpdate}
 						deletingId={isDeletingId}
