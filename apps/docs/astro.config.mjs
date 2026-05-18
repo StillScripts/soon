@@ -122,7 +122,7 @@ export default defineConfig({
 				},
 				{
 					label: "Skills",
-					autogenerate: { directory: "skills" },
+					items: [{ autogenerate: { directory: "skills" } }],
 				},
 				{
 					label: "Reference",
