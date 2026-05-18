@@ -5,6 +5,28 @@ All notable changes to the SOON starter kit are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-05-18
+
+### Changed
+
+- Updated all dependencies to latest stable versions across the monorepo
+- TypeScript 5.9.3 → 6.0.3 (major upgrade)
+- @types/node 22.15.3 → 25.8.0 (major upgrade)
+- jsdom 26.1.0 → 29.1.1 (major upgrade)
+- Astro 6.1.3 → 6.3.3, @astrojs/starlight 0.38.2 → 0.39.2
+- Next.js 16.2.2 → 16.2.6, React 19.2.4 → 19.2.6
+- Convex 1.34.1 → 1.39.1, Better Auth 1.5.6 → 1.6.11
+- Remotion 4.0.445 → 4.0.462, Tailwind CSS 4.2.2 → 4.3.0
+- Vitest 4.1.2 → 4.1.6, oxlint 1.58.0 → 1.65.0, turbo 2.9.3 → 2.9.14
+- Plus many minor/patch updates across @base-ui/react, lucide-react, zod, @tanstack/react-form, convex-helpers, and more
+
+### Fixed
+
+- Removed deprecated `baseUrl` from web tsconfig (deprecated in TS 6.0, removed in TS 7.0)
+- Updated Starlight sidebar config to use new `autogenerate` syntax required by 0.39.0
+- Added `aria-label` to hidden file input to satisfy oxlint 1.65.0 a11y rules
+- Disabled `jsx-a11y/prefer-tag-over-role` and `jsx-a11y/no-noninteractive-element-interactions` in shared oxlint config to allow shadcn primitive patterns
+
 ## [2.0.1] - 2026-04-06
 
 ### Fixed

@@ -91,6 +91,7 @@ function ImageUpload({
 				ref={fileInputRef}
 				type="file"
 				accept="image/*"
+				aria-label="Upload image"
 				onChange={handleFileChange}
 				disabled={disabled || isUploading}
 				className="hidden"

@@ -9,7 +9,6 @@
 		"strictFunctionTypes": false,
 		"declaration": false,
 		"declarationMap": false,
-		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*"],
 			"@convex/*": ["../../packages/backend/convex/functions/_generated/*"]
